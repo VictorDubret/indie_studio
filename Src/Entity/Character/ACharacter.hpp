@@ -42,7 +42,7 @@ namespace is {
 		void moveLeft();
 		void moveRight();
 
-		void checkCollision();
+		bool checkCollision();
 	protected:
 		bool _wallPass = false;
 

@@ -29,6 +29,7 @@ namespace is {
 		float &getY() override;
 		float &getZ() override;
 		std::string const &getType() const override;
+		bool isCollidable() const override;
 
 		// Setter
 		void setX(float &) override;
@@ -40,7 +41,7 @@ namespace is {
 		void addEvent(std::string const &key, Callable &&func, Arg &&...args) {
 
 			_events[key] = [this](is::IEntity *caller) {
-				auto f = std::bind(std::forward(func), std::forward(args)...);
+				auto f = std::bind(std::forward(func), std::forward(args)..., caller);
 
 				f();
 			};
@@ -55,6 +56,8 @@ namespace is {
 		std::string _type = "AEntity";
 		is::IEntity::Position _position;
 		std::map<std::string, std::function<void (is::IEntity *)>> _events;
+
+		bool collidable = false;
 	private:
 	};
 }

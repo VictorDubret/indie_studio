@@ -72,36 +72,45 @@ is::ACharacter &is::ACharacter::operator++()
 	return *this;
 }
 
-void is::ACharacter::checkCollision()
+bool is::ACharacter::checkCollision()
 {
+	bool ret = false;
 	for (auto &it: _entities) {
-		if (it->getX() == _position.x &&
+		if (it != this && it->getX() == _position.x &&
 			it->getY() == _position.y &&
-			it->getZ() == _position.z)
+			it->getZ() == _position.z &&
+			it->isCollidable) {
 			it->event("collide", *this);
+			ret = true;
+		}
 	}
+	return ret;
 }
 
 void is::ACharacter::moveUp()
 {
 	_position.y--;
-	checkCollision();
+	if (checkCollision())
+		_position.y++;
 }
 
 void is::ACharacter::moveDown()
 {
 	_position.y++;
-	checkCollision();
+	if (checkCollision())
+		_position.y--;
 }
 
 void is::ACharacter::moveLeft()
 {
 	_position.x--;
-	checkCollision();
+	if (checkCollision())
+		_position.x++;
 }
 
 void is::ACharacter::moveRight()
 {
 	_position.x++;
-	checkCollision();
+	if (checkCollision())
+		_position.x--;
 }

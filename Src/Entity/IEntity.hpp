@@ -27,6 +27,7 @@ namespace is {
 		virtual float &getY() = 0;
 		virtual float &getZ() = 0;
 		virtual std::string const &getType() const = 0;
+		virtual bool isCollidable() const = 0;
 
 		virtual void setX(float &) = 0;
 		virtual void setY(float &) = 0;
