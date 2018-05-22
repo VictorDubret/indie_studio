@@ -38,6 +38,7 @@ namespace is {
 		};
 
 		virtual void event(std::string const &key) = 0;
+		virtual void event(std::string const &key, is::IEntity &caller) = 0;
 
 		virtual void animate() = 0; // TODO when Irlicht is set
 	};

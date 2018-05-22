@@ -56,7 +56,16 @@ void is::AEntity::setZ(float &z)
 void is::AEntity::event(std::string const &key)
 {
 	try {
-		_events[key]();
+		_events[key](nullptr);
+	} catch (std::exception &e) {
+
+	}
+}
+
+void is::AEntity::event(std::string const &key, is::IEntity &caller)
+{
+	try {
+		(_events[key])(&caller);
 	} catch (std::exception &e) {
 
 	}

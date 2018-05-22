@@ -38,23 +38,24 @@ namespace is {
 		// Other
 		template<class Callable, class... Arg>
 		void addEvent(std::string const &key, Callable &&func, Arg &&...args) {
-			auto f = std::bind(std::forward(func), std::forward(args)...);
 
-			_events[key] = [this]() {
+			_events[key] = [this](is::IEntity *caller) {
+				auto f = std::bind(std::forward(func), std::forward(args)...);
+
 				f();
 			};
 		};
 
 		void event(std::string const &key) override;
+		void event(std::string const &key, is::IEntity &caller) override;
 
 
 	protected:
-
-	private:
 		std::vector<IEntity *> &_entities;
 		std::string _type = "AEntity";
 		is::IEntity::Position _position;
-		std::map<std::string, std::function<void (*)>> _events;
+		std::map<std::string, std::function<void (is::IEntity *)>> _events;
+	private:
 	};
 }
 
