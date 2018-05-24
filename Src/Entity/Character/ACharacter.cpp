@@ -78,10 +78,13 @@ bool is::ACharacter::checkCollision()
 	for (auto &it: _entities) {
 		if (it != this && it->getX() == _position.x &&
 			it->getY() == _position.y &&
-			it->getZ() == _position.z &&
-			it->isCollidable) {
-			it->event("collide", *this);
-			ret = true;
+			it->getZ() == _position.z) {
+			if (it->isCollidable()) {
+				it->event("collide", this);
+				ret = (it->isWallPassable() && _wallPass) ? ret : true;
+			}
+			if (it->isPickable())
+				it->event("pickup", this);
 		}
 	}
 	return ret;

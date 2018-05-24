@@ -14,7 +14,7 @@ namespace is {
 	class IEntity {
 	public:
 		IEntity() = default;
-		virtual ~IEntity() = 0;
+		virtual ~IEntity() = default;
 
 		struct Position {
 			float x;
@@ -28,20 +28,18 @@ namespace is {
 		virtual float &getZ() = 0;
 		virtual std::string const &getType() const = 0;
 		virtual bool isCollidable() const = 0;
+		virtual bool isPickable() const = 0;
+		virtual bool isWallPassable() const = 0;
 
 		virtual void setX(float &) = 0;
 		virtual void setY(float &) = 0;
 		virtual void setZ(float &) = 0;
 
-		template<class Callable, class... Arg>
-		virtual void addEvent(std::string const &key, Callable func, Arg &...args) {
+		virtual void event(std::string const &key, is::IEntity *caller = nullptr) = 0;
 
-		};
+		virtual void ia() = 0;
 
-		virtual void event(std::string const &key) = 0;
-		virtual void event(std::string const &key, is::IEntity &caller) = 0;
-
-		virtual void animate() = 0; // TODO when Irlicht is set
+		//virtual void animate() = 0; // TODO when Irlicht is set
 	};
 }
 
