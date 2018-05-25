@@ -84,7 +84,9 @@ bool is::ACharacter::checkCollision()
 			it->getZ() == _position.z) {
 			if (it->isCollidable()) {
 				_eventManager.lock();
-				_eventManager->enqueue(&is::AEntity::collide, it.get(), this);
+				_eventManager->enqueue([it, this]() {
+					it.get()->collide(this);
+				});
 				_eventManager.unlock();
 				ret = (it->isWallPassable() && _wallPass) ? ret : true;
 			}

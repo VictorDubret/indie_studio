@@ -14,16 +14,18 @@ is::AEntity::AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &enti
 	my::ItemLocker<my::ThreadPool> &eventManager):
 	_entities(entities), _eventManager(eventManager)
 {
-	_entities->push_back(std::shared_ptr<is::IEntity>(this));
+	_entities.lock();
+	_entities->push_back(std::shared_ptr<is::IEntity>(this, [&](IEntity *){}));
+	_entities.unlock();
 }
 
 is::AEntity::~AEntity()
 {
 	_entities.lock();
 	for (auto it = _entities->begin(); it != _entities->end(); it++) {
-		if (it.base()->get() == this) {
-			_entities->erase(it);
+		if (it->get() == this) {
 			_entities.unlock();
+			_entities->erase(it);
 			break;
 		}
 	}
