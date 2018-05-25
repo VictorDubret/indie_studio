@@ -15,14 +15,16 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include "ThreadPool.hpp"
+#include "ItemLocker.hpp"
 #include "IEntity.hpp"
 
 namespace is {
 	class AEntity : public IEntity {
 	public:
 		// Constructor
-		explicit AEntity(std::vector<IEntity *> &);
-
+		AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
+			my::ItemLocker<my::ThreadPool> &eventManager);
 		// Destructor
 		~AEntity() override;
 
@@ -41,38 +43,18 @@ namespace is {
 		void setY(float &) override;
 		void setZ(float &) override;
 
-		// Other
-		template<class Callable, class... Arg>
-		void addEvent(std::string const &key, Callable &&func, Arg &&...args) {
-
-			_events[key] = [this, &func, args...](is::IEntity *caller) {
-				auto f = std::bind(std::forward(func), std::forward(args)..., caller);
-
-				f();
-			};
-		};
-
-		void event(std::string const &key, is::IEntity *caller = nullptr) override;
-
-		bool ended = false;
-		void ia() override;
+		void collide(IEntity *collider) override;
 
 	protected:
-		std::vector<IEntity *> &_entities;
+		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
+		my::ItemLocker<my::ThreadPool> &_eventManager;
 		std::string _type = "AEntity";
 		is::IEntity::Position _position;
 
-		std::map<std::string, std::function<void (is::IEntity *)>> _events;
 		bool _collidable = false;
 		bool _pickable = false;
 
 		bool _wallPassable = false;
-
-		std::mutex _mutex;
-		std::thread _thread;
-		std::queue<std::pair<std::string, IEntity *>>_poll;
-
-		void execEvent();
 	private:
 	};
 }

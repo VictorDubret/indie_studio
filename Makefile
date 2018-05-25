@@ -1,19 +1,33 @@
 SRC	=	Src/Entity/AEntity.cpp		\
 		test.cpp			\
 		Src/Entity/Character/ACharacter.cpp	\
+		Src/Tools/Thread.cpp	\
+		Src/Tools/ThreadPool.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 
-CXXFLAGS	=	-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/
+CC	=	g++
+CXX	=	clang++
+
+CXXFLAGS	=	-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/ -ISrc/Tools
+
+LDFLAGS	=	-lpthread
 
 NAME	=	toto
 
 all:	$(NAME)
 
 $(NAME):	$(OBJ)
-		g++ -o $(NAME) $(OBJ) -lpthread
+		$(CXX) -o $(NAME) $(OBJ) $(LDFLAGS)
 
 
 clean:
 	rm -rf $(OBJ)
+
+fclean: clean
 	rm -rf $(NAME)
+
+re: fclean all
+
+exec: re
+	./$(NAME)

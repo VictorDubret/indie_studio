@@ -14,7 +14,8 @@ namespace is {
 	class ACharacter: AEntity {
 	public:
 		// Constructor
-		explicit ACharacter(std::vector<is::IEntity *> &entities);
+		ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
+			my::ItemLocker<my::ThreadPool> &eventManager);
 
 		// Destructor
 		~ACharacter() override = default;

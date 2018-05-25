@@ -7,26 +7,27 @@
 
 #include <thread>
 #include <chrono>
+#include <functional>
 #include "AEntity.hpp"
 
-is::AEntity::AEntity(std::vector<is::IEntity *> &entities):
-	_entities(entities)
+is::AEntity::AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
+	my::ItemLocker<my::ThreadPool> &eventManager):
+	_entities(entities), _eventManager(eventManager)
 {
-	_entities.push_back(this);
-	_thread = std::thread(&is::AEntity::ia, this);
+	_entities->push_back(std::shared_ptr<is::IEntity>(this));
 }
 
 is::AEntity::~AEntity()
 {
-	ended = true;
-	if (_thread.joinable())
-		_thread.join();
-	for (auto it = _entities.begin(); it != _entities.end(); it++) {
-		if (*it.base() == this) {
-			_entities.erase(it);
+	_entities.lock();
+	for (auto it = _entities->begin(); it != _entities->end(); it++) {
+		if (it.base()->get() == this) {
+			_entities->erase(it);
+			_entities.unlock();
 			break;
 		}
 	}
+	_entities.unlock();
 }
 
 is::IEntity::Position& is::AEntity::getPosition()
@@ -74,26 +75,6 @@ bool is::AEntity::isCollidable() const
 	return _collidable;
 }
 
-void is::AEntity::event(std::string const &key, is::IEntity *caller)
-{
-	_mutex.lock();
-	_poll.push(std::pair<std::string, is::IEntity *>(key, caller));
-	_mutex.unlock();
-}
-
-void is::AEntity::execEvent()
-{
-	_mutex.lock();
-	if (_poll.empty()) {
-		_mutex.unlock();
-		return;
-	}
-	auto event = _poll.back();
-	_poll.pop();
-	_mutex.unlock();
-	_events[event.first](event.second);
-}
-
 bool is::AEntity::isPickable() const
 {
 	return _pickable;
@@ -104,10 +85,7 @@ bool is::AEntity::isWallPassable() const
 	return _wallPassable;
 }
 
-void is::AEntity::ia()
+void is::AEntity::collide(IEntity *collider)
 {
-	while (!ended) {
-		execEvent();
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
+	std::cout << "Collide with " << collider->getType() << std::endl;
 }

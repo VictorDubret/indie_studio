@@ -8,6 +8,7 @@
 #ifndef CPP_INDIE_STUDIO_IENTITY_HPP
 #define CPP_INDIE_STUDIO_IENTITY_HPP
 
+#include <memory>
 #include <string>
 
 namespace is {
@@ -35,9 +36,7 @@ namespace is {
 		virtual void setY(float &) = 0;
 		virtual void setZ(float &) = 0;
 
-		virtual void event(std::string const &key, is::IEntity *caller = nullptr) = 0;
-
-		virtual void ia() = 0;
+		virtual void collide(IEntity *collider) = 0;
 
 		//virtual void animate() = 0; // TODO when Irlicht is set
 	};

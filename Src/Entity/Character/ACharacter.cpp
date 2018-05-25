@@ -5,10 +5,11 @@
 ** Created by sahel.lucas-saoudi@epitech.eu,
 */
 
+#include <ThreadPool.hpp>
 #include "ACharacter.hpp"
 
-is::ACharacter::ACharacter(std::vector<is::IEntity *> &entities) :
-	AEntity(entities)
+is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) :
+	AEntity(entities, eventManager)
 {
 }
 
@@ -75,18 +76,21 @@ is::ACharacter &is::ACharacter::operator++()
 bool is::ACharacter::checkCollision()
 {
 	bool ret = false;
-	for (auto &it: _entities) {
-		if (it != this && it->getX() == _position.x &&
+
+	_entities.lock();
+	for (auto &it: _entities.get()) {
+		if (it.get() != this && it->getX() == _position.x &&
 			it->getY() == _position.y &&
 			it->getZ() == _position.z) {
 			if (it->isCollidable()) {
-				it->event("collide", this);
+				_eventManager.lock();
+				_eventManager->enqueue(&is::AEntity::collide, it.get(), this);
+				_eventManager.unlock();
 				ret = (it->isWallPassable() && _wallPass) ? ret : true;
 			}
-			if (it->isPickable())
-				it->event("pickup", this);
 		}
 	}
+	_entities.unlock();
 	return ret;
 }
 
