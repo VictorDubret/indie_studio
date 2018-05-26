@@ -42,32 +42,32 @@ std::string const& is::AEntity::getType() const
 	return _type;
 }
 
-float& is::AEntity::getX()
+double& is::AEntity::getX()
 {
 	return _position.x;
 }
 
-float& is::AEntity::getY()
+double& is::AEntity::getY()
 {
 	return _position.y;
 }
 
-float &is::AEntity::getZ()
+double &is::AEntity::getZ()
 {
 	return _position.z;
 }
 
-void is::AEntity::setX(float &x)
+void is::AEntity::setX(double &x)
 {
 	_position.x = x;
 }
 
-void is::AEntity::setY(float &y)
+void is::AEntity::setY(double &y)
 {
 	_position.y = y;
 }
 
-void is::AEntity::setZ(float &z)
+void is::AEntity::setZ(double &z)
 {
 	_position.z = z;
 }
@@ -89,5 +89,5 @@ bool is::AEntity::isWallPassable() const
 
 void is::AEntity::collide(IEntity *collider)
 {
-	std::cout << "Collide with " << collider->getType() << std::endl;
+	std::cout << _type << " collide with " << collider->getType() << std::endl;
 }

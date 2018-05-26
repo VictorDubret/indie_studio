@@ -11,6 +11,7 @@
 is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) :
 	AEntity(entities, eventManager)
 {
+	_type = "Character";
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -85,7 +86,7 @@ bool is::ACharacter::checkCollision()
 			if (it->isCollidable()) {
 				_eventManager.lock();
 				_eventManager->enqueue([it, this]() {
-					it.get()->collide(this);
+					dynamic_cast<AEntity *>(it.get())->collide(this);
 				});
 				_eventManager.unlock();
 				ret = (it->isWallPassable() && _wallPass) ? ret : true;

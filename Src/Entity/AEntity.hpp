@@ -30,25 +30,25 @@ namespace is {
 
 		// Getter
 		is::IEntity::Position &getPosition() override;
-		float &getX() override;
-		float &getY() override;
-		float &getZ() override;
+		double &getX() override;
+		double &getY() override;
+		double &getZ() override;
 		std::string const &getType() const override;
 		bool isCollidable() const override;
 		bool isPickable() const override;
 		bool isWallPassable() const override;
 
 		// Setter
-		void setX(float &) override;
-		void setY(float &) override;
-		void setZ(float &) override;
+		void setX(double &) override;
+		void setY(double &) override;
+		void setZ(double &) override;
 
-		void collide(IEntity *collider) override;
+		void collide(is::IEntity *collider) override;
 
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
-		std::string _type = "AEntity";
+		std::string _type = "Entity";
 		is::IEntity::Position _position;
 
 		bool _collidable = false;
