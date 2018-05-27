@@ -18,23 +18,23 @@ namespace is {
 		virtual ~IEntity() = default;
 
 		struct Position {
-			float x;
-			float y;
-			float z;
+			double x = 0;
+			double y = 0;
+			double z = 0;
 		};
 
 		virtual is::IEntity::Position &getPosition() = 0;
-		virtual float &getX() = 0;
-		virtual float &getY() = 0;
-		virtual float &getZ() = 0;
+		virtual double &getX() = 0;
+		virtual double &getY() = 0;
+		virtual double &getZ() = 0;
 		virtual std::string const &getType() const = 0;
 		virtual bool isCollidable() const = 0;
 		virtual bool isPickable() const = 0;
 		virtual bool isWallPassable() const = 0;
 
-		virtual void setX(float &) = 0;
-		virtual void setY(float &) = 0;
-		virtual void setZ(float &) = 0;
+		virtual void setX(double &) = 0;
+		virtual void setY(double &) = 0;
+		virtual void setZ(double &) = 0;
 
 		virtual void collide(IEntity *collider) = 0;
 

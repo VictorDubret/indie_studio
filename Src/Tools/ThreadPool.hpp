@@ -18,7 +18,7 @@ namespace my {
 	class ThreadPool {
 		public:
 		// Constructor
-		ThreadPool(unsigned int threadNumber);
+		explicit ThreadPool(unsigned int threadNumber);
 
 		// Destructor
 		~ThreadPool();

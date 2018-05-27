@@ -11,7 +11,7 @@
 #include "AEntity.hpp"
 
 namespace is {
-	class ACharacter: AEntity {
+	class ACharacter: public AEntity {
 	public:
 		// Constructor
 		ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
@@ -53,7 +53,6 @@ namespace is {
 		size_t _bombLength = 1;
 		size_t _speed = 1;
 
-		std::string _type = "ACharacter";
 	private:
 	};
 }

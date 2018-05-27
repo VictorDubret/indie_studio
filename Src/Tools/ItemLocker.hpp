@@ -15,7 +15,7 @@ namespace my {
 	class ItemLocker {
 	public:
 		// Constructor
-		ItemLocker(ItemClass &item): _item(item) {
+		explicit ItemLocker(ItemClass &item): _item(item) {
 
 		}
 
