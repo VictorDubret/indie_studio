@@ -1,13 +1,13 @@
 SRC	=	Src/Entity/AEntity.cpp		\
-		test.cpp			\
+		Src/main.cpp			\
 		Src/Entity/Character/ACharacter.cpp	\
 		Src/Tools/Thread.cpp	\
 		Src/Tools/ThreadPool.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 
-CC	=	g++
-CXX	=	clang++
+CXX	=	g++
+CC	=	clang++
 
 CXXFLAGS	=	-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/ -ISrc/Tools
 
