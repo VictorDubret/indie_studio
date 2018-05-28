@@ -38,10 +38,14 @@ namespace is {
 		// Other
 		is::ACharacter &operator++();
 
+		/*
+		 * Event
+		 */
 		void moveUp();
 		void moveDown();
 		void moveLeft();
 		void moveRight();
+		void dropBomb();
 
 		bool checkCollision();
 	protected:
@@ -50,9 +54,13 @@ namespace is {
 		size_t _bomb = 1;
 		size_t _bombMax = 1;
 
-		size_t _bombLength = 1;
+		size_t _bombLength = 2;
 		size_t _speed = 1;
 
+		/*
+		 * Internal Config
+		 */
+		double _speedCoef = 0.1;
 	private:
 	};
 }

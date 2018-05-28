@@ -82,6 +82,11 @@ bool is::AEntity::isPickable() const
 	return _pickable;
 }
 
+bool is::AEntity::isWalkable() const
+{
+	return _walkable;
+}
+
 bool is::AEntity::isWallPassable() const
 {
 	return _wallPassable;
@@ -90,4 +95,11 @@ bool is::AEntity::isWallPassable() const
 void is::AEntity::collide(IEntity *collider)
 {
 	std::cout << _type << " collide with " << collider->getType() << std::endl;
+}
+
+bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
+{
+	return ((int) _position.x == (int) entity->getX() &&
+		(int) _position.y == (int) entity->getY() &&
+		(int) _position.z == (int) entity->getZ());
 }

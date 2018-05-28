@@ -37,6 +37,7 @@ namespace is {
 		bool isCollidable() const override;
 		bool isPickable() const override;
 		bool isWallPassable() const override;
+		bool isWalkable() const override;
 
 		// Setter
 		void setX(double &) override;
@@ -51,10 +52,12 @@ namespace is {
 		std::string _type = "Entity";
 		is::IEntity::Position _position;
 
-		bool _collidable = false;
+		bool _collidable = true;
 		bool _pickable = false;
+		bool _walkable = true;
+		bool _wallPassable = true;
 
-		bool _wallPassable = false;
+		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 	private:
 	};
 }

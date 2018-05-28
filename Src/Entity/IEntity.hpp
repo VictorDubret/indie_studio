@@ -31,6 +31,7 @@ namespace is {
 		virtual bool isCollidable() const = 0;
 		virtual bool isPickable() const = 0;
 		virtual bool isWallPassable() const = 0;
+		virtual bool isWalkable() const = 0;
 
 		virtual void setX(double &) = 0;
 		virtual void setY(double &) = 0;

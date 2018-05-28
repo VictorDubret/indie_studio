@@ -12,6 +12,7 @@ is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>>
 	AEntity(entities, eventManager)
 {
 	_type = "Character";
+	_walkable = false;
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -70,7 +71,6 @@ is::ACharacter &is::ACharacter::operator++()
 {
 	if (_bomb < _bombMax)
 		_bomb++;
-
 	return *this;
 }
 
@@ -80,16 +80,15 @@ bool is::ACharacter::checkCollision()
 
 	_entities.lock();
 	for (auto &it: _entities.get()) {
-		if (it.get() != this && it->getX() == _position.x &&
-			it->getY() == _position.y &&
-			it->getZ() == _position.z) {
+		if (it.get() != this && isInCollisionWith(it)) {
 			if (it->isCollidable()) {
 				_eventManager.lock();
 				_eventManager->enqueue([it, this]() {
 					dynamic_cast<AEntity *>(it.get())->collide(this);
 				});
 				_eventManager.unlock();
-				ret = (it->isWallPassable() && _wallPass) ? ret : true;
+				if (!it->isWalkable())
+					ret = (it->isWallPassable() && _wallPass) ? ret : true;
 			}
 		}
 	}
@@ -99,28 +98,35 @@ bool is::ACharacter::checkCollision()
 
 void is::ACharacter::moveUp()
 {
-	_position.y--;
-	if (checkCollision())
-		_position.y++;
+	if (!checkCollision()) {
+		_position.y -= _speed * _speedCoef;
+	}
 }
 
 void is::ACharacter::moveDown()
 {
-	_position.y++;
-	if (checkCollision())
-		_position.y--;
+	if (!checkCollision()) {
+		_position.y += _speed * _speedCoef;
+	}
 }
 
 void is::ACharacter::moveLeft()
 {
-	_position.x--;
-	if (checkCollision())
-		_position.x++;
+	if (!checkCollision()) {
+		_position.x -= _speed * _speedCoef;
+	}
 }
 
 void is::ACharacter::moveRight()
 {
-	_position.x++;
-	if (checkCollision())
-		_position.x--;
+	if (!checkCollision()) {
+		_position.x += _speed * _speedCoef;
+	}
+}
+
+void is::ACharacter::dropBomb()
+{
+	if (_bomb > 0) {
+		// TODO create Bomb
+	}
 }
