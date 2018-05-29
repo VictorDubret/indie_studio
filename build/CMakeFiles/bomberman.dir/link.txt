@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/bomberman.dir/src/main.cpp.o  -o bomberman -rdynamic 

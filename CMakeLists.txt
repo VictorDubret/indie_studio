@@ -1,6 +1,5 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9)
 project(cpp_indie_studio)
-
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -12,13 +11,10 @@ include_directories(Src Src/Entity Src/Entity/Character
         Src/Entity/PowerUp/FireUp
         Src/Entity/PoserUp/WallPass
         Src/Entity/PoserUp/SpeedUp
-        Src/Entity/PowerUp
-        )
+        Src/Entity/PowerUp)
 
 add_executable(cpp_indie_studio
         ${FILE})
 
 target_link_libraries(cpp_indie_studio
-
-        pthread
-        )
+        pthread)

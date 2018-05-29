@@ -16,7 +16,7 @@ CXX	=	g++
 
 CXXFLAGS	=	-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/ -ISrc/Tools \
 				-ISrc/Entity/PowerUp -ISrc/Entity/PowerUp/BombUp -ISrc/Entity/PowerUp/FireUp \
-				-ISrc/Entity/PowerUp/SpeedUp -ISrc/Entity/PowerUp/WallPass
+				-ISrc/Entity/PowerUp/SpeedUp -ISrc/Entity/PowerUp/WallPass -ISrc
 
 LDFLAGS	=	-lpthread
 

@@ -1,0 +1,3 @@
+/home/victor/Delivery/tek2/C++/Part2/cpp_indie_studio/build/CMakeFiles/rebuild_cache.dir
+/home/victor/Delivery/tek2/C++/Part2/cpp_indie_studio/build/CMakeFiles/edit_cache.dir
+/home/victor/Delivery/tek2/C++/Part2/cpp_indie_studio/build/CMakeFiles/bomberman.dir
