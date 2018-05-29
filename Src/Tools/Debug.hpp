@@ -20,7 +20,7 @@ class Debug {
 
 	// Other
 	template<typename T>
-	static void debug(T arg)
+	static void debug(T )
 	{
 		#ifdef DEBUG
 		std::cerr << arg << std::endl;
@@ -28,7 +28,7 @@ class Debug {
 	}
 
 	template<typename T, class ...Args>
-	static void debug(T t, Args &&... args)
+	static void debug(T , Args &&... )
 	{
 		#ifdef DEBUG
 		std::cerr << t;
