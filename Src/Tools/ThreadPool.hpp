@@ -34,7 +34,7 @@ namespace my {
 				std::forward<Args>(args)...);
 
 			_tasks.push([f]{
-				f;
+				f();
 			});
 			_cond.notify_one();
 		};

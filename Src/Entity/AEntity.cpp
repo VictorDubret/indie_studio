@@ -6,12 +6,9 @@
 */
 
 #include <thread>
-#include <chrono>
-#include <functional>
 #include "AEntity.hpp"
 
-is::AEntity::AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager):
+is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager):
 	_entities(entities), _eventManager(eventManager)
 {
 	_entities.lock();

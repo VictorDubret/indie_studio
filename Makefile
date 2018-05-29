@@ -1,8 +1,10 @@
 SRC	=	Src/Entity/AEntity.cpp		\
 		Src/main.cpp			\
 		Src/Entity/Character/ACharacter.cpp	\
-		Src/Tools/Thread.cpp	\
-		Src/Tools/ThreadPool.cpp
+		Src/Tools/Thread.cpp		\
+		Src/Tools/ThreadPool.cpp	\
+		Src/Entity/Bomb/Timer.cpp	\
+		Src/Entity/Bomb/Bomb.cpp
 
 OBJ	=	$(SRC:.cpp=.o)
 

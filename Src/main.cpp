@@ -7,8 +7,9 @@
 
 #include <IEntity.hpp>
 #include <ACharacter.hpp>
-#include "Tools/ThreadPool.hpp"
-#include "Tools/ItemLocker.hpp"
+#include <Bomb/Timer.hpp>
+#include <zconf.h>
+#include <Bomb/Bomb.hpp>
 
 int main()
 {
@@ -17,7 +18,11 @@ int main()
 	my::ItemLocker<my::ThreadPool> threadPool(_threadPool);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> entities(a);
 
-	is::ACharacter toto(entities, threadPool);
-	toto.moveUp();
+
+	is::Bomb bomb(entities, threadPool);
+
+	sleep(3);
+	//is::ACharacter toto(entities, threadPool);
+	//toto.moveUp();
 	return 0;
 }

@@ -15,6 +15,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include "IndieStudio.hpp"
 #include "ThreadPool.hpp"
 #include "ItemLocker.hpp"
 #include "IEntity.hpp"
@@ -23,8 +24,8 @@ namespace is {
 	class AEntity : public IEntity {
 	public:
 		// Constructor
-		AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager);
+		AEntity(Entity_t &entities,
+			ThreadPool_t &eventManager);
 		// Destructor
 		~AEntity() override;
 
