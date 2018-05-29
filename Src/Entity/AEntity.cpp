@@ -8,7 +8,9 @@
 #include <thread>
 #include <chrono>
 #include <functional>
+#include <algorithm>
 #include "AEntity.hpp"
+#include "Debug.hpp"
 
 is::AEntity::AEntity(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager):
@@ -93,7 +95,12 @@ bool is::AEntity::isWallPassable() const
 
 void is::AEntity::collide(IEntity *collider)
 {
-	std::cout << _type << " collide with " << collider->getType() << std::endl;
+	Debug::debug(_type, " collide with ", collider->getType());
+}
+
+void is::AEntity::explode()
+{
+	Debug::debug(_type, " explode");
 }
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
@@ -101,4 +108,31 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 	return ((int) _position.x == (int) entity->getX() &&
 		(int) _position.y == (int) entity->getY() &&
 		(int) _position.z == (int) entity->getZ());
+}
+
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
+	int x, int y, int z
+)
+{
+	std::vector<std::shared_ptr<is::IEntity>> ret;
+	auto it = std::find_if(_entities->begin(), _entities->end(),
+		[x, y, z](std::shared_ptr<is::IEntity> entity) {
+			return (int) entity->getX() == x &&
+				(int) entity->getY() == y &&
+				(int) entity->getZ() == z;
+		}
+	);
+
+	while (it != _entities->end()) {
+		ret.push_back(*it.base());
+		it++;
+		if (it != _entities->end()) {
+			it = std::find_if(it, _entities->end(), [x, y, z](std::shared_ptr<is::IEntity> entity) {
+				return (int) entity->getX() == x &&
+					(int) entity->getY() == y &&
+					(int) entity->getZ() == z;
+			});
+		}
+	}
+	return ret;
 }

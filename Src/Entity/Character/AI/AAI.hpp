@@ -24,7 +24,7 @@ namespace is {
 		// Setter
 
 		// Other
-
+		void ia();
 
 	protected:
 

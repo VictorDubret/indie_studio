@@ -46,6 +46,9 @@ namespace is {
 		void setZ(double &) override;
 
 		void collide(is::IEntity *collider) override;
+		void explode() override;
+
+		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(int x, int y, int z);
 
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
