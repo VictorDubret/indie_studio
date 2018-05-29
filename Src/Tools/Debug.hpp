@@ -20,21 +20,22 @@ class Debug {
 
 	// Other
 	template<typename T>
-	static void debug(T )
+	static void debug(T arg)
 	{
 		#ifdef DEBUG
 		std::cerr << arg << std::endl;
 		#endif
+		(void)arg;
 	}
 
 	template<typename T, class ...Args>
-	static void debug(T , Args &&... )
+	static void debug(T t, Args &&... args)
 	{
 		#ifdef DEBUG
 		std::cerr << t;
 		debug(args...);
 		#endif
-
+		(void)t;
 	}
 
 	protected:

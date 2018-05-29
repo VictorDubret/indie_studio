@@ -5,8 +5,9 @@
 ** Created by sahel.lucas-saoudi@epitech.eu,
 */
 
-#include <ThreadPool.hpp>
+#include "ThreadPool.hpp"
 #include "ACharacter.hpp"
+#include "Debug.hpp"
 
 is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) :
 	AEntity(entities, eventManager)
@@ -98,6 +99,7 @@ bool is::ACharacter::checkCollision()
 
 void is::ACharacter::moveUp()
 {
+	Debug::debug("MOVE UP");
 	if (!checkCollision()) {
 		_position.y -= _speed * _speedCoef;
 	}
@@ -105,6 +107,7 @@ void is::ACharacter::moveUp()
 
 void is::ACharacter::moveDown()
 {
+	Debug::debug("MOVE DOWN");
 	if (!checkCollision()) {
 		_position.y += _speed * _speedCoef;
 	}
@@ -112,6 +115,7 @@ void is::ACharacter::moveDown()
 
 void is::ACharacter::moveLeft()
 {
+	Debug::debug("MOVE LEFT");
 	if (!checkCollision()) {
 		_position.x -= _speed * _speedCoef;
 	}
@@ -119,6 +123,7 @@ void is::ACharacter::moveLeft()
 
 void is::ACharacter::moveRight()
 {
+	Debug::debug("MOVE RIGHT");
 	if (!checkCollision()) {
 		_position.x += _speed * _speedCoef;
 	}
@@ -126,6 +131,7 @@ void is::ACharacter::moveRight()
 
 void is::ACharacter::dropBomb()
 {
+	Debug::debug("DROP BOMB");
 	if (_bomb > 0) {
 		// TODO create Bomb
 	}

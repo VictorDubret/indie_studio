@@ -11,9 +11,20 @@
 # include <unordered_map>
 # include <vector>
 # include "ACharacter.hpp"
+# include "EventManager.hpp"
 # include "IManageIrrlicht.hpp"
 
 namespace nts {
+
+	typedef struct {
+		irr::EKEY_CODE key;
+		std::function<void (void)> f;
+	} event_t;
+
+	typedef struct {
+		std::shared_ptr<is::ACharacter> entity;
+		event_t key[6];
+	} player_t;
 
 	class ManageIrrlicht : public nts::IManageIrrlicht {
 		public:
@@ -23,8 +34,8 @@ namespace nts {
 		void updateView() override;
 		void loopDisplay() override;
 
-		bool addEntity(std::shared_ptr<is::IEntity> &, irr::IReferenceCounted &) override;
-		irr::IReferenceCounted &getNode(std::shared_ptr<is::IEntity> &) override;
+		bool addEntity(std::shared_ptr<is::IEntity> &, irr::IReferenceCounted *) override;
+		irr::IReferenceCounted *getNode(std::shared_ptr<is::IEntity> &) override;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
 
@@ -32,18 +43,19 @@ namespace nts {
 
 		private:
 		void manageEvent();
+		void manageEventPlayers();
 
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
-		std::unordered_map<std::shared_ptr<is::IEntity>, irr::IReferenceCounted> _listObj;
-		std::vector<std::shared_ptr<is::IEntity>> _listPlayer;
+		std::unordered_map<std::shared_ptr<is::IEntity>, irr::IReferenceCounted *> _listObj;
+		std::vector<nts::player_t> _listPlayer;
 
 		irr::IrrlichtDevice *_device = nullptr;
 		irr::video::IVideoDriver *_driver = nullptr;
 		irr::scene::ISceneManager *_sceneManager = nullptr;
 
-//		MyEventReceiver _eventReceiver;
+		nts::EventManager _eventReceiver;
 	};
 
 }
