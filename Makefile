@@ -20,9 +20,10 @@ CXX		=		clang++
 
 CXXFLAGS	=		-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/ -ISrc/Tools 			\
 				-ISrc/Entity/PowerUp -ISrc/Entity/PowerUp/BombUp -ISrc/Entity/PowerUp/FireUp 		\
-				-ISrc/Entity/PowerUp/SpeedUp -ISrc/Entity/PowerUp/WallPass
+				-ISrc/Entity/PowerUp/SpeedUp -ISrc/Entity/PowerUp/WallPass -std=c++11
 
-LDFLAGS		=		-lpthread -LIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
+
+LDFLAGS		=		-lpthread -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
 NAME		=		toto
 
@@ -47,3 +48,13 @@ debug: 				CXXFLAGS += -ggdb3 -DDEBUG=1
 debug: 				re
 
 dexec: 				debug exec
+
+#multilib handling                                                                                    
+ifeq ($(HOSTTYPE), x86_64)
+LIBSELECT=64
+endif
+#solaris real-time features                                                                           
+ifeq ($(HOSTTYPE), sun4)
+LDFLAGS += -lrt
+endif
+
