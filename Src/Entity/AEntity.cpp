@@ -24,7 +24,6 @@ is::AEntity::~AEntity()
 	_entities.lock();
 	for (auto it = _entities->begin(); it != _entities->end(); it++) {
 		if (it->get() == this) {
-			_entities.unlock();
 			_entities->erase(it);
 			break;
 		}

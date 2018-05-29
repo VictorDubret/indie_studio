@@ -8,8 +8,6 @@ tests
 *.gcno
 test_exec
 my_cat
-test.cpp
-*.txt
 *.so
 a
 b

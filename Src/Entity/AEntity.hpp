@@ -19,6 +19,7 @@
 #include "ItemLocker.hpp"
 #include "IEntity.hpp"
 
+
 namespace is {
 	class AEntity : public IEntity {
 	public:
