@@ -14,7 +14,7 @@ namespace is {
 	class AAI: public ACharacter {
 	public:
 		// Constructor
-		AAI(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
+		AAI(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManage);
 
 		// Destructor
 		~AAI() override = default;

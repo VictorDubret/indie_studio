@@ -10,8 +10,8 @@
 #include "Timer.hpp"
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager
-) : AEntity(entities, eventManager)
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+) : AEntity(entities, eventManager, irrlicht)
 {
 	std::cout << "Bomb constructor" << std::endl;
 	_type = "Bomb";

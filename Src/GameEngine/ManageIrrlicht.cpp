@@ -55,7 +55,7 @@ void nts::ManageIrrlicht::manageEventPlayers()
 
 }
 
-irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(std::shared_ptr<is::IEntity> &entity)
+irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(const std::shared_ptr<is::IEntity> &entity)
 {
 	return _listObj[entity];
 }

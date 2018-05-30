@@ -15,7 +15,7 @@ namespace is {
 	public:
 		// Constructor
 		BombUp(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-		my::ItemLocker<my::ThreadPool> &eventManager);
+		my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
 		~BombUp() override = default;

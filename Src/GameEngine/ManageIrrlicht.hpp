@@ -35,7 +35,7 @@ namespace nts {
 		void loopDisplay() override;
 
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) override;
-		irr::scene::ISceneNode *getNode(std::shared_ptr<is::IEntity> &) override;
+		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
 		irr::IrrlichtDevice *getDevice() const override;

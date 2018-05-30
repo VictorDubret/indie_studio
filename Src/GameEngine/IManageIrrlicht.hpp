@@ -30,7 +30,7 @@ namespace nts {
 		// add ISceneNode into a map of IEntity
 		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) = 0;
 		// get the object
-		virtual irr::scene::ISceneNode *getNode(std::shared_ptr<is::IEntity> &) = 0;
+		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
 
 		// Getter
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;

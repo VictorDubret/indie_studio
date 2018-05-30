@@ -11,12 +11,14 @@
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
+#include "ManageIrrlicht.hpp"
 
-is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager):
-	_entities(entities), _eventManager(eventManager)
+is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
+	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
 	_entities.lock();
-	_entities->push_back(std::shared_ptr<is::IEntity>(this, [&](IEntity *){}));
+	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
+	_entities->push_back(_sptr);
 	_entities.unlock();
 }
 
@@ -32,9 +34,9 @@ is::AEntity::~AEntity()
 	_entities.unlock();
 }
 
-is::IEntity::Position& is::AEntity::getPosition()
+irr::core::vector3df const &is::AEntity::getPosition() const
 {
-	return _position;
+	return _irrlicht.getNode(_sptr)->getPosition();
 }
 
 std::string const& is::AEntity::getType() const
@@ -42,41 +44,48 @@ std::string const& is::AEntity::getType() const
 	return _type;
 }
 
-double& is::AEntity::getX()
+float is::AEntity::getX() const
 {
-	return _position.x;
+	auto pos = getPosition();
+	return pos.X;
 }
 
-double& is::AEntity::getY()
+float is::AEntity::getY() const
 {
-	return _position.y;
+	auto pos = getPosition();
+	return pos.Y;
 }
 
-double &is::AEntity::getZ()
+float is::AEntity::getZ() const
 {
-	return _position.z;
+	auto pos = getPosition();
+	return pos.Z;
 }
 
-void is::AEntity::setX(double &x)
+void is::AEntity::setX(float x)
 {
-	_position.x = x;
+	auto pos = getPosition();
+	pos.X = x;
+	_irrlicht.getNode(_sptr)->setPosition(pos);
 }
 
-void is::AEntity::setY(double &y)
+void is::AEntity::setY(float y)
 {
-	_position.y = y;
+	auto pos = getPosition();
+	pos.Y = y;
+	_irrlicht.getNode(_sptr)->setPosition(pos);
 }
 
-void is::AEntity::setZ(double &z)
+void is::AEntity::setZ(float z)
 {
-	_position.z = z;
+	auto pos = getPosition();
+	pos.Z = z;
+	_irrlicht.getNode(_sptr)->setPosition(pos);
 }
 
-void is::AEntity::setPosition(is::IEntity::Position &position)
+void is::AEntity::setPosition(irr::core::vector3df position)
 {
-	_position.x = position.x;
-	_position.y = position.y;
-	_position.z = position.z;
+	_irrlicht.getNode(_sptr)->setPosition(position);
 }
 
 bool is::AEntity::isCollidable() const
@@ -111,9 +120,9 @@ void is::AEntity::explode()
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
-	return ((int) _position.x == (int) entity->getX() &&
-		(int) _position.y == (int) entity->getY() &&
-		(int) _position.z == (int) entity->getZ());
+	return ((int) getX() == (int) entity->getX() &&
+		(int) getY() == (int) entity->getY() &&
+		(int) getZ() == (int) entity->getZ());
 }
 
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(

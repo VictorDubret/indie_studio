@@ -9,8 +9,8 @@
 #include "ACharacter.hpp"
 #include "Debug.hpp"
 
-is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) :
-	AEntity(entities, eventManager)
+is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht) :
+	AEntity(entities, eventManager, irrlicht)
 {
 	_type = "Character";
 	_walkable = false;
@@ -101,7 +101,9 @@ void is::ACharacter::moveUp()
 {
 	Debug::debug("MOVE UP");
 	if (!checkCollision()) {
-		_position.y -= _speed * _speedCoef;
+		float z = getZ();
+		z += _speed * _speedCoef;
+		setZ(z);
 	}
 }
 
@@ -109,7 +111,9 @@ void is::ACharacter::moveDown()
 {
 	Debug::debug("MOVE DOWN");
 	if (!checkCollision()) {
-		_position.y += _speed * _speedCoef;
+		float z = getZ();
+		z -= _speed * _speedCoef;
+		setZ(z);
 	}
 }
 
@@ -117,7 +121,9 @@ void is::ACharacter::moveLeft()
 {
 	Debug::debug("MOVE LEFT");
 	if (!checkCollision()) {
-		_position.x -= _speed * _speedCoef;
+		float x = getX();
+		x -= _speed * _speedCoef;
+		setX(x);
 	}
 }
 
@@ -125,7 +131,9 @@ void is::ACharacter::moveRight()
 {
 	Debug::debug("MOVE RIGHT");
 	if (!checkCollision()) {
-		_position.x += _speed * _speedCoef;
+		float x = getX();
+		x += _speed * _speedCoef;
+		setX(x);
 	}
 }
 

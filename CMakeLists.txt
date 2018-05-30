@@ -3,7 +3,7 @@ project(cpp_indie_studio)
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src)
+file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src)
 
 include_directories(
         Src
@@ -23,7 +23,7 @@ include_directories(
 add_definitions(-DDEBUG=1)
 
 add_executable(cpp_indie_studio
-        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hppa)
+        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hpp)
 
 target_link_libraries(cpp_indie_studio
         pthread)

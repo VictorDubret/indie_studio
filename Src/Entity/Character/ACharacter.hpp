@@ -15,7 +15,7 @@ namespace is {
 	public:
 		// Constructor
 		ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager);
+			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
 		~ACharacter() override = default;

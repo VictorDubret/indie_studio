@@ -21,9 +21,9 @@ int main()
 	my::ItemLocker<my::ThreadPool> pool(thpool);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
-	is::IEntity *player = new is::ACharacter(lockList, pool);
 
 	nts::ManageIrrlicht tmp(lockList, pool);
+	is::IEntity *player = new is::ACharacter(lockList, pool, tmp);
 
 	std::shared_ptr<is::IEntity> player_tmp = std::shared_ptr<is::IEntity>(player, [](is::IEntity *){});
 

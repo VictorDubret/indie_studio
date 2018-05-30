@@ -14,7 +14,7 @@ namespace is {
 	class Bomb : public AEntity {
 		public:
 		Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager);
+			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 		~Bomb() = default;
 
 		void explode();

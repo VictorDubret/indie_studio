@@ -20,21 +20,21 @@
 #include "ItemLocker.hpp"
 #include "IEntity.hpp"
 
-
 namespace is {
 	class AEntity : public IEntity {
 	public:
 		// Constructor
 		AEntity(Entity_t &entities,
-			ThreadPool_t &eventManager);
+			ThreadPool_t &eventManager,
+			nts::ManageIrrlicht &irrlicht);
 		// Destructor
 		~AEntity() override;
 
 		// Getter
-		is::IEntity::Position &getPosition() override;
-		double &getX() override;
-		double &getY() override;
-		double &getZ() override;
+		irr::core::vector3df const &getPosition() const override;
+		float getX() const override;
+		float getY() const override;
+		float getZ() const override;
 		std::string const &getType() const override;
 		bool isCollidable() const override;
 		bool isPickable() const override;
@@ -42,10 +42,10 @@ namespace is {
 		bool isWalkable() const override;
 
 		// Setter
-		void setX(double &) override;
-		void setY(double &) override;
-		void setZ(double &) override;
-		void setPosition(Position &) override;
+		void setX(float) override;
+		void setY(float) override;
+		void setZ(float) override;
+		void setPosition(irr::core::vector3df) override;
 
 		void collide(is::IEntity *collider) override;
 		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(int x, int y, int z);
@@ -55,7 +55,6 @@ namespace is {
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		std::string _type = "Entity";
-		is::IEntity::Position _position;
 
 		bool _collidable = true;
 		bool _pickable = false;
@@ -63,6 +62,9 @@ namespace is {
 		bool _wallPassable = true;
 
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
+
+		std::shared_ptr<IEntity> _sptr;
+		nts::ManageIrrlicht &_irrlicht;
 	private:
 	};
 }

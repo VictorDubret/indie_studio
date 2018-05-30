@@ -11,8 +11,8 @@
 
 is::BombUp::BombUp(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager
-) : APowerUp(entities, eventManager)
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "BombUp";
 }
