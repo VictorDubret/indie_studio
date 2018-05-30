@@ -45,8 +45,10 @@ namespace is {
 		void setX(double &) override;
 		void setY(double &) override;
 		void setZ(double &) override;
+		void setPosition(Position &) override;
 
 		void collide(is::IEntity *collider) override;
+		void explode() override = default;
 
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
