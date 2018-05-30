@@ -142,3 +142,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 	}
 	return ret;
 }
+
+void is::AEntity::explode()
+{
+}
