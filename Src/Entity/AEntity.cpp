@@ -72,6 +72,13 @@ void is::AEntity::setZ(double &z)
 	_position.z = z;
 }
 
+void is::AEntity::setPosition(is::IEntity::Position &position)
+{
+	_position.x = position.x;
+	_position.y = position.y;
+	_position.z = position.z;
+}
+
 bool is::AEntity::isCollidable() const
 {
 	return _collidable;
