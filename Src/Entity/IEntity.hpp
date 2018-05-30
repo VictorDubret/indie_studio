@@ -36,8 +36,10 @@ namespace is {
 		virtual void setX(double &) = 0;
 		virtual void setY(double &) = 0;
 		virtual void setZ(double &) = 0;
+		virtual void setPosition(Position &) = 0;
 
 		virtual void collide(IEntity *collider) = 0;
+		virtual void explode() = 0;
 
 		//virtual void animate() = 0; // TODO when Irlicht is set
 	};

@@ -21,6 +21,9 @@ int main(int ac, char **av)
 	is::FireUp fireUp(entitiesLocker, eventManagerLocker);
 	is::SpeedUp speedUp(entitiesLocker, eventManagerLocker);
 	is::WallPass wallPass(entitiesLocker, eventManagerLocker);
+
+	std::cerr << "list size: " << bombUp.getEntitiesAt(0, 0, 0).size() << std::endl;
+	std::cerr << "list size: " << bombUp.getEntitiesAt(1, 1, 1).size() << std::endl;
 	{
 		is::ACharacter character(entitiesLocker, eventManagerLocker);
 		is::ACharacter character1(entitiesLocker, eventManagerLocker);

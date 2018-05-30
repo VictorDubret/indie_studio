@@ -21,6 +21,7 @@ CC		=		g++
 CXX		=		clang++
 
 CXXFLAGS	=		-W -Wall -Wextra				\
+				-I Src/						\
 				-I Src/Entity/					\
 				-I Src/Entity/Character/			\
 				-I Src/Tools/					\
@@ -58,11 +59,11 @@ debug: 				re
 
 dexec: 				debug exec
 
-#multilib handling                                                                                    
+#multilib handling
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
-#solaris real-time features                                                                           
+#solaris real-time features
 ifeq ($(HOSTTYPE), sun4)
 LDFLAGS += -lrt
 endif
