@@ -23,7 +23,7 @@ include_directories(
 add_definitions(-DDEBUG=1)
 
 add_executable(cpp_indie_studio
-        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hpp)
+        ${FILE})
 
 target_link_libraries(cpp_indie_studio
         pthread)

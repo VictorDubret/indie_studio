@@ -14,16 +14,25 @@ SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp		\
 				Src/GameEngine/ManageObject.cpp			\
 
 
-CC	=	g++
-CXX	=	g++
-
-CXXFLAGS	=	-W -Wall -Wextra -ISrc/Entity/ -ISrc/Entity/Character/ -ISrc/Tools \
-				-ISrc/Entity/PowerUp -ISrc/Entity/PowerUp/BombUp -ISrc/Entity/PowerUp/FireUp \
-				-ISrc/Entity/PowerUp/SpeedUp -ISrc/Entity/PowerUp/WallPass -ISrc \
-				-ISrc/GameEngine -std=c++11
-
 OBJ		=		$(SRC:.cpp=.o)					\
 				$(SRC_IRRLICHT:.cpp=.o)
+
+CC		=		g++
+
+CXX		=		clang++
+
+CXXFLAGS	=		-W -Wall -Wextra				\
+				-I Src/						\
+				-I Src/Entity/					\
+				-I Src/Entity/Character/			\
+				-I Src/Tools/					\
+				-I Src/Entity/PowerUp/				\
+				-I Src/Entity/PowerUp/BombUp/			\
+				-I Src/Entity/PowerUp/FireUp/			\
+				-I Src/Entity/PowerUp/SpeedUp/			\
+				-I Src/Entity/PowerUp/WallPass/			\
+				-I Src/GameEngine/				\
+				-std=c++11
 
 LDFLAGS		=		-lpthread -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
@@ -51,11 +60,11 @@ debug: 				re
 
 dexec: 				debug exec
 
-#multilib handling                                                                                    
+#multilib handling
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
-#solaris real-time features                                                                           
+#solaris real-time features
 ifeq ($(HOSTTYPE), sun4)
 LDFLAGS += -lrt
 endif
