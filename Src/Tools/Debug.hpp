@@ -27,6 +27,7 @@ class Debug {
 		#ifdef DEBUG
 		std::cerr << arg << std::endl;
 		#endif
+		(void)arg;
 	}
 
 	template<typename T, class ...Args>
@@ -36,7 +37,7 @@ class Debug {
 		std::cerr << t;
 		debug(args...);
 		#endif
-
+		(void)t;
 	}
 
 	protected:

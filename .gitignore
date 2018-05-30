@@ -5,6 +5,7 @@
 cmake-build-debug
 a.out
 tests
+media
 *.gcno
 test_exec
 my_cat

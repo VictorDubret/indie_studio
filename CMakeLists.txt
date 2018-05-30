@@ -10,6 +10,7 @@ include_directories(
         Src/Entity
         Src/Entity/Character
         Src/Tools
+        Src/GameEngine
         Src/Entity/PowerUp/BombUp
         Src/Entity/PowerUp/FireUp
         Src/Entity/PowerUp/WallPass
@@ -22,7 +23,7 @@ include_directories(
 add_definitions(-DDEBUG=1)
 
 add_executable(cpp_indie_studio
-        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hpp)
+        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hppa)
 
 target_link_libraries(cpp_indie_studio
         pthread)
