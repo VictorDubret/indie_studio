@@ -60,7 +60,9 @@ namespace is {
 		/*
 		 * Internal Config
 		 */
-		double _speedCoef = 0.1;
+		float _speedCoef = 0.1;
+
+		void move(float, float, float);
 	private:
 	};
 }

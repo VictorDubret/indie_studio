@@ -97,44 +97,49 @@ bool is::ACharacter::checkCollision()
 	return ret;
 }
 
+void is::ACharacter::move(float nextX, float nextY, float nextZ)
+{
+	auto list = getEntitiesAt((int) nextX, (int) nextY, (int) nextZ);
+
+	for (auto &it: list) {
+		if (it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+			std::cout << "COLLIDE" << std::endl;
+			return;
+		}
+	}
+	std::cerr << "MOVE" << std::endl;
+	setZ(nextZ);
+	setY(nextY);
+	setX(nextX);
+	checkCollision();
+}
+
 void is::ACharacter::moveUp()
 {
-	Debug::debug("MOVE UP");
-	if (!checkCollision()) {
-		float z = getZ();
-		z += _speed * _speedCoef;
-		setZ(z);
-	}
+	float next = getZ() + _speed * _speedCoef;
+
+	move(getX(), getY(), next);
 }
 
 void is::ACharacter::moveDown()
 {
-	Debug::debug("MOVE DOWN");
-	if (!checkCollision()) {
-		float z = getZ();
-		z -= _speed * _speedCoef;
-		setZ(z);
-	}
+	float next = getZ() - _speed * _speedCoef;
+
+	move(getX(), getY(), next);
 }
 
 void is::ACharacter::moveLeft()
 {
-	Debug::debug("MOVE LEFT");
-	if (!checkCollision()) {
-		float x = getX();
-		x -= _speed * _speedCoef;
-		setX(x);
-	}
+	float next = getX() - _speed * _speedCoef;
+
+	move(next, getY(), getZ());
 }
 
 void is::ACharacter::moveRight()
 {
-	Debug::debug("MOVE RIGHT");
-	if (!checkCollision()) {
-		float x = getX();
-		x += _speed * _speedCoef;
-		setX(x);
-	}
+	float next = getX() + _speed * _speedCoef;
+
+	move(next, getY(), getZ());
 }
 
 void is::ACharacter::dropBomb()
