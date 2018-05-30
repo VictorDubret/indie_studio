@@ -10,8 +10,13 @@
 nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) : _eventManager(eventManager) ,_entities(entities), _eventReceiver()
 {
 	_device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(1200, 800), 32, false, false, false, &_eventReceiver);
+	if (!_device)
+		throw std::exception();
+
 	_driver = _device->getVideoDriver();
 	_sceneManager = _device->getSceneManager();
+	if (!_driver || !_sceneManager)
+		throw std::exception();
 
 	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0,30,-40), irr::core::vector3df(0,5,0));
 }
@@ -50,12 +55,12 @@ void nts::ManageIrrlicht::manageEventPlayers()
 
 }
 
-irr::IReferenceCounted *nts::ManageIrrlicht::getNode(std::shared_ptr<is::IEntity> &entity)
+irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(std::shared_ptr<is::IEntity> &entity)
 {
 	return _listObj[entity];
 }
 
-bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::IReferenceCounted *obj)
+bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::scene::ISceneNode *obj)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
@@ -83,7 +88,17 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::I
 	return false;
 }
 
-irr::scene::ISceneManager* nts::ManageIrrlicht::getSceneManager() const
+irr::scene::ISceneManager *nts::ManageIrrlicht::getSceneManager() const
 {
 	return _sceneManager;
+}
+
+irr::IrrlichtDevice *nts::ManageIrrlicht::getDevice() const
+{
+	return _device;
+}
+
+irr::video::IVideoDriver *nts::ManageIrrlicht::getDriver() const
+{
+	return _driver;
 }

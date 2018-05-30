@@ -34,10 +34,12 @@ namespace nts {
 		void updateView() override;
 		void loopDisplay() override;
 
-		bool addEntity(std::shared_ptr<is::IEntity> &, irr::IReferenceCounted *) override;
-		irr::IReferenceCounted *getNode(std::shared_ptr<is::IEntity> &) override;
+		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) override;
+		irr::scene::ISceneNode *getNode(std::shared_ptr<is::IEntity> &) override;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
+		irr::IrrlichtDevice *getDevice() const override;
+		irr::video::IVideoDriver *getDriver() const override;
 
 		protected:
 
@@ -48,7 +50,7 @@ namespace nts {
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
-		std::unordered_map<std::shared_ptr<is::IEntity>, irr::IReferenceCounted *> _listObj;
+		std::unordered_map<std::shared_ptr<is::IEntity>, irr::scene::ISceneNode *> _listObj;
 		std::vector<nts::player_t> _listPlayer;
 
 		irr::IrrlichtDevice *_device = nullptr;

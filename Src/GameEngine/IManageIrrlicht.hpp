@@ -28,12 +28,14 @@ namespace nts {
 		virtual void loopDisplay() = 0;
 
 		// add ISceneNode into a map of IEntity
-		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::IReferenceCounted *) = 0;
+		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) = 0;
 		// get the object
-		virtual irr::IReferenceCounted *getNode(std::shared_ptr<is::IEntity> &) = 0;
+		virtual irr::scene::ISceneNode *getNode(std::shared_ptr<is::IEntity> &) = 0;
 
-		// Get the scene manager
+		// Getter
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;
+		virtual irr::IrrlichtDevice *getDevice() const = 0;
+		virtual irr::video::IVideoDriver *getDriver() const = 0;
 
 		protected:
 		private:

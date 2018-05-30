@@ -10,6 +10,7 @@
 #include "ThreadPool.hpp"
 #include "ItemLocker.hpp"
 #include "ManageIrrlicht.hpp"
+#include "ManageObject.hpp"
 #include "ACharacter.hpp"
 
 int main()
@@ -22,13 +23,13 @@ int main()
 
 	is::IEntity *player = new is::ACharacter(lockList, pool);
 
-
 	nts::ManageIrrlicht tmp(lockList, pool);
 
 	std::shared_ptr<is::IEntity> player_tmp = std::shared_ptr<is::IEntity>(player, [](is::IEntity *){});
-	irr::IReferenceCounted *cube = tmp.getSceneManager()->addCubeSceneNode(10.f, 0, -3, irr::core::vector3df(0.f, 0.f, 20.f));
 
-	tmp.addEntity(player_tmp, cube);
+	nts::ManageObject::createCube(tmp, player_tmp, 10);
+	nts::ManageObject::setMaterialLight(tmp, player_tmp, false);
+	nts::ManageObject::setTexture(tmp, player_tmp, "media/rockwall.jpg");
 
 	tmp.loopDisplay();
 	return 0;

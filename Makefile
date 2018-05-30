@@ -11,6 +11,7 @@ SRC		=		Src/Main.cpp					\
 
 SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp		\
 				Src/GameEngine/EventManager.cpp			\
+				Src/GameEngine/ManageObject.cpp			\
 
 OBJ		=		$(SRC:.cpp=.o)					\
 				$(SRC_IRRLICHT:.cpp=.o)
@@ -28,9 +29,8 @@ CXXFLAGS	=		-W -Wall -Wextra				\
 				-I Src/Entity/PowerUp/FireUp/			\
 				-I Src/Entity/PowerUp/SpeedUp/			\
 				-I Src/Entity/PowerUp/WallPass/			\
-				-I Src/GameEngine/
-				-std=c++11					\
-
+				-I Src/GameEngine/				\
+				-std=c++11
 
 LDFLAGS		=		-lpthread -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
