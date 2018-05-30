@@ -78,19 +78,16 @@ is::ACharacter &is::ACharacter::operator++()
 bool is::ACharacter::checkCollision()
 {
 	bool ret = false;
+	auto list = getEntitiesAt((int) getX(), (int) getY(), (int) getZ());
 
 	_entities.lock();
-	for (auto &it: _entities.get()) {
-		if (it.get() != this && isInCollisionWith(it)) {
-			if (it->isCollidable()) {
-				_eventManager.lock();
-				_eventManager->enqueue([it, this]() {
-					dynamic_cast<AEntity *>(it.get())->collide(this);
-				});
-				_eventManager.unlock();
-				if (!it->isWalkable())
-					ret = (it->isWallPassable() && _wallPass) ? ret : true;
-			}
+	for (auto &it: list) {
+		if (it.get() != this && it->isCollidable()) {
+			_eventManager.lock();
+			_eventManager->enqueue([it, this]() {
+				dynamic_cast<AEntity *>(it.get())->collide(this);
+			});
+			_eventManager.unlock();
 		}
 	}
 	_entities.unlock();
@@ -102,7 +99,7 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	auto list = getEntitiesAt((int) nextX, (int) nextY, (int) nextZ);
 
 	for (auto &it: list) {
-		if (it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			std::cout << "COLLIDE" << std::endl;
 			return;
 		}
