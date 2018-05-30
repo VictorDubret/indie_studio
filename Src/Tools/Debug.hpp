@@ -8,6 +8,8 @@
 #ifndef CPP_INDIE_STUDIO_DEBUG_HPP
 #define CPP_INDIE_STUDIO_DEBUG_HPP
 
+# include <iostream>
+
 class Debug {
 	public:
 	// Constructor
