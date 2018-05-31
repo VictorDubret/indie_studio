@@ -30,7 +30,7 @@ int main()
 	is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
 
 
-	std::pair<std::size_t, std::size_t> mapSize(50,50);
+	std::pair<std::size_t, std::size_t> mapSize(11,13);
 
 	/* Création floor */
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc

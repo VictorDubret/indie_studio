@@ -114,7 +114,7 @@ void		mg::MapGenerator::setCrates()
 
 void		mg::MapGenerator::addBorders()
 {
-	_map.insert(_map.end(), _width + 3, '#');
+	_map.insert(_map.end(), _width + 1, '#');
 	for (std::size_t i = _height * _width ; i > 0 ; --i) {
 		if (i % _width == 0)
 			_map.insert(i, "##");
