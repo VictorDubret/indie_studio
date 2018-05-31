@@ -19,6 +19,7 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 	_entities.lock();
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
+	_irrlicht.addEntity(_sptr, nullptr, 1);
 	_entities.unlock();
 }
 

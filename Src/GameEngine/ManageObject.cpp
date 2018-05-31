@@ -19,7 +19,6 @@ bool nts::ManageObject::createCube(nts::ManageIrrlicht &manage,
 	return false;
 }
 
-
 void nts::ManageObject::setPosition(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::core::vector3df &position)
 {
 	manage.getNode(obj)->setPosition(position);
