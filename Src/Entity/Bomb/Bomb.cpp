@@ -8,7 +8,6 @@
 #include <algorithm>
 #include "ItemLocker.hpp"
 #include "Bomb.hpp"
-#include "Timer.hpp"
 #include "Explosion.hpp"
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
@@ -94,13 +93,10 @@ void is::Bomb::timer(size_t time)
 {
 	_eventManager.lock();
 	_eventManager->enqueue([this, time]() {
-		Timer timer;
 		std::cout << "I'll explode in " << time << " seconds"
 			<< std::endl;
-		timer.startTimer(time);
+		std::this_thread::sleep_for(std::chrono::seconds(time));
 		//Change animation flamish bomb
-		while (!timer.isOver()) {
-		}
 		std::cout << "Bouuum" << std::endl;
 		explode();
 	});

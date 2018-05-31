@@ -44,6 +44,8 @@ void is::Explosion::explode()
 
 void is::Explosion::collide(is::IEntity *entity)
 {
+	_entities.lock();
 	Debug::debug("Character type : ", entity->getType()," die at ", getX() , ", ", getY(), ", ", getZ());
 	entity->explode();
+	_entities.unlock();
 }

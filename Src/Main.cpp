@@ -94,16 +94,19 @@ int main()
 	std::shared_ptr<is::IEntity> japanWall6 = std::shared_ptr<is::IEntity>(chinaWall6, [](is::IEntity *){});
 
 	std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *){});
+	std::shared_ptr<is::IEntity> player_tmp(new is::ACharacter(lockList, pool, tmp));
 
 	/* Create cube */
 	nts::ManageObject::createCube(tmp, bitewall, 1);
 	nts::ManageObject::createCube(tmp, bitewall2, 1);
 	nts::ManageObject::createCube(tmp, bitewall3, 1);
 	nts::ManageObject::createAnim(tmp, player_tmp2, "media/sydney.md2", 0.8);
+	nts::ManageObject::createAnim(tmp, player_tmp, "media/sydney.md2", 0.8);
 
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(2.3, 0, 0));
 	tmp.getNode(bitewall3)->setPosition(irr::core::vector3df(3.f, 0, 10));
 	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(10, 0, 10));
+	tmp.getNode(player_tmp)->setPosition(irr::core::vector3df(5, 0, 10));
 	nts::ManageObject::createCube(tmp, bitewall4, 1);
 	nts::ManageObject::createCube(tmp, bitewall5, 1);
 
@@ -135,6 +138,14 @@ int main()
 	nts::ManageObject::setMaterialLight(tmp, player_tmp2, false);
 	nts::ManageObject::setAnimation(tmp, player_tmp2, irr::scene::EMAT_RUN);
 	nts::ManageObject::setTexture(tmp, player_tmp2, "media/sydney.bmp");
+
+
+	nts::ManageObject::setScale(tmp, player_tmp, irr::core::vector3df(0.05, 0.05 , 0.05));
+	nts::ManageObject::setRotation(tmp, player_tmp, irr::core::vector3df(0, 90, 0));
+	nts::ManageObject::setMaterialLight(tmp, player_tmp, false);
+	nts::ManageObject::setAnimation(tmp, player_tmp, irr::scene::EMAT_RUN);
+	nts::ManageObject::setTexture(tmp, player_tmp, "media/sydney.bmp");
+
 
 	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(10.f, 0, 10.f));
 

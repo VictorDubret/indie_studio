@@ -54,7 +54,9 @@ void nts::ManageIrrlicht::manageEventPlayers()
 				break;
 			}
 		}
-		if (!doSomething)
+		if (_eventReceiver.IsKeyDown(it.doSomething.key))
+			_eventManager->enqueue(it.doSomething.f);
+		else if (!doSomething)
 			_eventManager->enqueue(it.nothing.f);
 	}
 
@@ -77,20 +79,18 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 	if (tmp != nullptr && tmp->getType() == "Character") {
 		player_t player;
 		if (_listPlayer.empty())
-			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}},
+			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_RETURN, [tmp](){tmp->dropBomb();}},
 			        {{irr::KEY_LEFT, [tmp](){tmp->moveLeft();}},
 				{irr::KEY_RIGHT, [tmp](){tmp->moveRight();}},
 				{irr::KEY_UP, [tmp](){tmp->moveUp();}},
 				{irr::KEY_DOWN, [tmp](){tmp->moveDown();}},
-				{irr::KEY_RETURN, [tmp](){tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		else
-			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}},
+			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_SPACE, [tmp](){tmp->dropBomb();}},
 			        {{irr::KEY_KEY_Q, [tmp](){tmp->moveLeft();}},
 				{irr::KEY_KEY_D, [tmp](){tmp->moveRight();}},
 				{irr::KEY_KEY_Z, [tmp](){tmp->moveUp();}},
 				{irr::KEY_KEY_S, [tmp](){tmp->moveDown();}},
-				{irr::KEY_SPACE, [tmp](){tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		_listPlayer.push_back(player);
 	}
