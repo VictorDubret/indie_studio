@@ -9,10 +9,10 @@ SRC		=		Src/Main.cpp							\
 				Src/Entity/PowerUp/SpeedUp/SpeedUp.cpp				\
 				Src/Entity/PowerUp/WallPass/WallPass.cpp			\
 				Src/Entity/Scenery/Explosion/Explosion.cpp			\
-				Src/Entity/Bomb/Bomb.cpp					\
-				Src/Entity/Bomb/Timer.cpp					\
 				Src/Entity/Scenery/UnbreakableWall/UnbreakableWall.cpp		\
 				Src/Entity/Scenery/Wall/Wall.cpp				\
+				Src/Entity/Bomb/Bomb.cpp					\
+				Src/Entity/Bomb/Timer.cpp
 
 SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp				\
 				Src/GameEngine/EventManager.cpp					\
@@ -31,6 +31,7 @@ CXXFLAGS	=		-W -Wall -Wextra						\
 				-I Src/GameEngine/						\
 				-I Src/Tools/							\
 				-I Src/Entity/							\
+				-I Src/Entity/Bomb						\
 				-I Src/Entity/Character/					\
 				-I Src/Entity/PowerUp/						\
 				-I Src/Entity/PowerUp/BombUp/					\

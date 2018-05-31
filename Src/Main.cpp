@@ -26,6 +26,7 @@ int main()
 
 	nts::ManageIrrlicht tmp(lockList, pool);
 	is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
+	is::IEntity *player1 = new is::ACharacter(lockList, pool, tmp);
 	is::IEntity *wall = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall2 = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall3 = new is::Wall(lockList, pool, tmp);
@@ -44,7 +45,7 @@ int main()
 	nts::ManageObject::createCube(tmp, bomb, 1);
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(2.3, 0, 0));
 	tmp.getNode(bitewall3)->setPosition(irr::core::vector3df(3.f, 0, 10));
-	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(10, 0, 10));
+	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(3.3, 0, 0));
 	tmp.getNode(bomb)->setPosition(irr::core::vector3df(2.3, 0, 1));
 
 	nts::ManageObject::setMaterialLight(tmp, bitewall, false);

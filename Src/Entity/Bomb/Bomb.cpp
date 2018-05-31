@@ -6,7 +6,6 @@
 
 #include <exception>
 #include <algorithm>
-#include <algorithm>
 #include "ItemLocker.hpp"
 #include "Bomb.hpp"
 #include "Timer.hpp"
@@ -46,21 +45,21 @@ void is::Bomb::explode()
 		}
 		for (const auto &it : xAxes) {
 			if (it.get() != this) {
-				std::cout << "J'ai recuperer : "
+				std::cout << "J'ai recuperer sur X : "
 					<< it.get()->getType() << std::endl;
 				it.get()->explode();
 			}
 		}
 		std::cout << "I'll explode all blocks around me ! MOUAHAHAH"
 			<< std::endl;
+		dynamic_cast<is::ACharacter *>(_player.get())->setBomb(1);
 		for (const auto &it : zAxes) {
 			if (it.get() != this) {
-				std::cout << "J'ai recuperer : "
+				std::cout << "J'ai recuperer sur Z : "
 					<< it.get()->getType() << std::endl;
 				it.get()->explode();
 			}
 		}
-		dynamic_cast<is::ACharacter *>(_player.get())->setBomb(1);
 	});
 	_eventManager.unlock();
 	_entities.unlock();
