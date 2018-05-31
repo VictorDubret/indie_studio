@@ -30,6 +30,8 @@ namespace is {
 
 		int _lenExplosion = 2;
 
+		bool _stopTimer = false;
+
 		std::shared_ptr<IEntity> &_player;
 	};
 }
