@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.9)
 project(cpp_indie_studio)
 
+
 set(CMAKE_CXX_STANDARD 11)
 
 file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src)
 
+include_directories(Src Src/Entity Src/Entity/Character
 include_directories(
         Src
         Src/Entity
@@ -23,7 +25,7 @@ include_directories(
 add_definitions(-DDEBUG=1)
 
 add_executable(cpp_indie_studio
-        ${FILE} Src/Entity/Scenery/Explosion/Explosion.cpp Src/Entity/Scenery/Explosion/Explosion.hpp)
+        ${FILE})
 
 target_link_libraries(cpp_indie_studio
         pthread)
