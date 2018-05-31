@@ -47,19 +47,35 @@ int main()
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
 	irr::core::dimension2d<irr::u32> tileCount(19, 19); // taille de la map
 	auto material = new irr::video::SMaterial();
+	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
+
 	irr::f32 hillHeight = 0;
 	irr::core::dimension2d<irr::f32> countHills(0.0, 0.0);
 	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
-	irr::scene::IMesh *cube = tmp.getSceneManager()->getGeometryCreator()->createHillPlaneMesh(
+	material->Wireframe = false;
+	material->Lighting = false;
+	irr::scene::IMesh *cube = tmp.getSceneManager()->getGeometryCreator()->createPlaneMesh(
 			tileSize,
 			tileCount,
 			material,
-			hillHeight,
-			countHills,
+//			hillHeight,
+//			countHills,
 			textureRepeatCount);
 	material->ColorMaterial = irr::video::E_COLOR_PLANE::ECP_BLUE;
-	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, true);
-	tmp.getSceneManager()->addMeshSceneNode(cube);
+
+
+	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+
+	irr::video::ITexture *texture = tmp.getDriver()->getTexture(irr::io::path("media/earth.jpg"));
+
+	irr::scene::IMeshSceneNode *cubeNode = tmp.getSceneManager()->addMeshSceneNode(cube);
+	cubeNode->setMaterialTexture(0, texture);
+	cubeNode->setPosition(irr::core::vector3df(0, -1.0f, 0));
+	cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+	cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+
+	//cubeNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+	//cubeNode->getMaterial(0).setTexture(0, tmp.getDriver()->getTexture(texture));
 
 
 	/* Save */
