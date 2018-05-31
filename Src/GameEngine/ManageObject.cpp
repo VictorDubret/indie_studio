@@ -15,7 +15,7 @@ bool nts::ManageObject::createCube(nts::ManageIrrlicht &manage,
 	irr::scene::ISceneNode *cube = manage.getSceneManager()->addCubeSceneNode(size, 0, id, position, rotation, scale);
 	if (cube == nullptr)
 		throw std::exception();
-	manage.addEntity(obj, cube);
+	manage.addEntity(obj, cube, size);
 	return false;
 }
 
@@ -40,6 +40,5 @@ void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<
 	irr::video::ITexture *texture = manage.getDriver()->getTexture(path);
 	if (texture == nullptr)
 		throw std::exception();
-
 	manage.getNode(obj)->setMaterialTexture(0, texture);
 }

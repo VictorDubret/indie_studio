@@ -6,13 +6,14 @@
 */
 
 #include <Tools/Debug.hpp>
+#include "ManageIrrlicht.hpp"
 #include "Explosion.hpp"
 
 is::Explosion::Explosion(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
 ):
-	AEntity(entities, eventManager)
+	AEntity(entities, eventManager, irrlicht)
 {
 	_type = "Explosion";
 
@@ -31,5 +32,5 @@ void is::Explosion::explode()
 void is::Explosion::collide(is::IEntity *entity)
 {
 	entity->explode();
-	Debug::debug("Character type : ", entity->getType()," die at ", _position.x , ", ", _position.y, ", ", _position.z);
+	Debug::debug("Character type : ", entity->getType()," die at ", _irrlicht.getNode(_sptr)->getPosition().X , ", ", _irrlicht.getNode(_sptr)->getPosition().Y, ", ", _irrlicht.getNode(_sptr)->getPosition().Z);
 }

@@ -16,7 +16,7 @@ namespace is {
 	public:
 		//Constructor
 		Wall(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager);
+			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
 		~Wall() override = default;

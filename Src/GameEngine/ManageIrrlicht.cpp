@@ -18,7 +18,7 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 	if (!_driver || !_sceneManager)
 		throw std::exception();
 
-	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0,30,-40), irr::core::vector3df(0,5,0));
+	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, 15, -10), irr::core::vector3df(0, 10, 0));
 }
 
 void nts::ManageIrrlicht::updateView()
@@ -49,6 +49,7 @@ void nts::ManageIrrlicht::manageEventPlayers()
 		for (int i = 0; it.key[i].f != nullptr ; ++i) {
 			if (_eventReceiver.IsKeyDown(it.key[i].key)) {
 				_eventManager->enqueue(it.key[i].f);
+				break;
 			}
 		}
 	}
@@ -57,10 +58,15 @@ void nts::ManageIrrlicht::manageEventPlayers()
 
 irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(const std::shared_ptr<is::IEntity> &entity)
 {
-	return _listObj[entity];
+	return _listObj[entity].obj;
 }
 
-bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::scene::ISceneNode *obj)
+float &nts::ManageIrrlicht::getNodeSize(const std::shared_ptr<is::IEntity> &entity)
+{
+	return _listObj[entity].size;
+}
+
+bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::scene::ISceneNode *obj, float size)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
@@ -84,7 +90,7 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 				{irr::KEY_ESCAPE, nullptr}}};
 		_listPlayer.push_back(player);
 	}
-	_listObj[entity] = obj;
+	_listObj[entity] = {obj, size};
 	return false;
 }
 

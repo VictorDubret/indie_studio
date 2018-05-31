@@ -35,8 +35,8 @@ class Debug {
 	{
 		#ifdef DEBUG
 		std::cerr << t;
-		debug(args...);
 		#endif
+		debug(args...);
 		(void)t;
 	}
 

@@ -96,7 +96,7 @@ bool is::ACharacter::checkCollision()
 
 void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
-	auto list = getEntitiesAt((int) nextX, (int) nextY, (int) nextZ);
+	auto list = getEntitiesAt(nextX, nextY, nextZ);
 
 	for (auto &it: list) {
 		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {

@@ -28,9 +28,10 @@ namespace nts {
 		virtual void loopDisplay() = 0;
 
 		// add ISceneNode into a map of IEntity
-		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) = 0;
+		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float) = 0;
 		// get the object
 		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
+		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;
 
 		// Getter
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;
