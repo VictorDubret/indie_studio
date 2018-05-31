@@ -61,11 +61,13 @@ namespace is {
 		void explode() override;
 
 		bool checkCollision();
+
+		void texture() override;
 	protected:
 		/*
 		 * Internal Config
 		 */
-		float _speedCoef = 0.1;
+		float _speedCoef = 0.05;
 
 		uint _pv = 1;
 
@@ -75,7 +77,7 @@ namespace is {
 		size_t _bomb = 1;
 		size_t _bombMax = 1;
 
-		size_t _bombLength = 2;
+		size_t _bombLength = 1;
 		size_t _speed = 1;
 
 		void move(float, float, float);

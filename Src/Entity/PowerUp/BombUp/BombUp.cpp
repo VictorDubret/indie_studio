@@ -15,6 +15,7 @@ is::BombUp::BombUp(
 ) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "BombUp";
+	texture();
 }
 
 void is::BombUp::action(is::ACharacter *character)

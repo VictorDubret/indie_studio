@@ -129,13 +129,13 @@ void		mg::MapGenerator::transposeMap(is::Entity_t &entities,
 	for (std::size_t i = 0 ; i < _map.size() ; ++i) {
 		if (_map[i] == '#' || _map[i] == '.') {
 			auto wall = new is::UnbreakableWall(entities, eventManager, irrlicht);
-			wall->setZ(i / _width);
-			wall->setX(i % _width);
+			wall->setZ(i / (_width + 2));
+			wall->setX(i % (_width + 2));
 		} else if (_map[i] != ' ') {
 			auto crate = new is::Wall(entities, eventManager, irrlicht);
 			crate->setPowerUp(_map[i]);
-			crate->setZ(i / _width);
-			crate->setX(i % _width);
+			crate->setZ(i / (_width + 2));
+			crate->setX(i % (_width + 2));
 		}
 	}
 }

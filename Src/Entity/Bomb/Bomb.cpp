@@ -8,8 +8,9 @@
 #include <algorithm>
 #include "ItemLocker.hpp"
 #include "Bomb.hpp"
-#include "Timer.hpp"
+//#include "Timer.hpp"
 #include "Explosion.hpp"
+#include "ManageObject.hpp"
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
@@ -19,9 +20,13 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 {
 	std::cout << "Bomb constructor" << std::endl;
 	_type = "Bomb";
-	if (dynamic_cast<is::ACharacter *>(_player.get()) == nullptr) {
+	auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
+	if (tmp == nullptr) {
 		delete this;
 	}
+	_lenExplosion = tmp->getBombLength();
+	std::cout << _lenExplosion << std::endl;
+	texture();
 	timer(time);
 }
 
@@ -81,7 +86,7 @@ void is::Bomb::explode()
 		auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 		if (tmp)
 			tmp->operator++();
-		delete this;
+		this->~Bomb();
 		_eventManager.unlock();
 		_entities.unlock();
 		return;
@@ -94,15 +99,24 @@ void is::Bomb::timer(size_t time)
 {
 	_eventManager.lock();
 	_eventManager->enqueue([this, time]() {
-		Timer timer;
+		//Timer timer;
 		std::cout << "I'll explode in " << time << " seconds"
 			<< std::endl;
-		timer.startTimer(time);
+		//timer.startTimer(time);
 		//Change animation flamish bomb
-		while (!timer.isOver()) {
-		}
+		//while (!timer.isOver()) {
+		//}
+		std::this_thread::sleep_for(std::chrono::seconds(2));
 		std::cout << "Bouuum" << std::endl;
 		explode();
 	});
 	_eventManager.unlock();
+}
+
+void is::Bomb::texture()
+{
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 }

@@ -14,6 +14,7 @@ is::SpeedUp::SpeedUp(
 ) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "SpeedUp";
+	texture();
 }
 
 void is::SpeedUp::action(is::ACharacter *character)

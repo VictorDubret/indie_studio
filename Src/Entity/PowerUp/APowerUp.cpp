@@ -9,6 +9,7 @@
 #include "ACharacter.hpp"
 #include "Debug.hpp"
 #include "ManageIrrlicht.hpp"
+#include "ManageObject.hpp"
 
 is::APowerUp::APowerUp(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
@@ -37,4 +38,12 @@ void is::APowerUp::collide(is::IEntity *entity)
 // Do nothing
 void is::APowerUp::action(is::ACharacter *)
 {
+}
+
+void is::APowerUp::texture()
+{
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/help.png");
 }

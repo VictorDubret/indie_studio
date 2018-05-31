@@ -14,6 +14,7 @@ is::WallPass::WallPass(
 ) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "WallPass";
+	texture();
 }
 
 void is::WallPass::action(is::ACharacter *character)

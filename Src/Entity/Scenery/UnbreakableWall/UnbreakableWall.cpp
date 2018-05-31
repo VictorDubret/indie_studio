@@ -7,6 +7,7 @@
 
 #include <Debug.hpp>
 #include "UnbreakableWall.hpp"
+#include "ManageObject.hpp"
 
 is::UnbreakableWall::UnbreakableWall(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
@@ -20,4 +21,13 @@ is::UnbreakableWall::UnbreakableWall(
 	_pickable = false;
 	_walkable = false;
 	_wallPassable = false;
+	texture();
+}
+
+void is::UnbreakableWall::texture()
+{
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.bmp");
 }

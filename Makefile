@@ -12,7 +12,6 @@ SRC		=		Src/Main.cpp							\
 				Src/Entity/Scenery/UnbreakableWall/UnbreakableWall.cpp		\
 				Src/Entity/Scenery/Wall/Wall.cpp				\
 				Src/Entity/Bomb/Bomb.cpp					\
-				Src/Entity/Bomb/Timer.cpp					\
 				Src/MapGenerator/MapGenerator.cpp
 
 SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp				\

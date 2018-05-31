@@ -28,7 +28,7 @@ namespace is {
 		// Other
 		void explode() override;
 		void setPowerUp(char powerUp);
-
+		void texture() override;
 	private:
 		void placePowerUp();
 		char _powerUp = 0;

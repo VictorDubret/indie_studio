@@ -22,6 +22,13 @@ is::Explosion::Explosion(
 	_pickable = false;
 	_walkable = true;
 	_wallPassable = true;
+	texture();
+	_eventManager.lock();
+	_eventManager->enqueue([this]() {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		this->~Explosion();
+	});
+	_eventManager.unlock();
 }
 
 void is::Explosion::texture()
@@ -38,8 +45,8 @@ void is::Explosion::explode()
 
 void is::Explosion::collide(is::IEntity *entity)
 {
+	_entities.lock();
 	Debug::debug("Character type : ", entity->getType()," die at ", getX() , ", ", getY(), ", ", getZ());
 	entity->explode();
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	delete this;
+	_entities.unlock();
 }

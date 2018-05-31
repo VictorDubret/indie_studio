@@ -12,6 +12,7 @@
 #include "SpeedUp.hpp"
 #include "WallPass.hpp"
 #include "ManageIrrlicht.hpp"
+#include "ManageObject.hpp"
 
 is::Wall::Wall(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
@@ -25,22 +26,23 @@ is::Wall::Wall(
 	_pickable = false;
 	_walkable = false;
 	_wallPassable = true;
+	texture();
 }
 
 void is::Wall::placePowerUp()
 {
 	switch (_powerUp) {
 	case 'b':
-		is::BombUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		(new is::BombUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 'f':
-		is::FireUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		(new is::FireUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 's':
-		is::SpeedUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		(new is::SpeedUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 'w':
-		is::WallPass(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		(new is::WallPass(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	default:
 		break;
@@ -57,4 +59,12 @@ void is::Wall::explode()
 void is::Wall::setPowerUp(char powerUp)
 {
 	_powerUp = powerUp;
+}
+
+void is::Wall::texture()
+{
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/stones.jpg");
 }
