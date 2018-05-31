@@ -10,7 +10,7 @@
 #include <Bomb/Timer.hpp>
 #include <zconf.h>
 #include <Bomb/Bomb.hpp>
-
+/*
 int main()
 {
 	std::vector<std::shared_ptr<is::IEntity>> a;
@@ -25,4 +25,4 @@ int main()
 	//is::ACharacter toto(entities, threadPool);
 	//toto.moveUp();
 	return 0;
-}
+}*/

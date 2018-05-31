@@ -3,7 +3,7 @@ project(cpp_indie_studio)
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src)
+file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src Src)
 
 include_directories(Src Src/Entity Src/Entity/Character
         Src
@@ -26,4 +26,4 @@ add_executable(cpp_indie_studio
         ${FILE})
 
 target_link_libraries(cpp_indie_studio
-        pthread)
+        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor)

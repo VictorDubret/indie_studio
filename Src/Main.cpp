@@ -25,6 +25,7 @@ int main()
 
 	nts::ManageIrrlicht tmp(lockList, pool);
 	is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
+	is::IEntity *player1 = new is::ACharacter(lockList, pool, tmp);
 	is::IEntity *wall = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall2 = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall3 = new is::Wall(lockList, pool, tmp);

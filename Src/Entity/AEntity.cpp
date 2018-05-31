@@ -12,6 +12,7 @@
 #include "AEntity.hpp"
 #include "Debug.hpp"
 #include "ManageIrrlicht.hpp"
+#include "ManageObject.hpp"
 
 is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
@@ -20,6 +21,10 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
 	_irrlicht.addEntity(_sptr, nullptr, 1);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/rockwall.jpg");
 	_entities.unlock();
 }
 
@@ -121,9 +126,10 @@ void is::AEntity::explode()
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
-	return ((int) getX() == (int) entity->getX() &&
-		(int) getY() == (int) entity->getY() &&
-		(int) getZ() == (int) entity->getZ());
+	auto size = _irrlicht.getNodeSize(_sptr);
+
+	return (((getX() >= entity->getX() && getX() <= entity->getX() + size) || (getX() + size >= entity->getX() && getX() + size <= entity->getX() + size)) &&
+		((getY() >= entity->getZ() && getZ() <= entity->getZ() + size) || (getZ() + size >= entity->getZ() && getZ() + size <= entity->getZ() + size)));
 }
 
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
@@ -131,21 +137,17 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	float size = _irrlicht.getNodeSize(_sptr);
+	auto f = [x, z, size](std::shared_ptr<is::IEntity> entity) {
+		return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
+			((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
+	};
 
-	auto it = std::find_if(_entities->begin(), _entities->end(),
-		[x, z, size](std::shared_ptr<is::IEntity> entity) {
-			return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
-				((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
-		}
-	);
+	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
 		ret.push_back(*it.base());
 		it++;
 		if (it != _entities->end()) {
-			it = std::find_if(it, _entities->end(), [x, z, size](std::shared_ptr<is::IEntity> entity) {
-				return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
-					((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
-			});
+			it = std::find_if(it, _entities->end(), f);
 		}
 	}
 	return ret;
