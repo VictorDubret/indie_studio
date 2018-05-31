@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src)
 
-include_directories(Src Src/Entity Src/Entity/Character
+include_directories(Src Src/Entity Src/Entity/Character)
 include_directories(
         Src
         Src/Entity

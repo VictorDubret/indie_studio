@@ -7,7 +7,7 @@
 
 #include "ManageIrrlicht.hpp"
 
-nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) : _eventManager(eventManager) ,_entities(entities), _eventReceiver()
+nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize) : _eventManager(eventManager) ,_entities(entities), _eventReceiver(), _mapSize(mapSize)
 {
 	_device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(1200, 800), 32, false, false, false, &_eventReceiver);
 	if (!_device)
@@ -18,18 +18,19 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 	if (!_driver || !_sceneManager)
 		throw std::exception();
 
-	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, 15, -10), irr::core::vector3df(0, 10, 0));
+	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, 15 , -10), irr::core::vector3df(0, 10, 0));
 }
 
 void nts::ManageIrrlicht::updateView()
 {
 }
 
-void nts::ManageIrrlicht::loopDisplay()
+void nts::ManageIrrlicht::loopDisplay(const std::shared_ptr<is::IEntity> &entity)
 {
 	while (_device->run()) {
 		_driver->beginScene(true, true, irr::video::SColor(0, 220, 220, 220));
 		_sceneManager->drawAll();
+		std::cout << "Player X[" << _listObj[entity].obj->getPosition().X << "] Y[" << _listObj[entity].obj->getPosition().Y << "] Z[" << _listObj[entity].obj->getPosition().Z << "]" << std::endl;
 		_driver->endScene();
 		manageEvent();
 	}
@@ -111,4 +112,14 @@ irr::IrrlichtDevice *nts::ManageIrrlicht::getDevice() const
 irr::video::IVideoDriver *nts::ManageIrrlicht::getDriver() const
 {
 	return _driver;
+}
+
+void nts::ManageIrrlicht::setMapSize(const irr::core::vector2di &mapSize)
+{
+	_mapSize = mapSize;
+}
+
+irr::core::vector2di nts::ManageIrrlicht::getMapSize() const
+{
+	return _mapSize;
 }
