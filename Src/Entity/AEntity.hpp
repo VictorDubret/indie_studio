@@ -51,6 +51,9 @@ namespace is {
 		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float y, float z);
 		void explode() override;
 
+		void lock() override;
+		void unlock() override;
+
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
@@ -61,6 +64,7 @@ namespace is {
 		bool _walkable = true;
 		bool _wallPassable = true;
 
+		std::mutex _mutex;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 
 		std::shared_ptr<IEntity> _sptr;

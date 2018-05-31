@@ -47,8 +47,17 @@ namespace is {
 		void moveRight();
 		void dropBomb();
 
+		void explode() override;
+
 		bool checkCollision();
 	protected:
+		/*
+		 * Internal Config
+		 */
+		double _speedCoef = 0.1;
+
+		uint _pv = 1;
+
 		bool _wallPass = false;
 
 		size_t _bomb = 1;
@@ -56,11 +65,6 @@ namespace is {
 
 		size_t _bombLength = 2;
 		size_t _speed = 1;
-
-		/*
-		 * Internal Config
-		 */
-		float _speedCoef = 0.1;
 
 		void move(float, float, float);
 	private:

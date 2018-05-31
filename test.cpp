@@ -16,20 +16,13 @@ int main(int ac, char **av)
 	my::ItemLocker<my::ThreadPool> eventManagerLocker(eventManager);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> entitiesLocker(entities);
 
-
-	is::BombUp bombUp(entitiesLocker, eventManagerLocker);
-	is::FireUp fireUp(entitiesLocker, eventManagerLocker);
-	is::SpeedUp speedUp(entitiesLocker, eventManagerLocker);
-	is::WallPass wallPass(entitiesLocker, eventManagerLocker);
-
-	std::cerr << "list size: " << bombUp.getEntitiesAt(0, 0, 0).size() << std::endl;
-	std::cerr << "list size: " << bombUp.getEntitiesAt(1, 1, 1).size() << std::endl;
 	{
 		is::ACharacter character(entitiesLocker, eventManagerLocker);
 		is::ACharacter character1(entitiesLocker, eventManagerLocker);
 
 		std::cout << "Entities size (Before collision): " << entitiesLocker->size() << std::endl;
 		character.checkCollision();
+		character.dropBomb();
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		std::cout << "Entities size (After collision and event): " << entitiesLocker->size() << std::endl;
 	}

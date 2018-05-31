@@ -33,6 +33,7 @@ is::AEntity::~AEntity()
 	_entities.lock();
 	for (auto it = _entities->begin(); it != _entities->end(); it++) {
 		if (it->get() == this) {
+			_entities.unlock();
 			_entities->erase(it);
 			break;
 		}
@@ -143,6 +144,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 	};
 
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
+	_entities.lock();
 	while (it != _entities->end()) {
 		ret.push_back(*it.base());
 		it++;
@@ -150,5 +152,16 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
+	_entities.unlock();
 	return ret;
+}
+
+void is::AEntity::lock()
+{
+	_mutex.lock();
+}
+
+void is::AEntity::unlock()
+{
+	_mutex.unlock();
 }
