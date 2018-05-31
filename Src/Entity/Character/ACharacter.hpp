@@ -28,7 +28,7 @@ namespace is {
 			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
-		~ACharacter() override = default;
+		~ACharacter() override;
 
 		// Getter
 		bool const &getWallPass() const;
@@ -65,7 +65,7 @@ namespace is {
 		/*
 		 * Internal Config
 		 */
-		double _speedCoef = 0.1;
+		float _speedCoef = 0.1;
 
 		uint _pv = 1;
 

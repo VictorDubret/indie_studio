@@ -66,6 +66,7 @@ namespace is {
 
 		std::mutex _mutex;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
+		virtual void texture();
 
 		std::shared_ptr<IEntity> _sptr;
 		nts::ManageIrrlicht &_irrlicht;

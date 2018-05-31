@@ -18,6 +18,11 @@ is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>>
 	_walkable = false;
 }
 
+is::ACharacter::~ACharacter()
+{
+	std::cout << "NIKE TA MERE CONNARD" << std::endl;
+}
+
 bool const &is::ACharacter::getWallPass() const
 {
 	return _wallPass;
@@ -117,7 +122,6 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			return;
 		}
 	}
-	std::cerr << "MOVE" << std::endl;
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
@@ -187,24 +191,24 @@ void is::ACharacter::dropBomb()
 				return;
 			}
 		}
+		lock();
+		--_bomb;
+		unlock();
 		_entities.unlock();
-		auto bomb = new is::Bomb(_entities, _eventManager, _irrlicht);
+		auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 		std::cerr << "Bomb" << std::endl;
 		bomb->lock();
 		bomb->setX((int) getX());
 		bomb->setY((int) getY());
 		bomb->setZ((int) getZ());
 		bomb->unlock();
-		lock();
-		--_bomb;
-		unlock();
 	}
 }
 
 void is::ACharacter::explode()
 {
 	lock();
-	--_pv;
+	//--_pv;
 	unlock();
 	if (_pv == 0) {
 		Debug::debug("A player die");

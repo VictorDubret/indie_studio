@@ -18,8 +18,8 @@ include_directories(Src Src/Entity Src/Entity/Character
         Src/Entity/PowerUp
         Src/Entity/Scenery/Wall
         Src/Entity/Scenery/UnbreakableWall
-        Src/Entity/Scenery/Explosion
-        Src/Entity/Bomb)
+        Src/Entity/Bomb/
+        Src/Entity/Scenery/Explosion)
 
 add_definitions(-DDEBUG=1)
 

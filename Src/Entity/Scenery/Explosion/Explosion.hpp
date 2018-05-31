@@ -29,7 +29,8 @@ namespace is {
 		void explode() override;
 		void collide(IEntity *) override;
 
-	private:
+	protected:
+		void texture() override;
 	};
 };
 

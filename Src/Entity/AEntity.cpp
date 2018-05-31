@@ -20,11 +20,7 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 	_entities.lock();
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
-	_irrlicht.addEntity(_sptr, nullptr, 1);
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
-	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/rockwall.jpg");
+	texture();
 	_entities.unlock();
 }
 
@@ -39,6 +35,14 @@ is::AEntity::~AEntity()
 		}
 	}
 	_entities.unlock();
+}
+
+void is::AEntity::texture()
+{
+	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/rockwall.jpg");
 }
 
 irr::core::vector3df const &is::AEntity::getPosition() const
@@ -137,15 +141,23 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 	float x, float, float z)
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
-	auto f = [x, z, _irrlicht](std::shared_ptr<is::IEntity> entity) {
+	auto f = [x, z, this](std::shared_ptr<is::IEntity> entity) {
+		if (dynamic_cast<IEntity *>(entity.get()) == nullptr) {
+			std::cerr << "JE TAIME PAS" << std::endl;
+			return false;
+		}
+		entity->lock();
 		float size = _irrlicht.getNodeSize(entity);
-		return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
-			((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
+		bool a = ((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
+			((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size));
+		entity->unlock();
+		return (a);
 	};
 
-	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	_entities.lock();
+	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
+
 		ret.push_back(*it.base());
 		it++;
 		if (it != _entities->end()) {

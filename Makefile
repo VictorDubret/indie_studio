@@ -41,6 +41,7 @@ CXXFLAGS	=		-W -Wall -Wextra						\
 				-I Src/Entity/PowerUp/WallPass/					\
 				-I Src/Entity/Scenery/Explosion/				\
 				-I Src/Entity/Scenery/UnbreakableWall/				\
+				-I Src/Entity/Bomb						\
 				-I Src/Entity/Scenery/Wall/					\
 				-I Src/MapGenerator/						\
 				-std=c++11							\
