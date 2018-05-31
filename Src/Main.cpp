@@ -82,7 +82,7 @@ int main()
 	nts::ManageObject::createCube(tmp, bitewall, 1);
 	nts::ManageObject::createCube(tmp, bitewall2, 1);
 	nts::ManageObject::createCube(tmp, bitewall3, 1);
-	nts::ManageObject::createAnim(tmp, player_tmp2, "media/sydney.md2", 0.9);
+	nts::ManageObject::createAnim(tmp, player_tmp2, "media/sydney.md2", 0.8);
 
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(2.3, 0, 0));
 	tmp.getNode(bitewall3)->setPosition(irr::core::vector3df(3.f, 0, 10));
@@ -146,6 +146,7 @@ int main()
 	nts::ManageObject::setMaterialLight(tmp, japanWall6, false);
 	nts::ManageObject::setTexture(tmp, japanWall6, "media/redSquare.png");
 
-	tmp.loopDisplay(player_tmp2);
+	tmp.deleteEntity(player_tmp2);
+	tmp.loopDisplay();
 	return 0;
 }
