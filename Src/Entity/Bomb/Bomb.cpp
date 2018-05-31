@@ -43,6 +43,8 @@ void is::Bomb::explode()
 				this->getX(), this->getY(), this->getZ() - i);
 			zAxes.insert(zAxes.end(), tmp.begin(), tmp.end());
 		}
+		dynamic_cast<is::ACharacter *>(_player.get())->setBomb(1);
+
 		for (const auto &it : xAxes) {
 			if (it.get() != this) {
 				std::cout << "J'ai recuperer sur X : "
@@ -52,7 +54,6 @@ void is::Bomb::explode()
 		}
 		std::cout << "I'll explode all blocks around me ! MOUAHAHAH"
 			<< std::endl;
-		dynamic_cast<is::ACharacter *>(_player.get())->setBomb(1);
 		for (const auto &it : zAxes) {
 			if (it.get() != this) {
 				std::cout << "J'ai recuperer sur Z : "
