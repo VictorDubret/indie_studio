@@ -7,18 +7,17 @@
 
 #include <Debug.hpp>
 #include "Wall.hpp"
-
 #include "BombUp.hpp"
 #include "FireUp.hpp"
 #include "SpeedUp.hpp"
 #include "WallPass.hpp"
-
+#include "ManageIrrlicht.hpp"
 
 is::Wall::Wall(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
 ):
-	AEntity(entities, eventManager)
+	AEntity(entities, eventManager, irrlicht)
 {
 	_type = "Wall";
 
@@ -32,16 +31,16 @@ void is::Wall::placePowerUp()
 {
 	switch (_powerUp) {
 	case 'b':
-		is::BombUp(_entities, _eventManager).setPosition(_position);
+		is::BombUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 'f':
-		is::FireUp(_entities, _eventManager).setPosition(_position);
+		is::FireUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 's':
-		is::SpeedUp(_entities, _eventManager).setPosition(_position);
+		is::SpeedUp(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	case 'w':
-		is::WallPass(_entities, _eventManager).setPosition(_position);
+		is::WallPass(_entities, _eventManager, _irrlicht).setPosition(_irrlicht.getNode(_sptr)->getPosition());
 		break;
 	default:
 		break;

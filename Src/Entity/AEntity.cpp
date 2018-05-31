@@ -126,26 +126,24 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 }
 
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
-	int x, int y, int z
-)
+	float x, float, float z)
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
+	float size = _irrlicht.getNodeSize(_sptr);
+
 	auto it = std::find_if(_entities->begin(), _entities->end(),
-		[x, y, z](std::shared_ptr<is::IEntity> entity) {
-			return (int) entity->getX() == x &&
-				(int) entity->getY() == y &&
-				(int) entity->getZ() == z;
+		[x, z, size](std::shared_ptr<is::IEntity> entity) {
+			return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
+				((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
 		}
 	);
-
 	while (it != _entities->end()) {
 		ret.push_back(*it.base());
 		it++;
 		if (it != _entities->end()) {
-			it = std::find_if(it, _entities->end(), [x, y, z](std::shared_ptr<is::IEntity> entity) {
-				return (int) entity->getX() == x &&
-					(int) entity->getY() == y &&
-					(int) entity->getZ() == z;
+			it = std::find_if(it, _entities->end(), [x, z, size](std::shared_ptr<is::IEntity> entity) {
+				return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
+					((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
 			});
 		}
 	}

@@ -26,6 +26,11 @@ namespace nts {
 		event_t key[6];
 	} player_t;
 
+	typedef struct {
+		irr::scene::ISceneNode *obj;
+		float size;
+	} irrObj_t;
+
 	class ManageIrrlicht : public nts::IManageIrrlicht {
 		public:
 		ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
@@ -34,8 +39,9 @@ namespace nts {
 		void updateView() override;
 		void loopDisplay() override;
 
-		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *) override;
+		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
 		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
+		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
 		irr::IrrlichtDevice *getDevice() const override;
@@ -50,7 +56,7 @@ namespace nts {
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
-		std::unordered_map<std::shared_ptr<is::IEntity>, irr::scene::ISceneNode *> _listObj;
+		std::unordered_map<std::shared_ptr<is::IEntity>, nts::irrObj_t> _listObj;
 		std::vector<nts::player_t> _listPlayer;
 
 		irr::IrrlichtDevice *_device = nullptr;
