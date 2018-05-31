@@ -25,12 +25,11 @@ void nts::ManageIrrlicht::updateView()
 {
 }
 
-void nts::ManageIrrlicht::loopDisplay(const std::shared_ptr<is::IEntity> &entity)
+void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device->run()) {
 		_driver->beginScene(true, true, irr::video::SColor(0, 220, 220, 220));
 		_sceneManager->drawAll();
-		std::cout << "Player X[" << _listObj[entity].obj->getPosition().X << "] Y[" << _listObj[entity].obj->getPosition().Y << "] Z[" << _listObj[entity].obj->getPosition().Z << "]" << std::endl;
 		_driver->endScene();
 		manageEvent();
 	}
@@ -96,6 +95,25 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 		_listPlayer.push_back(player);
 	}
 	_listObj[entity] = {obj, size};
+	return false;
+}
+
+bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
+{
+	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
+
+	if (tmp && tmp->getType() == "Character") {
+		int idx = 0;
+		for (auto &it : _listPlayer) {
+			if (it.entity == entity) {
+				_listPlayer.erase(_listPlayer.begin() + idx);
+				break;
+			}
+			idx++;
+		}
+	}
+	_listObj[entity].obj->setVisible(false);
+	_listObj.erase(_listObj.find(entity));
 	return false;
 }
 

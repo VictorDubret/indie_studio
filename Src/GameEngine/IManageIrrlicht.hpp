@@ -25,10 +25,12 @@ namespace nts {
 		// Update the view of the map, take the 2 farest player
 		virtual void updateView() = 0;
 		// call each function needed on the loop
-		virtual void loopDisplay(const std::shared_ptr<is::IEntity> &entity) = 0;
+		virtual void loopDisplay() = 0;
 
-		// add ISceneNode into a map of IEntity
+		// add/remove ISceneNode into a map of IEntity
 		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float) = 0;
+		virtual bool deleteEntity(std::shared_ptr<is::IEntity> &) = 0;
+
 		// get the object
 		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
 		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;

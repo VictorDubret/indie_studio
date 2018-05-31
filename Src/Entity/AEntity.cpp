@@ -27,6 +27,7 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 is::AEntity::~AEntity()
 {
 	_entities.lock();
+	_irrlicht.deleteEntity(_sptr);
 	for (auto it = _entities->begin(); it != _entities->end(); it++) {
 		if (it->get() == this) {
 			_entities.unlock();
