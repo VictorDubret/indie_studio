@@ -97,7 +97,7 @@ int main()
 	nts::ManageObject::createCube(tmp, japanWall5, 1);
 	nts::ManageObject::createCube(tmp, japanWall6, 1);
 
-	nts::ManageObject::createCube(tmp, player_tmp2, 1);
+//	nts::ManageObject::createCube(tmp, player_tmp2, 1);
 
 	/* Set all positions */
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(3, 0, 3));
