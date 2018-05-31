@@ -14,6 +14,7 @@ is::FireUp::FireUp(
 ) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "FireUp";
+	texture();
 }
 
 void is::FireUp::action(is::ACharacter *character)

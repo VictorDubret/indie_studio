@@ -26,7 +26,7 @@ namespace is {
 		// Setter
 
 		// Other
-
+		void texture() override;
 	private:
 	};
 };

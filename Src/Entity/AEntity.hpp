@@ -54,6 +54,7 @@ namespace is {
 		void lock() override;
 		void unlock() override;
 
+		virtual void texture() = 0;
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
@@ -66,7 +67,6 @@ namespace is {
 
 		std::mutex _mutex;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
-		virtual void texture();
 
 		std::shared_ptr<IEntity> _sptr;
 		nts::ManageIrrlicht &_irrlicht;

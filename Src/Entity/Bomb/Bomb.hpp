@@ -22,13 +22,14 @@ namespace is {
 
 		~Bomb() = default;
 
-		void explode();
+		void explode() override;
 
 		void timer(size_t time);
 
+		void texture() override;
 		private:
 
-		int _lenExplosion = 2;
+		int _lenExplosion = 1;
 
 		bool _stopTimer = false;
 

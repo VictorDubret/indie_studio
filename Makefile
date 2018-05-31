@@ -10,9 +10,9 @@ SRC		=		Src/Main.cpp							\
 				Src/Entity/PowerUp/WallPass/WallPass.cpp			\
 				Src/Entity/Scenery/Explosion/Explosion.cpp			\
 				Src/Entity/Scenery/UnbreakableWall/UnbreakableWall.cpp		\
+				Src/Entity/Bomb/Timer.cpp	\
 				Src/Entity/Scenery/Wall/Wall.cpp				\
 				Src/Entity/Bomb/Bomb.cpp					\
-				Src/Entity/Bomb/Timer.cpp					\
 				Src/MapGenerator/MapGenerator.cpp
 
 SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp				\
@@ -51,7 +51,7 @@ OBJ		=		$(SRC:.cpp=.o)							\
 
 LDFLAGS		=		-lpthread -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
-NAME		=		toto
+NAME		=		bomberman
 
 all:				$(NAME)
 

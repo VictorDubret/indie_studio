@@ -27,6 +27,8 @@ namespace is {
 
 		// Other
 		void collide(is::IEntity *entity) override;
+
+		void texture() override;
 	protected:
 		virtual void action(is::ACharacter *entity);
 
