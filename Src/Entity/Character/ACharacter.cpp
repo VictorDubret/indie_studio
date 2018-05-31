@@ -9,12 +9,18 @@
 #include "ACharacter.hpp"
 #include "Debug.hpp"
 #include "Bomb.hpp"
+#include "ManageObject.hpp"
 
 is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht) :
 	AEntity(entities, eventManager, irrlicht)
 {
 	_type = "Character";
 	_walkable = false;
+}
+
+is::ACharacter::~ACharacter()
+{
+	std::cout << "NIKE TA MERE CONNARD" << std::endl;
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -116,7 +122,6 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			return;
 		}
 	}
-	std::cerr << "MOVE" << std::endl;
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
@@ -125,6 +130,11 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 
 void is::ACharacter::moveUp()
 {
+	if (_lastMove != MoveCharacter::UP) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 270, 0));
+		_lastMove = MoveCharacter::UP;
+	}
 	float next = getZ() + _speed * _speedCoef;
 
 	move(getX(), getY(), next);
@@ -132,6 +142,11 @@ void is::ACharacter::moveUp()
 
 void is::ACharacter::moveDown()
 {
+	if (_lastMove != MoveCharacter::DOWN) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 90, 0));
+		_lastMove = MoveCharacter::DOWN;
+	}
 	float next = getZ() - _speed * _speedCoef;
 
 	move(getX(), getY(), next);
@@ -139,6 +154,11 @@ void is::ACharacter::moveDown()
 
 void is::ACharacter::moveLeft()
 {
+	if (_lastMove != MoveCharacter::LEFT) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 180, 0));
+		_lastMove = MoveCharacter::LEFT;
+	}
 	float next = getX() - _speed * _speedCoef;
 
 	move(next, getY(), getZ());
@@ -146,6 +166,11 @@ void is::ACharacter::moveLeft()
 
 void is::ACharacter::moveRight()
 {
+	if (_lastMove != MoveCharacter::RIGHT) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 0, 0));
+		_lastMove = MoveCharacter::RIGHT;
+	}
 	float next = getX() + _speed * _speedCoef;
 
 	move(next, getY(), getZ());
@@ -166,26 +191,35 @@ void is::ACharacter::dropBomb()
 				return;
 			}
 		}
-		_entities.unlock();
-		auto bomb = new is::Bomb(_entities, _eventManager, _sptr,_irrlicht);
-		bomb->lock();
-		bomb->setX(getX());
-		bomb->setY(getY());
-		bomb->setZ(getZ());
-		bomb->unlock();
 		lock();
 		--_bomb;
 		unlock();
+		_entities.unlock();
+		auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
+		std::cerr << "Bomb" << std::endl;
+		bomb->lock();
+		bomb->setX((int) getX());
+		bomb->setY((int) getY());
+		bomb->setZ((int) getZ());
+		bomb->unlock();
 	}
 }
 
 void is::ACharacter::explode()
 {
 	lock();
-	--_pv;
+	//--_pv;
 	unlock();
 	if (_pv == 0) {
 		Debug::debug("A player die");
 		this->~ACharacter();
+	}
+}
+
+void is::ACharacter::doNothing()
+{
+	if (_lastMove != MoveCharacter::NOTHING) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_STAND);
+		_lastMove = MoveCharacter::NOTHING;
 	}
 }

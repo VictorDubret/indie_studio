@@ -23,6 +23,7 @@ namespace nts {
 
 	typedef struct {
 		std::shared_ptr<is::ACharacter> entity;
+		event_t nothing;
 		event_t key[6];
 	} player_t;
 
@@ -33,13 +34,18 @@ namespace nts {
 
 	class ManageIrrlicht : public nts::IManageIrrlicht {
 		public:
-		ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
+		ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize);
 		~ManageIrrlicht() override = default;
 
 		void updateView() override;
 		void loopDisplay() override;
 
+		void setMapSize(const irr::core::vector2di &mapSize) override;
+		irr::core::vector2di getMapSize() const override;
+
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
+		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
+
 		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
@@ -62,6 +68,8 @@ namespace nts {
 		irr::IrrlichtDevice *_device = nullptr;
 		irr::video::IVideoDriver *_driver = nullptr;
 		irr::scene::ISceneManager *_sceneManager = nullptr;
+
+		irr::core::vector2di _mapSize;
 
 		nts::EventManager _eventReceiver;
 	};

@@ -27,8 +27,10 @@ namespace nts {
 		// call each function needed on the loop
 		virtual void loopDisplay() = 0;
 
-		// add ISceneNode into a map of IEntity
+		// add/remove ISceneNode into a map of IEntity
 		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float) = 0;
+		virtual bool deleteEntity(std::shared_ptr<is::IEntity> &) = 0;
+
 		// get the object
 		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
 		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;
@@ -37,6 +39,10 @@ namespace nts {
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;
 		virtual irr::IrrlichtDevice *getDevice() const = 0;
 		virtual irr::video::IVideoDriver *getDriver() const = 0;
+		virtual irr::core::vector2di getMapSize() const = 0;
+
+		// Setter
+		virtual void setMapSize(const irr::core::vector2di &mapSize) = 0;
 
 		protected:
 		private:
