@@ -13,6 +13,16 @@
 namespace is {
 	class ACharacter: public AEntity {
 	public:
+
+		enum MoveCharacter {
+			NOTHING,
+			LEFT,
+			RIGHT,
+			UP,
+			DOWN,
+			UNKNOWN
+		};
+
 		// Constructor
 		ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
@@ -46,6 +56,7 @@ namespace is {
 		void moveLeft();
 		void moveRight();
 		void dropBomb();
+		void doNothing();
 
 		void explode() override;
 
@@ -59,6 +70,7 @@ namespace is {
 		uint _pv = 1;
 
 		bool _wallPass = false;
+		MoveCharacter _lastMove = MoveCharacter::UNKNOWN;
 
 		size_t _bomb = 1;
 		size_t _bombMax = 1;

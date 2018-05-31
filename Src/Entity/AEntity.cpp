@@ -137,8 +137,8 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 	float x, float, float z)
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
-	float size = _irrlicht.getNodeSize(_sptr);
-	auto f = [x, z, size](std::shared_ptr<is::IEntity> entity) {
+	auto f = [x, z, _irrlicht](std::shared_ptr<is::IEntity> entity) {
+		float size = _irrlicht.getNodeSize(entity);
 		return (((x >= entity->getX() && x <= entity->getX() + size) || (x + size >= entity->getX() && x + size <= entity->getX() + size)) &&
 			((z >= entity->getZ() && z <= entity->getZ() + size) || (z + size >= entity->getZ() && z + size <= entity->getZ() + size)));
 	};
