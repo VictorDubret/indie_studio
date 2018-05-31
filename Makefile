@@ -12,7 +12,8 @@ SRC		=		Src/Main.cpp							\
 				Src/Entity/Scenery/UnbreakableWall/UnbreakableWall.cpp		\
 				Src/Entity/Scenery/Wall/Wall.cpp				\
 				Src/Entity/Bomb/Bomb.cpp					\
-				Src/Entity/Bomb/Timer.cpp
+				Src/Entity/Bomb/Timer.cpp					\
+				Src/MapGenerator/MapGenerator.cpp
 
 SRC_IRRLICHT	=		Src/GameEngine/ManageIrrlicht.cpp				\
 				Src/GameEngine/EventManager.cpp					\
@@ -42,6 +43,7 @@ CXXFLAGS	=		-W -Wall -Wextra						\
 				-I Src/Entity/Scenery/UnbreakableWall/				\
 				-I Src/Entity/Bomb						\
 				-I Src/Entity/Scenery/Wall/					\
+				-I Src/MapGenerator/						\
 				-std=c++11							\
 
 OBJ		=		$(SRC:.cpp=.o)							\
