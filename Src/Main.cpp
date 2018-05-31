@@ -162,7 +162,6 @@ int main()
 	nts::ManageObject::setMaterialLight(tmp, japanWall6, false);
 	nts::ManageObject::setTexture(tmp, japanWall6, "media/redSquare.png");
 
-	tmp.deleteEntity(player_tmp2);
 	tmp.loopDisplay();
 	return 0;
 }

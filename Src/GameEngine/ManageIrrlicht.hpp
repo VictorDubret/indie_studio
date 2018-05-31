@@ -38,14 +38,14 @@ namespace nts {
 		~ManageIrrlicht() override = default;
 
 		void updateView() override;
-		void loopDisplay(const std::shared_ptr<is::IEntity> &entity) override;
+		void loopDisplay() override;
 
 		void setMapSize(const irr::core::vector2di &mapSize) override;
 		irr::core::vector2di getMapSize() const override;
 
-
-
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
+		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
+
 		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
