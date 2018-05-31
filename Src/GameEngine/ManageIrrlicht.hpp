@@ -23,6 +23,7 @@ namespace nts {
 
 	typedef struct {
 		std::shared_ptr<is::ACharacter> entity;
+		event_t nothing;
 		event_t key[6];
 	} player_t;
 

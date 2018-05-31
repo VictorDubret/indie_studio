@@ -8,6 +8,7 @@
 #include "ThreadPool.hpp"
 #include "ACharacter.hpp"
 #include "Debug.hpp"
+#include "ManageObject.hpp"
 
 is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht) :
 	AEntity(entities, eventManager, irrlicht)
@@ -113,6 +114,11 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 
 void is::ACharacter::moveUp()
 {
+	if (_lastMove != MoveCharacter::UP) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 270, 0));
+		_lastMove = MoveCharacter::UP;
+	}
 	float next = getZ() + _speed * _speedCoef;
 
 	move(getX(), getY(), next);
@@ -120,6 +126,11 @@ void is::ACharacter::moveUp()
 
 void is::ACharacter::moveDown()
 {
+	if (_lastMove != MoveCharacter::DOWN) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 90, 0));
+		_lastMove = MoveCharacter::DOWN;
+	}
 	float next = getZ() - _speed * _speedCoef;
 
 	move(getX(), getY(), next);
@@ -127,6 +138,11 @@ void is::ACharacter::moveDown()
 
 void is::ACharacter::moveLeft()
 {
+	if (_lastMove != MoveCharacter::LEFT) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 180, 0));
+		_lastMove = MoveCharacter::LEFT;
+	}
 	float next = getX() - _speed * _speedCoef;
 
 	move(next, getY(), getZ());
@@ -134,6 +150,11 @@ void is::ACharacter::moveLeft()
 
 void is::ACharacter::moveRight()
 {
+	if (_lastMove != MoveCharacter::RIGHT) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+		nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 0, 0));
+		_lastMove = MoveCharacter::RIGHT;
+	}
 	float next = getX() + _speed * _speedCoef;
 
 	move(next, getY(), getZ());
@@ -144,5 +165,13 @@ void is::ACharacter::dropBomb()
 	Debug::debug("DROP BOMB");
 	if (_bomb > 0) {
 		// TODO create Bomb
+	}
+}
+
+void is::ACharacter::doNothing()
+{
+	if (_lastMove != MoveCharacter::NOTHING) {
+		nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_STAND);
+		_lastMove = MoveCharacter::NOTHING;
 	}
 }

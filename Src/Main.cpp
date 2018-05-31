@@ -22,7 +22,6 @@ int main()
 	my::ItemLocker<my::ThreadPool> pool(thpool);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
-
 	nts::ManageIrrlicht tmp(lockList, pool);
 	is::IEntity *wall = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall2 = new is::Wall(lockList, pool, tmp);
@@ -37,10 +36,17 @@ int main()
 	nts::ManageObject::createCube(tmp, bitewall, 1);
 	nts::ManageObject::createCube(tmp, bitewall2, 1);
 	nts::ManageObject::createCube(tmp, bitewall3, 1);
-	nts::ManageObject::createCube(tmp, player_tmp2, 1);
+	nts::ManageObject::createAnim(tmp, player_tmp2, "media/sydney.md2", 0.9);
+
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(2.3, 0, 0));
 	tmp.getNode(bitewall3)->setPosition(irr::core::vector3df(3.f, 0, 10));
 	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(10, 0, 10));
+
+	nts::ManageObject::setScale(tmp, player_tmp2, irr::core::vector3df(0.05, 0.05 , 0.05));
+	nts::ManageObject::setRotation(tmp, player_tmp2, irr::core::vector3df(0, 90, 0));
+	nts::ManageObject::setMaterialLight(tmp, player_tmp2, false);
+	nts::ManageObject::setAnimation(tmp, player_tmp2, irr::scene::EMAT_RUN);
+	nts::ManageObject::setTexture(tmp, player_tmp2, "media/sydney.bmp");
 
 	nts::ManageObject::setMaterialLight(tmp, bitewall, false);
 	nts::ManageObject::setTexture(tmp, bitewall, "media/rockwall.jpg");
