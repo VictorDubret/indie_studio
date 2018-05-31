@@ -122,7 +122,6 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			return;
 		}
 	}
-	std::cerr << "MOVE" << std::endl;
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
