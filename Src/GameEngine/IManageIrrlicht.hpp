@@ -25,7 +25,7 @@ namespace nts {
 		// Update the view of the map, take the 2 farest player
 		virtual void updateView() = 0;
 		// call each function needed on the loop
-		virtual void loopDisplay() = 0;
+		virtual void loopDisplay(const std::shared_ptr<is::IEntity> &entity) = 0;
 
 		// add ISceneNode into a map of IEntity
 		virtual bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float) = 0;
@@ -37,6 +37,10 @@ namespace nts {
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;
 		virtual irr::IrrlichtDevice *getDevice() const = 0;
 		virtual irr::video::IVideoDriver *getDriver() const = 0;
+		virtual irr::core::vector2di getMapSize() const = 0;
+
+		// Setter
+		virtual void setMapSize(const irr::core::vector2di &mapSize) = 0;
 
 		protected:
 		private:
