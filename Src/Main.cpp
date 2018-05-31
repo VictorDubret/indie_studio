@@ -24,12 +24,10 @@ int main()
 
 
 	nts::ManageIrrlicht tmp(lockList, pool);
-	is::IEntity *player = new is::ACharacter(lockList, pool, tmp);
 	is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
 	is::IEntity *wall = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall2 = new is::Wall(lockList, pool, tmp);
 	is::IEntity *wall3 = new is::Wall(lockList, pool, tmp);
-	is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
 
 	std::shared_ptr<is::IEntity> bitewall = std::shared_ptr<is::IEntity>(wall, [](is::IEntity *){});
 	std::shared_ptr<is::IEntity> bitewall2 = std::shared_ptr<is::IEntity>(wall2, [](is::IEntity *){});
