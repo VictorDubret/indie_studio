@@ -9,6 +9,8 @@ SRC		=		Src/Main.cpp							\
 				Src/Entity/PowerUp/SpeedUp/SpeedUp.cpp				\
 				Src/Entity/PowerUp/WallPass/WallPass.cpp			\
 				Src/Entity/Scenery/Explosion/Explosion.cpp			\
+				Src/Entity/Bomb/Bomb.cpp					\
+				Src/Entity/Bomb/Timer.cpp					\
 				Src/Entity/Scenery/UnbreakableWall/UnbreakableWall.cpp		\
 				Src/Entity/Scenery/Wall/Wall.cpp				\
 
@@ -37,6 +39,7 @@ CXXFLAGS	=		-W -Wall -Wextra						\
 				-I Src/Entity/PowerUp/WallPass/					\
 				-I Src/Entity/Scenery/Explosion/				\
 				-I Src/Entity/Scenery/UnbreakableWall/				\
+				-I Src/Entity/Bomb						\
 				-I Src/Entity/Scenery/Wall/					\
 				-std=c++11							\
 

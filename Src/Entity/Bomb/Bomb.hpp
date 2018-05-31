@@ -16,7 +16,8 @@ namespace is {
 		public:
 		Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 			my::ItemLocker<my::ThreadPool> &eventManager,
-			std::shared_ptr<ACharacter> Player, size_t time = 2
+			std::shared_ptr<IEntity> &Player,
+			nts::ManageIrrlicht &irrlicht, size_t time = 2
 		);
 
 		~Bomb() = default;
@@ -29,10 +30,7 @@ namespace is {
 
 		int _lenExplosion = 2;
 
-		std::shared_ptr<ACharacter> _player;
-
-		std::vector<std::shared_ptr<is::IEntity>> getEntitesInRange(int from, int to);
-
+		std::shared_ptr<IEntity> &_player;
 	};
 }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include <Bomb.hpp>
 #include "ThreadPool.hpp"
 #include "ItemLocker.hpp"
 #include "ManageIrrlicht.hpp"
@@ -33,14 +34,18 @@ int main()
 	std::shared_ptr<is::IEntity> bitewall2 = std::shared_ptr<is::IEntity>(wall2, [](is::IEntity *){});
 	std::shared_ptr<is::IEntity> bitewall3 = std::shared_ptr<is::IEntity>(wall3, [](is::IEntity *){});
 	std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *){});
+	std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(new is::Bomb(lockList, pool, player_tmp2, tmp));
+
 
 	nts::ManageObject::createCube(tmp, bitewall, 1);
 	nts::ManageObject::createCube(tmp, bitewall2, 1);
 	nts::ManageObject::createCube(tmp, bitewall3, 1);
 	nts::ManageObject::createCube(tmp, player_tmp2, 1);
+	nts::ManageObject::createCube(tmp, bomb, 1);
 	tmp.getNode(bitewall)->setPosition(irr::core::vector3df(2.3, 0, 0));
 	tmp.getNode(bitewall3)->setPosition(irr::core::vector3df(3.f, 0, 10));
 	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(10, 0, 10));
+	tmp.getNode(bomb)->setPosition(irr::core::vector3df(2.3, 0, 1));
 
 	nts::ManageObject::setMaterialLight(tmp, bitewall, false);
 	nts::ManageObject::setTexture(tmp, bitewall, "media/rockwall.jpg");

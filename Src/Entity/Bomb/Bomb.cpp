@@ -4,6 +4,7 @@
 // Bomb.cpp
 //
 
+#include <exception>
 #include <algorithm>
 #include <algorithm>
 #include "ItemLocker.hpp"
@@ -12,12 +13,15 @@
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
-	std::shared_ptr<ACharacter> Player, size_t time
-) : AEntity(entities, eventManager)
+	std::shared_ptr<IEntity> &Player, nts::ManageIrrlicht &irrlicht,
+	size_t time
+) : AEntity(entities, eventManager, irrlicht), _player(Player)
 {
 	std::cout << "Bomb constructor" << std::endl;
 	_type = "Bomb";
-	_player = Player;
+	if (dynamic_cast<is::ACharacter *>(_player.get()) == nullptr) {
+		throw std::exception();
+	}
 	timer(time);
 }
 
@@ -34,19 +38,11 @@ void is::Bomb::explode()
 				this->getX() - i, this->getY(), this->getZ());
 			xAxes.insert(xAxes.end(), tmp.begin(), tmp.end());
 		}
-
-		/*auto test = std::find_if(
-			xAxes.begin(), xAxes.end(),
-			[this](std::shared_ptr<IEntity> entity) {
-				if (entity.get() == this) {
-					return entity;
-				}
-			});*/
-		std::vector<std::shared_ptr<IEntity>> yAxes;
+		std::vector<std::shared_ptr<IEntity>> zAxes;
 		for (int i = (_lenExplosion * -1); i <= _lenExplosion; ++i) {
 			std::vector<std::shared_ptr<IEntity>> tmp = this->getEntitiesAt(
-				this->getX(), this->getY() - i, this->getZ());
-			yAxes.insert(yAxes.end(), tmp.begin(), tmp.end());
+				this->getX(), this->getY(), this->getZ() - i);
+			zAxes.insert(zAxes.end(), tmp.begin(), tmp.end());
 		}
 		for (const auto &it : xAxes) {
 			if (it.get() != this) {
@@ -55,16 +51,16 @@ void is::Bomb::explode()
 				it.get()->explode();
 			}
 		}
-		for (const auto &it : yAxes) {
+		std::cout << "I'll explode all blocks around me ! MOUAHAHAH"
+			<< std::endl;
+		for (const auto &it : zAxes) {
 			if (it.get() != this) {
 				std::cout << "J'ai recuperer : "
 					<< it.get()->getType() << std::endl;
 				it.get()->explode();
 			}
 		}
-		std::cout << "I'll explode all block around me ! MOUAHAHAH"
-			<< std::endl;
-		_player.get()->setBomb(1);
+		dynamic_cast<is::ACharacter *>(_player.get())->setBomb(1);
 	});
 	_eventManager.unlock();
 	_entities.unlock();
@@ -87,11 +83,4 @@ void is::Bomb::timer(size_t time)
 	});
 	_eventManager.unlock();
 	_entities.unlock();
-}
-
-std::vector<std::shared_ptr<is::IEntity>> is::Bomb::getEntitesInRange(int from,
-	int to
-)
-{
-	return std::vector<std::shared_ptr<is::IEntity>>();
 }
