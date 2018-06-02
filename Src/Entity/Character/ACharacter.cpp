@@ -197,8 +197,10 @@ void is::ACharacter::dropBomb()
 
 		_entities.lock();
 		for (auto &it: _entitiesAt) {
-			if (it->getType() == "Bomb") {
-				std::cout << "already bomb here" << std::endl;
+			auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
+			auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
+			if (checkCharacter == nullptr && checkPowerUp == nullptr) {
+				std::cout << "Can't drop bomb" << std::endl;
 				_entities.unlock();
 				return;
 			}

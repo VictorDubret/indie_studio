@@ -35,9 +35,9 @@ void is::APowerUp::collide(is::IEntity *entity)
 	}
 }
 
-// Do nothing
-void is::APowerUp::action(is::ACharacter *)
+void is::APowerUp::explode()
 {
+	this->~APowerUp();
 }
 
 void is::APowerUp::texture()

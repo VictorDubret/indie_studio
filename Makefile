@@ -49,7 +49,7 @@ CXXFLAGS	=		-W -Wall -Wextra						\
 OBJ		=		$(SRC:.cpp=.o)							\
 				$(SRC_IRRLICHT:.cpp=.o)
 
-LDFLAGS		=		-lpthread -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
+LDFLAGS		=		-lpthread -pthread -lIrrlicht -L /usr/X11R6/lib$(LIBSELECT) /usr/bin/libIrrKlang.so -I /usr/include -lGL -lXxf86vm -lXext -lX11 -lXcursor
 
 NAME		=		bomberman
 
