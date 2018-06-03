@@ -142,7 +142,7 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 {
-	std::cerr << "bomb : " << getX() << " " << getY() <<  " " << getZ() << std::endl;
+	/*std::cerr << "bomb : " << getX() << " " << getY() <<  " " << getZ() << std::endl;
 	std::cerr << "chara : " << entity->getX() << " " << entity->getY() <<  " " << entity->getZ() << std::endl;
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
 	for (const auto &it : tmp) {
@@ -151,5 +151,6 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 			return true;
 		}
 	}
-	return false;
+	return false;*/
+	return true;
 }
