@@ -30,13 +30,23 @@ namespace is {
 			SAFE
 		};
 
+		enum Direction {
+			LEFT,
+			RIGHT,
+			UP,
+			DOWN,
+			NONE
+		};
+
 		bool 	stillCrates();
 		bool 	inDanger();
 		void	getMapDimensions();
 		void 	setWalls();
 		void 	setDangerRec(std::size_t pos, int range, int dir);
 		void 	setDanger(std::size_t pos, int range);
-		void 	goToSafeSpot();
+		int 	getDist(int pos, std::vector<int> &map);
+		Direction breadthFirst(int pos, std::vector<int> &map);
+		Direction headForAZone(Type type);
 		void 	addDangerZones();
 		void 	updateMap();
 
