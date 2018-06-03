@@ -39,7 +39,7 @@ namespace is {
 		bool isCollidable() const override;
 		bool isPickable() const override;
 		bool isWallPassable() const override;
-		bool isWalkable() const override;
+		bool isWalkable(std::shared_ptr<is::IEntity> &) const override;
 
 		// Setter
 		void setX(float) override;
@@ -48,7 +48,7 @@ namespace is {
 		void setPosition(irr::core::vector3df) override;
 
 		void collide(is::IEntity *collider) override;
-		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float y, float z);
+		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float y, float z) const;
 		void explode() override;
 
 		void lock() override;

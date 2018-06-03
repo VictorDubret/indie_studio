@@ -101,7 +101,7 @@ bool is::AEntity::isPickable() const
 	return _pickable;
 }
 
-bool is::AEntity::isWalkable() const
+bool is::AEntity::isWalkable(std::shared_ptr<is::IEntity> &) const
 {
 	return _walkable;
 }
@@ -129,8 +129,7 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
-	float x, float, float z)
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	float size = _irrlicht.getNodeSize(_sptr);
@@ -146,7 +145,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 		entity->unlock();
 		return (a);
 	};
-
 	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
