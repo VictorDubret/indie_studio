@@ -25,6 +25,7 @@ namespace is {
 			WALL,
 			CRATE,
 			BOMB,
+			EXPLOSION,
 			POWERUP,
 			DANGER,
 			SAFE

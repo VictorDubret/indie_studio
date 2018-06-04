@@ -23,8 +23,8 @@ is::LevelOne::LevelOne(Entity_t &entities, ThreadPool_t &eventManager,
 
 void 	is::LevelOne::beAnAI()
 {
-	dropBomb(); //test
-	while (stillCrates() == true) {
+	//dropBomb(); //test
+	//while (stillCrates() == true) {
 		updateMap();
 		if (inDanger() == true) {
 			std::cout << "I'm in ";
@@ -37,7 +37,7 @@ void 	is::LevelOne::beAnAI()
 			std::cout << ", I'm safe and there are no powerups I can reach." << std::endl;
 			//go for crates
 		}
-	}
+	//}
 }
 
 bool 	is::LevelOne::stillCrates()
@@ -130,7 +130,7 @@ void 	is::LevelOne::addDangerZones()
 
 int 	is::LevelOne::getDist(int pos, std::vector<int> &map)
 {
-	if (map[pos] == -3)
+	if (map[pos] == -3 || (map[pos] == -2 && _map[(int)getZ() * _width + (int)getX()].first != DANGER && _map[(int)getZ() * _width + (int)getX()].first != BOMB))
 		return (100);
 	if (map[pos] == -1)
 		return (0);
@@ -141,12 +141,12 @@ int 	is::LevelOne::getDist(int pos, std::vector<int> &map)
 	int	up = getDist(static_cast<int>(pos + _width), map);
 	int	down = getDist(static_cast<int>(pos - _width), map);
 	if (left <= right && left <= up && left <= down)
-		return (left);
+		return (left + 1);
 	if (right <= up && right <= down)
-		return (right);
+		return (right + 1);
 	if (up <= down)
-		return (up);
-	return (down);
+		return (up + 1);
+	return (down + 1);
 }
 
 is::LevelOne::Direction 	is::LevelOne::breadthFirst(int pos, std::vector<int> &map)
@@ -161,15 +161,15 @@ is::LevelOne::Direction 	is::LevelOne::breadthFirst(int pos, std::vector<int> &m
 	std::cout << "right distance = " << right << std::endl;
 	std::cout << "up distance = " << up << std::endl;
 	std::cout << "down distance = " << down << std::endl;
-	if (left == 100 && right == 100 && up == 100 && down == 100)
+	if (left >= 100 && right >= 100 && up >= 100 && down >= 100)
 		return (NONE);
 	if (left <= right && left <= up && left <= down)
 		return (LEFT);
 	if (right <= up && right <= down)
 		return (RIGHT);
 	if (up <= down)
-		return (UP);
-	return (DOWN);
+		return (DOWN);
+	return (UP);
 }
 
 is::LevelOne::Direction 	is::LevelOne::headForAZone(Type type)
@@ -179,7 +179,8 @@ is::LevelOne::Direction 	is::LevelOne::headForAZone(Type type)
 		static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
 
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
-		if (_map[i].first == WALL || _map[i].first == BOMB || (getWallPass() == false && _map[i].first == CRATE))
+		if (_map[i].first == WALL || _map[i].first == BOMB || _map[i].first == EXPLOSION ||
+			(getWallPass() == false && _map[i].first == CRATE))
 			map[i] = -3;
 		if (_map[i].first == DANGER)
 			map[i] = -2;
@@ -187,11 +188,12 @@ is::LevelOne::Direction 	is::LevelOne::headForAZone(Type type)
 			map[i] = -1;
 	}
 	Direction	dir = breadthFirst(start, map);
-	if (dir == LEFT)
+	if ((dir == LEFT && (int)getZ() == (int)(getZ() + _irrlicht.getNodeSize(_sptr))) ||
+		((dir == UP || dir == DOWN) && (int)getX() != (int)(getX() + _irrlicht.getNodeSize(_sptr))))
 		moveLeft();
-	else if (dir == RIGHT)
+	else if (dir == RIGHT && (int)getZ() == (int)(getZ() + _irrlicht.getNodeSize(_sptr)))
 		moveRight();
-	else if (dir == UP)
+	else if (dir == UP || ((dir == LEFT || dir == RIGHT) && (int)getZ() != (int)(getZ() + _irrlicht.getNodeSize(_sptr))))
 		moveUp();
 	else if (dir == DOWN)
 		moveDown();
@@ -200,12 +202,19 @@ is::LevelOne::Direction 	is::LevelOne::headForAZone(Type type)
 
 void 	is::LevelOne::updateMap()
 {
+	for (std::size_t i = _width + 1 ; i < (_height - 1) * _width ; ++i) {
+		if (_map[i].first != WALL) {
+			_map[i].first = SAFE;
+			_map[i].second = nullptr;
+		}
+	}
+	_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (_map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
 			if (it->getType() == "Wall")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = CRATE;
 			if (it->getType() == "Explosion")
-				_map[(int)it->getX() + (int)it->getZ() * _width].first = DANGER;
+				_map[(int)it->getX() + (int)it->getZ() * _width].first = EXPLOSION;
 			if (it->getType() == "Bomb")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = BOMB;
 			if (it->getType() == "BombUp" || it->getType() == "FireUp" ||
@@ -214,15 +223,20 @@ void 	is::LevelOne::updateMap()
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
 	}
+	_entities.unlock();
 	addDangerZones();
 	#ifdef DEBUG
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (_map[i].first == SAFE)
 			std::cout << "  ";
-		else if (_map[i].first == WALL || _map[i].first == BOMB)
+		else if (_map[i].first == WALL)
 			std::cout << "##";
 		else if (_map[i].first == CRATE)
 			std::cout << "00";
+		else if (_map[i].first == BOMB)
+			std::cout << "BB";
+		else if (_map[i].first == EXPLOSION)
+			std::cout << "EE";
 		else if (_map[i].first == DANGER)
 			std::cout << "XX";
 		else if (_map[i].first == POWERUP)
