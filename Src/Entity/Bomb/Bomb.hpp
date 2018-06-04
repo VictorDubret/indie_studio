@@ -27,13 +27,26 @@ namespace is {
 		void timer(size_t time);
 
 		void texture() override;
+
 		private:
 
-		int _lenExplosion = 1;
+		bool isWalkable(std::shared_ptr<is::IEntity> &entity) const override;
+
+		typedef enum {
+			XAXES = 0,
+			ZAXES = 1
+		} Axes_t;
+
+		size_t _lenExplosion = 1;
 
 		bool _stopTimer = false;
 
+		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes);
+
+		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos);
+
 		std::shared_ptr<IEntity> &_player;
+		void doExplosions();
 	};
 }
 

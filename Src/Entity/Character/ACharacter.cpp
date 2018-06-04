@@ -137,9 +137,11 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			return;
 		}
 	}
+	_entities.lock();
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
+	_entities.unlock();
 	checkCollision();
 }
 
@@ -214,18 +216,16 @@ void is::ACharacter::dropBomb()
 		_entities.unlock();
 		auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 		std::cerr << "Bomb" << std::endl;
-		bomb->lock();
 		bomb->setX((int) getX());
 		bomb->setY((int) getY());
 		bomb->setZ((int) getZ());
-		bomb->unlock();
 	}
 }
 
 void is::ACharacter::explode()
 {
 	lock();
-	//--_pv; TODO uncomment
+	//--_pv; //TODO uncomment
 	unlock();
 	if (_pv == 0) {
 		Debug::debug("A player die");

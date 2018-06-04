@@ -26,6 +26,7 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 		return;
 	}
 	_lenExplosion = tmp->getBombLength();
+	_collidable = true;
 	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
@@ -39,69 +40,15 @@ void is::Bomb::explode()
 	}
 	_entities.lock();
 	_eventManager.lock();
-
 	_eventManager->enqueue([this]() {
 		_stopTimer = true;
 
 		fprintf(stderr, "addr :%p\n", this);
-		std::cerr << "Je passe dans la fonction de destruction d'une bombe ^^" << std::endl;
-
-
+		std::cerr << "Je passe dans la fonction de "
+			"destruction d'une bombe ^^" << std::endl;
 		std::cout << "I'll explode all blocks around me ! MOUAHAHAH"
 			<< std::endl;
-		std::vector<std::shared_ptr<IEntity>> xAxes;
-		for (int i = (_lenExplosion * -1); i <= _lenExplosion; ++i) {
-			std::vector<std::shared_ptr<IEntity>> tmp = this->getEntitiesAt(
-				(int)this->getX() - i, (int)this->getY(),
-				(int)this->getZ());
-			xAxes.insert(xAxes.end(), tmp.begin(), tmp.end());
-			auto a = new is::Explosion(_entities, _eventManager,
-				_irrlicht);
-
-			a->setX((int)getX() - i);
-			a->setY((int)getY());
-			a->setZ((int)getZ());
-		}
-		auto it_tmp = std::unique(xAxes.begin(), xAxes.end());
-
-		xAxes.resize(std::distance(xAxes.begin(), it_tmp));
-		for (const auto &it : xAxes) {
-			if (it.get() != this) {
-				std::cout << "J'ai recuperer sur X : "
-					<< it.get()->getType() << std::endl;
-
-				if (it->getType() == "Bomb") {
-					fprintf(stderr, "je vais explode %p", it.get());
-				}
-
-				it->explode();
-			}
-		}
-		std::vector<std::shared_ptr<IEntity>> zAxes;
-		for (int i = (_lenExplosion * -1); i <= _lenExplosion; ++i) {
-			std::vector<std::shared_ptr<IEntity>> tmp = this->getEntitiesAt(
-				(int)this->getX(), (int)this->getY(),
-				(int)this->getZ() - i);
-			zAxes.insert(zAxes.end(), tmp.begin(), tmp.end());
-
-			auto a = new is::Explosion(_entities, _eventManager,
-				_irrlicht);
-
-			a->setX((int)getX());
-			a->setY((int)getY());
-			a->setZ((int)getZ() - i);
-		}
-		auto it_tmp2 = std::unique(zAxes.begin(), zAxes.end());
-
-		zAxes.resize(std::distance(zAxes.begin(), it_tmp2));
-		for (const auto &it : zAxes) {
-			if (it.get() != this) {
-				std::cout << "J'ai recuperer sur Z : "
-					<< it.get()->getType() << std::endl;
-				it.get()->explode();
-			}
-		}
-
+		doExplosions();
 		auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 		if (tmp)
 			tmp->operator++();
@@ -125,8 +72,6 @@ void is::Bomb::timer(size_t time)
 		while (!t.isOver() && !_stopTimer);
 		std::cout << "I'll explode in " << time << " seconds"
 			<< std::endl;
-		//Change animation flamish bomb
-		//std::cerr << "Bouuum" << std::endl;
 		fprintf(stderr, "Bouum de %p\n", this);
 		if (_stopTimer) {
 			return;
@@ -143,4 +88,71 @@ void is::Bomb::texture()
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 	unlock();
+}
+
+void is::Bomb::doExplosions()
+{
+	std::vector<std::shared_ptr<IEntity>> range;
+	check_arround(_lenExplosion, 0, [this](int actualPos) {
+		return getX() - actualPos;
+	}, XAXES);
+	check_arround(_lenExplosion, 0, [this](int actualPos) {
+		return getX() + actualPos;
+	}, XAXES);
+	check_arround(_lenExplosion, 0, [this](int actualPos) {
+		return getZ() - actualPos;
+	}, ZAXES);
+	check_arround(_lenExplosion, 0, [this](int actualPos) {
+		return getZ() + actualPos;
+	}, ZAXES);
+}
+
+bool is::Bomb::check_arround(int lenExplosion, int actualPos,
+	std::function<float(int)> f, is::Bomb::Axes_t which_axes
+)
+{
+	if (actualPos > lenExplosion)
+		return false;
+	std::vector<std::shared_ptr<IEntity>> tmp =
+		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
+			getEntitiesAt(getX(), 0, f(actualPos));
+	for (const auto &it : tmp) {
+		if (it->getType() == "Wall") {
+			it->explode();
+			createExplosion(f, which_axes, actualPos);
+			return false;
+		} else if (it->getType() == "UnbreakableWall")
+			return false;
+		it->explode();
+	}
+	createExplosion(f, which_axes, actualPos);
+	check_arround(lenExplosion, actualPos + 1, f, which_axes);
+	return false;
+}
+
+void is::Bomb::createExplosion(std::function<float(int)> &f,
+	is::Bomb::Axes_t &which_axes, int &actualPos)
+{
+	auto explosion = new is::Explosion(_entities, _eventManager,
+		_irrlicht);
+	(which_axes == XAXES) ? explosion->setX(f(actualPos)) :
+		explosion->setX(getX());
+	explosion->setY(0);
+	(which_axes == ZAXES) ? explosion->setZ(f(actualPos)) :
+		explosion->setZ(getZ());
+}
+
+bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
+{
+	/*std::cerr << "bomb : " << getX() << " " << getY() <<  " " << getZ() << std::endl;
+	std::cerr << "chara : " << entity->getX() << " " << entity->getY() <<  " " << entity->getZ() << std::endl;
+	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
+	for (const auto &it : tmp) {
+		std::cout << "type : " << it->getType() << std::endl;
+		if (entity.get() == it.get()) {
+			return true;
+		}
+	}
+	return false;*/
+	return true;
 }
