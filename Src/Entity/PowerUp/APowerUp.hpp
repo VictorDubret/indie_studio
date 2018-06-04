@@ -26,7 +26,7 @@ namespace is {
 		// Setter
 
 		// Other
-		void collide(is::IEntity *entity) override;
+		void collide(is::IEntity *&entity) override;
 
 		void explode() override;
 		void texture() override;

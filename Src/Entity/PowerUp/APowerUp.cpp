@@ -24,7 +24,7 @@ is::APowerUp::APowerUp(
 
 
 
-void is::APowerUp::collide(is::IEntity *entity)
+void is::APowerUp::collide(is::IEntity *&entity)
 {
 	auto character = dynamic_cast<ACharacter *>(entity);
 

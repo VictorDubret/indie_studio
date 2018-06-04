@@ -11,6 +11,7 @@
 #include "Explosion.hpp"
 #include "Timer.hpp"
 #include "ManageObject.hpp"
+#include "Debug.hpp"
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
@@ -84,7 +85,7 @@ void is::Bomb::timer(size_t time)
 void is::Bomb::texture()
 {
 	lock();
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 0.99);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 	unlock();
@@ -116,15 +117,21 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::vector<std::shared_ptr<IEntity>> tmp =
 		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
 			getEntitiesAt(getX(), 0, f(actualPos));
+	_entities.lock();
 	for (const auto &it : tmp) {
 		if (it->getType() == "Wall") {
+			_entities.unlock();
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
 			return false;
-		} else if (it->getType() == "UnbreakableWall")
+		} else if (it->getType() == "UnbreakableWall") {
+			std::cout << RED << " UNBREAKABLE" << RESET << std::endl;
+			_entities.unlock();
 			return false;
+		}
 		it->explode();
 	}
+	_entities.unlock();
 	createExplosion(f, which_axes, actualPos);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
 	return false;
@@ -144,8 +151,6 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 {
-	/*std::cerr << "bomb : " << getX() << " " << getY() <<  " " << getZ() << std::endl;
-	std::cerr << "chara : " << entity->getX() << " " << entity->getY() <<  " " << entity->getZ() << std::endl;
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
 	for (const auto &it : tmp) {
 		std::cout << "type : " << it->getType() << std::endl;
@@ -153,6 +158,5 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 			return true;
 		}
 	}
-	return false;*/
-	return true;
+	return false;
 }

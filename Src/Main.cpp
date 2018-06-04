@@ -20,7 +20,7 @@
 
 int main(int ac, char **)
 {
-	my::ThreadPool thpool(100);
+	my::ThreadPool thpool(20);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
@@ -74,7 +74,11 @@ int main(int ac, char **)
 	/* Set light and texture*/
 
 	std::cout << "Jarrive avant loopDisplay" << std::endl;
-	tmp.loopDisplay();
+	try {
+		tmp.loopDisplay();
+	} catch(std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}
 	//lockList->clear();
 	return 0;
 }

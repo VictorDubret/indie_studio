@@ -27,16 +27,10 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 is::AEntity::~AEntity()
 {
 	_entities.lock();
-	lock();
-	try {
-		_irrlicht.deleteEntity(_sptr);
-		_entities->erase(
-			std::find(_entities->begin(), _entities->end(),
-				_sptr));
-	} catch (std::exception &){
-
-	}
-	unlock();
+	_irrlicht.deleteEntity(_sptr);
+	_entities->erase(
+		std::find(_entities->begin(), _entities->end(),
+			_sptr));
 	_entities.unlock();
 }
 
@@ -119,9 +113,13 @@ bool is::AEntity::isWallPassable() const
 	return _wallPassable;
 }
 
-void is::AEntity::collide(IEntity *collider)
+void is::AEntity::collide(IEntity *&collider)
 {
+	_entities.lock();
+	collider->lock();
 	Debug::debug(_type, " collide with ", collider->getType());
+	collider->unlock();
+	_entities.unlock();
 }
 
 void is::AEntity::explode()
@@ -140,39 +138,24 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	float size = _irrlicht.getNodeSize(_sptr);
-	//irr::core::line3d<float> mesh1(x, y - 100, z, x, y + 100, z);
-	auto a = _irrlicht.getSceneManager()->getGeometryCreator()->createCylinderMesh(0.1, 2, 10, 0, true, 0);
-	auto node = _irrlicht.getSceneManager()->addMeshSceneNode(a);
-	std::cout << x << " " << z << std::endl;
 	irr::core::vector3df pos(x, 0, z);
-	node->setPosition(pos);
-	node->setPosition(pos);
-	node->setPosition(pos);
-	node->setPosition(pos);
-	node->setPosition(pos);
-	std::cout << "Abs Position " << node->getAbsolutePosition().X << " " << node->getAbsolutePosition().Z << " " << std::endl;
+	irr::scene::ISceneNode *node = _irrlicht.getSceneManager()->addCubeSceneNode(size, 0, 1, pos);
 
-	node->setVisible(true);
-
-	//auto mesh1 = node->getTransformedBoundingBox();
 	auto mesh1 = node->getTransformedBoundingBox();
-	std::cout << mesh1.getCenter().X << " " << mesh1.getCenter().Y << " " << mesh1.getCenter().Z << std::endl;
-	auto f = [x, y, z, this, size, mesh1, node](std::shared_ptr<is::IEntity> entity) {
+	node->setVisible(false);
+
+	auto f = [&](std::shared_ptr<is::IEntity> entity) {
 		static int i = 0;
 		entity->lock();
+
 		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
-		bool a = false;
+		bool test = false;
 
 		if (mesh2.intersectsWithBox(mesh1))
-		{
-			std::cout << "Box: " << mesh2.getCenter().X << " " << mesh2.getCenter().Y << " " << mesh2.getCenter().Z << std::endl;
-			std::cerr << entity->getX() << " " << entity->getY() << " " << entity->getZ() << std::endl;
-			std::cerr << entity->getType() << " => true " << i <<  std::endl;
-			a = true;
-		}
+			test = true;
 		entity->unlock();
 		i++;
-		return a;
+		return test;
 	};
 	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
@@ -185,6 +168,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		}
 	}
 	_entities.unlock();
+	node->getSceneManager()->addToDeletionQueue(node);
 	return ret;
 }
 
