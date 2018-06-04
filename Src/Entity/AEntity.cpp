@@ -103,6 +103,11 @@ bool is::AEntity::isPickable() const
 	return _pickable;
 }
 
+bool is::AEntity::isWalkable() const
+{
+	return _walkable;
+}
+
 bool is::AEntity::isWalkable(std::shared_ptr<is::IEntity> &) const
 {
 	return _walkable;

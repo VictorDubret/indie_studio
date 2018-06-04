@@ -31,6 +31,7 @@ namespace is {
 		virtual bool isPickable() const = 0;
 		virtual bool isWallPassable() const = 0;
 		virtual bool isWalkable(std::shared_ptr<is::IEntity> &) const = 0;
+		virtual bool isWalkable() const = 0;
 
 		virtual void setX(float) = 0;
 		virtual void setY(float) = 0;

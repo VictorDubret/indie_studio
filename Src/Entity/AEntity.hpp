@@ -40,6 +40,7 @@ namespace is {
 		bool isPickable() const override;
 		bool isWallPassable() const override;
 		bool isWalkable(std::shared_ptr<is::IEntity> &) const override;
+		bool isWalkable() const override;
 
 		// Setter
 		void setX(float) override;
