@@ -32,7 +32,7 @@ int main(int ac, char **)
 	}
 
 	/* initialisation */
-	std::pair<std::size_t, std::size_t> mapSize(21,21);
+	std::pair<std::size_t, std::size_t> mapSize(8,8);
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
 
 	//auto a = new is::Wall(lockList, pool, tmp);

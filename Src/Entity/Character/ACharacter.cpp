@@ -22,7 +22,7 @@ is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>>
 void is::ACharacter::texture()
 {
 	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2", 0.8);
-	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(1.02f, 0.1f, 1.02f));
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(1.2f, 0.1f, 1.2f));
 	nts::ManageObject::setScale(_irrlicht, _sptr, irr::core::vector3df(0.05, 0.05 , 0.05));
 	nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);

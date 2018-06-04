@@ -8,6 +8,7 @@
 #include <thread>
 #include <chrono>
 #include <functional>
+# include <irrlicht.h>
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
@@ -131,53 +132,47 @@ void is::AEntity::explode()
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
 	auto size = _irrlicht.getNodeSize(_sptr);
-
 	return (((getX() >= entity->getX() && getX() < entity->getX() + size) || (getX() + size > entity->getX() && getX() + size < entity->getX() + size)) &&
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float, float z) const
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	float size = _irrlicht.getNodeSize(_sptr);
-	auto f = [x, z, this, size](std::shared_ptr<is::IEntity> entity) {
-		if (dynamic_cast<IEntity *>(entity.get()) == nullptr) {
-			std::cerr << "JE TAIME PAS" << std::endl;
-			return false;
-		}
+	//irr::core::line3d<float> mesh1(x, y - 100, z, x, y + 100, z);
+	auto a = _irrlicht.getSceneManager()->getGeometryCreator()->createCylinderMesh(0.1, 2, 10, 0, true, 0);
+	auto node = _irrlicht.getSceneManager()->addMeshSceneNode(a);
+	std::cout << x << " " << z << std::endl;
+	irr::core::vector3df pos(x, 0, z);
+	node->setPosition(pos);
+	node->setPosition(pos);
+	node->setPosition(pos);
+	node->setPosition(pos);
+	node->setPosition(pos);
+	std::cout << "Abs Position " << node->getAbsolutePosition().X << " " << node->getAbsolutePosition().Z << " " << std::endl;
+
+	node->setVisible(true);
+
+	//auto mesh1 = node->getTransformedBoundingBox();
+	auto mesh1 = node->getTransformedBoundingBox();
+	std::cout << mesh1.getCenter().X << " " << mesh1.getCenter().Y << " " << mesh1.getCenter().Z << std::endl;
+	auto f = [x, y, z, this, size, mesh1, node](std::shared_ptr<is::IEntity> entity) {
+		static int i = 0;
 		entity->lock();
-		float esize = _irrlicht.getNodeSize(entity);
+		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
+		bool a = false;
 
-		std::pair<float, float> e1a(x, z);
-		std::pair<float, float> e1b(x + size, z);
-		std::pair<float, float> e1c(x , z + size);
-		std::pair<float, float> e1d(x + size, z + size);
-
-		std::pair<float, float> e2a(entity->getX(), entity->getZ());
-		std::pair<float, float> e2b(entity->getX() + esize, entity->getZ());
-		std::pair<float, float> e2c(entity->getX() , entity->getZ() + esize);
-		std::pair<float, float> e2d(entity->getX() + esize, entity->getZ() + esize);
-
-		bool a = (e1d.first > e2a.first && e1d.first < e2b.first &&
-			e1d.second > e2a.second && e1d.second < e2c.second);
-
-		bool b = (e2d.first > e1a.first && e2d.first < e1b.first &&
-			e2d.second > e1a.second && e2d.second < e1c.second);
-
-		bool c = (e2b.first > e1a.first && e2b.first < e1b.first &&
-			e2b.second > e1a.second && e2b.second < e1c.second);
-
-		bool d = (e1b.first > e2a.first && e1b.first < e2b.first &&
-			e1b.second > e2a.second && e1b.second < e2c.second);
-
-		bool e = (e1a.first > e2a.first && e1a.first < e2b.first &&
-			e1a.second > e2a.second && e1a.second < e2c.second);
-
-		if (a || b || c || d || e) {
-			std::cout << entity->getType() << " MAIS MDR NIKE TOI" << std::endl;
+		if (mesh2.intersectsWithBox(mesh1))
+		{
+			std::cout << "Box: " << mesh2.getCenter().X << " " << mesh2.getCenter().Y << " " << mesh2.getCenter().Z << std::endl;
+			std::cerr << entity->getX() << " " << entity->getY() << " " << entity->getZ() << std::endl;
+			std::cerr << entity->getType() << " => true " << i <<  std::endl;
+			a = true;
 		}
 		entity->unlock();
-		return (a || b || c || d || e);
+		i++;
+		return a;
 	};
 	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
