@@ -32,13 +32,16 @@ int main(int ac, char **)
 	}
 
 	/* initialisation */
-	std::pair<std::size_t, std::size_t> mapSize(11,11);
+	std::pair<std::size_t, std::size_t> mapSize(21,21);
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
+
+	//auto a = new is::Wall(lockList, pool, tmp);
+	//a->setX(5);
+	//a->setZ(5);
+
 	mg::MapGenerator generator(lockList, pool, tmp, mapSize);
 
 	new is::ACharacter(lockList, pool, tmp);
-
-
 
 	/* Création floor */
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
@@ -70,8 +73,8 @@ int main(int ac, char **)
 
 	/* Set light and texture*/
 
-	srand(time(NULL));
 	std::cout << "Jarrive avant loopDisplay" << std::endl;
 	tmp.loopDisplay();
+	//lockList->clear();
 	return 0;
 }

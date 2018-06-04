@@ -26,6 +26,8 @@ is::Explosion::Explosion(
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
+		//std::cout << "test" << std::endl;
+		_eventManager.unlock();
 		this->~Explosion();
 	});
 	_eventManager.unlock();
@@ -34,7 +36,6 @@ is::Explosion::Explosion(
 void is::Explosion::texture()
 {
 	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
-	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/water.jpg");
 }

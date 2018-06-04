@@ -71,7 +71,7 @@ void nts::ManageIrrlicht::displaySplitScreen()
 
 void nts::ManageIrrlicht::loopDisplay()
 {
-	while (_device->run()) {
+	while (_device && _device->run()) {
 		if (_splitScreen) {
 			displaySplitScreen();
 		} else {
@@ -89,8 +89,11 @@ void nts::ManageIrrlicht::loopDisplay()
 
 void nts::ManageIrrlicht::manageEvent()
 {
-	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE))
+	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
 		_device->closeDevice();
+		delete _device;
+		_device = nullptr;
+	}
 	else
 		manageEventPlayers();
 }
@@ -163,8 +166,10 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			idx++;
 		}
 	}
-	_listObj[entity].obj->setVisible(false);
-	_listObj.erase(_listObj.find(entity));
+	if (_device && _listObj[entity].obj) {
+		_listObj[entity].obj->setVisible(false);
+		_listObj.erase(_listObj.find(entity));
+	}
 	return false;
 }
 
