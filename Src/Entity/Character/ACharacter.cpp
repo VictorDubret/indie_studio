@@ -5,6 +5,7 @@
 ** Created by sahel.lucas-saoudi@epitech.eu,
 */
 
+#include <algorithm>
 #include "ThreadPool.hpp"
 #include "ACharacter.hpp"
 #include "Debug.hpp"
@@ -138,24 +139,19 @@ bool is::ACharacter::checkCollision()
 void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
+	bool stop = false;
 
 	_entities.lock();
-	for (auto &it: list) {
-		it->lock();
-		auto tmp = dynamic_cast<IEntity *>(it.get());
-		if (!tmp) {
-			it->unlock();
-			_entities.unlock();
-			return;
-		}
+	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it) {
 		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			std::cout << "COLLIDE" << std::endl;
-			it->unlock();
 			_entities.unlock();
+			stop = true;
 			return;
 		}
-		it->unlock();
-	}
+	});
+	if (stop)
+		return;
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
@@ -215,11 +211,12 @@ void is::ACharacter::dropBomb()
 {
 	Debug::debug("DROP BOMB");
 	if (_bomb > 0) {
-
-		auto _entitiesAt = getEntitiesAt(getX(), getY(), getZ());
+		float size = _irrlicht.getNodeSize(_sptr);
+		auto _entitiesAt = getEntitiesAt((int) (getX() + size / 2.0), (int) getY(), (int) (getZ() + size / 2.0));
 
 		_entities.lock();
 		for (auto &it: _entitiesAt) {
+			std::cout << YEL << it->getType() << RESET << std::endl;
 			auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 			auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
 			if (checkCharacter == nullptr && checkPowerUp == nullptr) {
@@ -234,9 +231,9 @@ void is::ACharacter::dropBomb()
 		_entities.unlock();
 		auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 		std::cerr << "Bomb" << std::endl;
-		bomb->setX((int) getX());
-		bomb->setY((int) getY());
-		bomb->setZ((int) getZ());
+		bomb->setX((int) (getX() + size / 2.0));
+		bomb->setY((int) (getY()));
+		bomb->setZ((int) (getZ() + size / 2.0));
 	}
 }
 
