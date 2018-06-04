@@ -129,7 +129,9 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			_entities.unlock();
 			return false;
 		}
+		_entities.unlock();
 		it->explode();
+		_entities.lock();
 	}
 	_entities.unlock();
 	createExplosion(f, which_axes, actualPos);
