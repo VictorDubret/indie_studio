@@ -38,7 +38,7 @@ namespace is {
 		virtual void setZ(float) = 0;
 		virtual void setPosition(irr::core::vector3df) = 0;
 
-		virtual void collide(IEntity *collider) = 0;
+		virtual void collide(IEntity *&collider) = 0;
 		virtual void explode() = 0;
 
 		virtual void lock() = 0;

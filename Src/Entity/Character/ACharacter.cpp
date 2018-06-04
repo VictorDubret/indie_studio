@@ -21,8 +21,8 @@ is::ACharacter::ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>>
 
 void is::ACharacter::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2", 0.8);
-	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(1.02f, 0.1f, 1.02f));
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2", 0.75);
+	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(1.1f, 0.1f, 1.1f));
 	nts::ManageObject::setScale(_irrlicht, _sptr, irr::core::vector3df(0.05, 0.05 , 0.05));
 	nts::ManageObject::setRotation(_irrlicht, _sptr, irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
@@ -113,13 +113,23 @@ bool is::ACharacter::checkCollision()
 
 	_entities.lock();
 	for (auto &it: list) {
+		it->lock();
+		auto tmp = dynamic_cast<IEntity *>(it.get());
+		if (!tmp) {
+			it->unlock();
+			return false;
+		}
 		if (it.get() != this && it->isCollidable()) {
 			_eventManager.lock();
 			_eventManager->enqueue([it, this]() {
-				dynamic_cast<AEntity *>(it.get())->collide(this);
+				IEntity *tmp_this = this;
+				auto tmp_it = dynamic_cast<AEntity *>(it.get());
+				if (tmp_it)
+					tmp_it->collide(tmp_this);
 			});
 			_eventManager.unlock();
 		}
+		it->unlock();
 	}
 	_entities.unlock();
 	return ret;
@@ -129,15 +139,23 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
 
+	_entities.lock();
 	for (auto &it: list) {
-		std::cout << getType() << " collidable: " << it->isCollidable() << " walkable: " << it->isWalkable() <<
-			" wallpassable: " << it->isWallPassable() << std::endl;
-		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
-			std::cout << "COLLIDE" << std::endl;
+		it->lock();
+		auto tmp = dynamic_cast<IEntity *>(it.get());
+		if (!tmp) {
+			it->unlock();
+			_entities.unlock();
 			return;
 		}
+		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+			std::cout << "COLLIDE" << std::endl;
+			it->unlock();
+			_entities.unlock();
+			return;
+		}
+		it->unlock();
 	}
-	_entities.lock();
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);

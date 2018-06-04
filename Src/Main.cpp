@@ -20,7 +20,7 @@
 
 int main(int ac, char **)
 {
-	my::ThreadPool thpool(100);
+	my::ThreadPool thpool(20);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
@@ -32,7 +32,7 @@ int main(int ac, char **)
 	}
 
 	/* initialisation */
-	std::pair<std::size_t, std::size_t> mapSize(21,21);
+	std::pair<std::size_t, std::size_t> mapSize(8,8);
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
 
 	//auto a = new is::Wall(lockList, pool, tmp);
@@ -74,7 +74,11 @@ int main(int ac, char **)
 	/* Set light and texture*/
 
 	std::cout << "Jarrive avant loopDisplay" << std::endl;
-	tmp.loopDisplay();
+	try {
+		tmp.loopDisplay();
+	} catch(std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}
 	//lockList->clear();
 	return 0;
 }

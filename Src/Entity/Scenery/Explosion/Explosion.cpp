@@ -26,8 +26,6 @@ is::Explosion::Explosion(
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		//std::cout << "test" << std::endl;
-		_eventManager.unlock();
 		this->~Explosion();
 	});
 	_eventManager.unlock();
@@ -35,7 +33,7 @@ is::Explosion::Explosion(
 
 void is::Explosion::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 0.99);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/water.jpg");
 }
@@ -44,10 +42,13 @@ void is::Explosion::explode()
 {
 }
 
-void is::Explosion::collide(is::IEntity *entity)
+void is::Explosion::collide(is::IEntity *&entity)
 {
 	_entities.lock();
-	Debug::debug("Character type : ", entity->getType()," die at ", getX() , ", ", getY(), ", ", getZ());
-	entity->explode();
+	if (entity) {
+		Debug::debug("Character type : ", entity->getType(),
+			" die at ", getX(), ", ", getY(), ", ", getZ());
+		entity->explode();
+	}
 	_entities.unlock();
 }

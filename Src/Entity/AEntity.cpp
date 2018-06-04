@@ -8,6 +8,7 @@
 #include <thread>
 #include <chrono>
 #include <functional>
+# include <irrlicht.h>
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
@@ -26,16 +27,10 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 is::AEntity::~AEntity()
 {
 	_entities.lock();
-	lock();
-	try {
-		_irrlicht.deleteEntity(_sptr);
-		_entities->erase(
-			std::find(_entities->begin(), _entities->end(),
-				_sptr));
-	} catch (std::exception &){
-
-	}
-	unlock();
+	_irrlicht.deleteEntity(_sptr);
+	_entities->erase(
+		std::find(_entities->begin(), _entities->end(),
+			_sptr));
 	_entities.unlock();
 }
 
@@ -118,9 +113,13 @@ bool is::AEntity::isWallPassable() const
 	return _wallPassable;
 }
 
-void is::AEntity::collide(IEntity *collider)
+void is::AEntity::collide(IEntity *&collider)
 {
+	_entities.lock();
+	collider->lock();
 	Debug::debug(_type, " collide with ", collider->getType());
+	collider->unlock();
+	_entities.unlock();
 }
 
 void is::AEntity::explode()
@@ -131,53 +130,32 @@ void is::AEntity::explode()
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
 	auto size = _irrlicht.getNodeSize(_sptr);
-
 	return (((getX() >= entity->getX() && getX() < entity->getX() + size) || (getX() + size > entity->getX() && getX() + size < entity->getX() + size)) &&
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float, float z) const
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	float size = _irrlicht.getNodeSize(_sptr);
-	auto f = [x, z, this, size](std::shared_ptr<is::IEntity> entity) {
-		if (dynamic_cast<IEntity *>(entity.get()) == nullptr) {
-			std::cerr << "JE TAIME PAS" << std::endl;
-			return false;
-		}
+	irr::core::vector3df pos(x, 0, z);
+	irr::scene::ISceneNode *node = _irrlicht.getSceneManager()->addCubeSceneNode(size, 0, 1, pos);
+
+	auto mesh1 = node->getTransformedBoundingBox();
+	node->setVisible(false);
+
+	auto f = [&](std::shared_ptr<is::IEntity> entity) {
+		static int i = 0;
 		entity->lock();
-		float esize = _irrlicht.getNodeSize(entity);
 
-		std::pair<float, float> e1a(x, z);
-		std::pair<float, float> e1b(x + size, z);
-		std::pair<float, float> e1c(x , z + size);
-		std::pair<float, float> e1d(x + size, z + size);
+		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
+		bool test = false;
 
-		std::pair<float, float> e2a(entity->getX(), entity->getZ());
-		std::pair<float, float> e2b(entity->getX() + esize, entity->getZ());
-		std::pair<float, float> e2c(entity->getX() , entity->getZ() + esize);
-		std::pair<float, float> e2d(entity->getX() + esize, entity->getZ() + esize);
-
-		bool a = (e1d.first > e2a.first && e1d.first < e2b.first &&
-			e1d.second > e2a.second && e1d.second < e2c.second);
-
-		bool b = (e2d.first > e1a.first && e2d.first < e1b.first &&
-			e2d.second > e1a.second && e2d.second < e1c.second);
-
-		bool c = (e2b.first > e1a.first && e2b.first < e1b.first &&
-			e2b.second > e1a.second && e2b.second < e1c.second);
-
-		bool d = (e1b.first > e2a.first && e1b.first < e2b.first &&
-			e1b.second > e2a.second && e1b.second < e2c.second);
-
-		bool e = (e1a.first > e2a.first && e1a.first < e2b.first &&
-			e1a.second > e2a.second && e1a.second < e2c.second);
-
-		if (a || b || c || d || e) {
-			std::cout << entity->getType() << " MAIS MDR NIKE TOI" << std::endl;
-		}
+		if (mesh2.intersectsWithBox(mesh1))
+			test = true;
 		entity->unlock();
-		return (a || b || c || d || e);
+		i++;
+		return test;
 	};
 	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
@@ -190,6 +168,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		}
 	}
 	_entities.unlock();
+	node->getSceneManager()->addToDeletionQueue(node);
 	return ret;
 }
 
