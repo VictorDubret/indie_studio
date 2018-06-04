@@ -85,7 +85,7 @@ void is::Bomb::timer(size_t time)
 void is::Bomb::texture()
 {
 	lock();
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.99);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 	unlock();

@@ -151,7 +151,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
 		bool test = false;
 
-		if (mesh2.intersectsWithBox(mesh1))
+		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
 		entity->unlock();
 		i++;
