@@ -12,8 +12,7 @@
 is::UnbreakableWall::UnbreakableWall(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
-):
-	AEntity(entities, eventManager, irrlicht)
+) : AEntity(entities, eventManager, irrlicht)
 {
 	_type = "UnbreakableWall";
 
