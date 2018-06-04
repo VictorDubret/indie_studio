@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(cpp_indie_studio)
+project(bomberman)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -19,12 +19,13 @@ include_directories(Src Src/Entity Src/Entity/Character
         Src/Entity/Scenery/Wall
         Src/Entity/Scenery/UnbreakableWall
         Src/Entity/Bomb/
-        Src/Entity/Scenery/Explosion)
+        Src/Entity/Scenery/Explosion
+	/usr/include)
 
 add_definitions(-DDEBUG=1)
 
-add_executable(cpp_indie_studio
+add_executable(bomberman
         ${FILE})
 
-target_link_libraries(cpp_indie_studio
-        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor)
+target_link_libraries(bomberman
+        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor /usr/bin/libIrrKlang.so)
