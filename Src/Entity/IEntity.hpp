@@ -22,7 +22,7 @@ namespace is {
 		IEntity() = default;
 		virtual ~IEntity() = default;
 
-		virtual irr::core::vector3df const &getPosition() const = 0;
+		virtual irr::core::vector3df const getPosition() const = 0;
 		virtual float getX() const = 0;
 		virtual float getY() const = 0;
 		virtual float getZ() const = 0;

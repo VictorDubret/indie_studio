@@ -64,7 +64,6 @@ void is::Wall::setPowerUp(char powerUp)
 void is::Wall::texture()
 {
 	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
-	_irrlicht.getNode(_sptr)->setPosition(irr::core::vector3df(0, 0, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/stones.jpg");
 }

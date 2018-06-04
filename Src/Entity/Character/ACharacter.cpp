@@ -33,6 +33,7 @@ void is::ACharacter::texture()
 is::ACharacter::~ACharacter()
 {
 	std::cout << "NIKE TA MERE CONNARD" << std::endl;
+	this->unlock();
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -108,7 +109,7 @@ is::ACharacter &is::ACharacter::operator++()
 bool is::ACharacter::checkCollision()
 {
 	bool ret = false;
-	auto list = getEntitiesAt((int) getX(), (int) getY(), (int) getZ());
+	auto list = getEntitiesAt(getX(), getY(), getZ());
 
 	_entities.lock();
 	for (auto &it: list) {
@@ -129,6 +130,8 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
 
 	for (auto &it: list) {
+		std::cout << getType() << " collidable: " << it->isCollidable() << " walkable: " << it->isWalkable() <<
+			" wallpassable: " << it->isWallPassable() << std::endl;
 		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			std::cout << "COLLIDE" << std::endl;
 			return;
@@ -197,8 +200,10 @@ void is::ACharacter::dropBomb()
 
 		_entities.lock();
 		for (auto &it: _entitiesAt) {
-			if (it->getType() == "Bomb") {
-				std::cout << "already bomb here" << std::endl;
+			auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
+			auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
+			if (checkCharacter == nullptr && checkPowerUp == nullptr) {
+				std::cout << "Can't drop bomb" << std::endl;
 				_entities.unlock();
 				return;
 			}

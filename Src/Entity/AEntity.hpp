@@ -31,7 +31,7 @@ namespace is {
 		~AEntity() override;
 
 		// Getter
-		irr::core::vector3df const &getPosition() const override;
+		irr::core::vector3df const getPosition() const override;
 		float getX() const override;
 		float getY() const override;
 		float getZ() const override;

@@ -26,20 +26,22 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 is::AEntity::~AEntity()
 {
 	_entities.lock();
-	_irrlicht.deleteEntity(_sptr);
-	for (auto it = _entities->begin(); it != _entities->end(); it++) {
-		if (it->get() == this) {
-			_entities.unlock();
-			_entities->erase(it);
-			break;
-		}
+	lock();
+	try {
+		_irrlicht.deleteEntity(_sptr);
+		_entities->erase(
+			std::find(_entities->begin(), _entities->end(),
+				_sptr));
+	} catch (std::exception &){
+
 	}
+	unlock();
 	_entities.unlock();
 }
 
-irr::core::vector3df const &is::AEntity::getPosition() const
+irr::core::vector3df const is::AEntity::getPosition() const
 {
-	return _irrlicht.getNode(_sptr)->getPosition();
+	return (!_irrlicht.getNode(_sptr)) ? irr::core::vector3df({0, 0, 0}) : _irrlicht.getNode(_sptr)->getPosition();
 }
 
 std::string const& is::AEntity::getType() const
@@ -141,10 +143,37 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(
 		}
 		entity->lock();
 		float esize = _irrlicht.getNodeSize(entity);
-		bool a = ((x > entity->getX() && x < entity->getX() + esize) || (x + size > entity->getX() && x + size <= entity->getX() + esize)) &&
-			((z > entity->getZ() && z < entity->getZ() + esize) || (z + size > entity->getZ() && z + size <= entity->getZ() + esize));
+
+		std::pair<float, float> e1a(x, z);
+		std::pair<float, float> e1b(x + size, z);
+		std::pair<float, float> e1c(x , z + size);
+		std::pair<float, float> e1d(x + size, z + size);
+
+		std::pair<float, float> e2a(entity->getX(), entity->getZ());
+		std::pair<float, float> e2b(entity->getX() + esize, entity->getZ());
+		std::pair<float, float> e2c(entity->getX() , entity->getZ() + esize);
+		std::pair<float, float> e2d(entity->getX() + esize, entity->getZ() + esize);
+
+		bool a = (e1d.first > e2a.first && e1d.first < e2b.first &&
+			e1d.second > e2a.second && e1d.second < e2c.second);
+
+		bool b = (e2d.first > e1a.first && e2d.first < e1b.first &&
+			e2d.second > e1a.second && e2d.second < e1c.second);
+
+		bool c = (e2b.first > e1a.first && e2b.first < e1b.first &&
+			e2b.second > e1a.second && e2b.second < e1c.second);
+
+		bool d = (e1b.first > e2a.first && e1b.first < e2b.first &&
+			e1b.second > e2a.second && e1b.second < e2c.second);
+
+		bool e = (e1a.first > e2a.first && e1a.first < e2b.first &&
+			e1a.second > e2a.second && e1a.second < e2c.second);
+
+		if (a || b || c || d || e) {
+			std::cout << entity->getType() << " MAIS MDR NIKE TOI" << std::endl;
+		}
 		entity->unlock();
-		return (a);
+		return (a || b || c || d || e);
 	};
 
 	_entities.lock();
