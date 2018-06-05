@@ -19,10 +19,6 @@ namespace nts {
 
 	class IManageIrrlicht {
 		public:
-		// Constructor & detructor
-		IManageIrrlicht() = default;
-		virtual ~IManageIrrlicht() = default;
-
 		// Update the view of the map, take the 2 farest player
 		virtual void updateView() = 0;
 		// call each function needed on the loop
