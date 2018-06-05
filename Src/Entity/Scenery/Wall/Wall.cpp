@@ -31,21 +31,25 @@ is::Wall::Wall(
 
 void is::Wall::placePowerUp()
 {
+	is::APowerUp *powerUp = nullptr;
 	switch (_powerUp) {
 	case 'b':
-		(new is::BombUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::BombUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 'f':
-		(new is::FireUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::FireUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 's':
-		(new is::SpeedUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::SpeedUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 'w':
-		(new is::WallPass(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::WallPass(_entities, _eventManager, _irrlicht);
 		break;
 	default:
 		break;
+	}
+	if (powerUp) {
+		powerUp->setPosition(getPosition());
 	}
 }
 
