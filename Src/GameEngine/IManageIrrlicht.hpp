@@ -47,6 +47,9 @@ namespace nts {
 		virtual void setMapSize(const irr::core::vector2di &mapSize) = 0;
 		virtual void setCameraPos() = 0;
 
+		virtual void lock() = 0;
+		virtual void unlock() = 0;
+
 		protected:
 		private:
 	};

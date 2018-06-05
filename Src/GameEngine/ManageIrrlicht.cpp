@@ -68,10 +68,12 @@ void nts::ManageIrrlicht::displaySplitScreen()
 	}
 }
 
-
 void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
+		std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
+		lock();
+		std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
 		if (_splitScreen) {
 			displaySplitScreen();
 		} else {
@@ -79,6 +81,8 @@ void nts::ManageIrrlicht::loopDisplay()
 			_sceneManager->drawAll();
 			//setCameraPos();
 		}
+		std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
+		unlock();
 		//fin test
 		displayFPS();
 
@@ -100,6 +104,9 @@ void nts::ManageIrrlicht::manageEvent()
 
 void nts::ManageIrrlicht::manageEventPlayers()
 {
+	std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
+	lock();
+	std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
 		for (int i = 0; it.key[i].f != nullptr ; ++i) {
@@ -113,7 +120,8 @@ void nts::ManageIrrlicht::manageEventPlayers()
 		else if (!doSomething)
 			_eventManager->enqueue(it.nothing.f);
 	}
-
+	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
+	unlock();
 }
 
 irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(const std::shared_ptr<is::IEntity> &entity)
@@ -130,6 +138,9 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
+	std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
+	lock();
+	std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
 	if (tmp != nullptr && tmp->getType() == "Character") {
 		player_t player;
 		if (_listPlayer.empty())
@@ -149,6 +160,8 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 		_listPlayer.push_back(player);
 	}
 	_listObj[entity] = {obj, size};
+	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
+	unlock();
 	return false;
 }
 
@@ -156,6 +169,9 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
+	std::cout << __PRETTY_FUNCTION__ <<" LOCK: " << entity->getType() << std::endl;
+//	lock();
+	std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
 	if (tmp && tmp->getType() == "Character") {
 		int idx = 0;
 		for (auto &it : _listPlayer) {
@@ -166,10 +182,13 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			idx++;
 		}
 	}
+	std::cout << __PRETTY_FUNCTION__ << "AFTER FOR" << std::endl;
 	if (_device && _listObj[entity].obj) {
 		_listObj[entity].obj->setVisible(false);
 		_listObj.erase(_listObj.find(entity));
 	}
+	std::cout << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+//	unlock();
 	return false;
 }
 
@@ -236,4 +255,14 @@ void nts::ManageIrrlicht::displayFPS()
 		_device->setWindowCaption(tmp);
 		lastFPS = fps;
 	}
+}
+
+void nts::ManageIrrlicht::lock()
+{
+	_mutex.lock();
+}
+
+void nts::ManageIrrlicht::unlock()
+{
+	_mutex.unlock();
 }

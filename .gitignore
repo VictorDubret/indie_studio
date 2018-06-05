@@ -12,3 +12,6 @@ my_cat
 [a-zA-Z0-9]
 toto
 bomberman
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake

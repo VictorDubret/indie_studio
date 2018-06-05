@@ -112,27 +112,26 @@ bool is::ACharacter::checkCollision()
 	bool ret = false;
 	auto list = getEntitiesAt(getX(), getY(), getZ());
 
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
-	for (auto &it: list) {
+	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it){
+		if (!it || !it.get())
+			return;
 		it->lock();
-		auto tmp = dynamic_cast<IEntity *>(it.get());
-		if (!tmp) {
-			it->unlock();
-			return false;
-		}
 		if (it.get() != this && it->isCollidable()) {
 			_eventManager.lock();
 			_eventManager->enqueue([it, this]() {
 				IEntity *tmp_this = this;
 				auto tmp_it = dynamic_cast<AEntity *>(it.get());
-				if (tmp_it)
+				if (tmp_it) {
 					tmp_it->collide(tmp_this);
+				}
 			});
 			_eventManager.unlock();
 		}
 		it->unlock();
-	}
-	_entities.unlock();
+	});
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	return ret;
 }
 
@@ -141,21 +140,24 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
 	bool stop = false;
 
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it) {
 		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			std::cout << "COLLIDE" << std::endl;
-			_entities.unlock();
+			_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			stop = true;
 			return;
 		}
 	});
-	if (stop)
+	if (stop) {
+		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		return;
+	}
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
-	_entities.unlock();
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	checkCollision();
 }
 
@@ -214,6 +216,7 @@ void is::ACharacter::dropBomb()
 		float size = _irrlicht.getNodeSize(_sptr);
 		auto _entitiesAt = getEntitiesAt((int) (getX() + size / 2.0), (int) getY(), (int) (getZ() + size / 2.0));
 
+		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
 		for (auto &it: _entitiesAt) {
 			std::cout << YEL << it->getType() << RESET << std::endl;
@@ -221,14 +224,14 @@ void is::ACharacter::dropBomb()
 			auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
 			if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 				std::cout << "Can't drop bomb" << std::endl;
-				_entities.unlock();
+				_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 				return;
 			}
 		}
 		lock();
 		--_bomb;
 		unlock();
-		_entities.unlock();
+		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 		std::cerr << "Bomb" << std::endl;
 		bomb->setX((int) (getX() + size / 2.0));

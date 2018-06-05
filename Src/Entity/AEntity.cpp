@@ -18,20 +18,27 @@
 is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
-	_entities.unlock();
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 is::AEntity::~AEntity()
 {
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
+	std::cout << RED << __PRETTY_FUNCTION__ << " TEST2" << RESET << std::endl;
+
 	_irrlicht.deleteEntity(_sptr);
+	std::cout << RED << __PRETTY_FUNCTION__ << " TeST3" << RESET << std::endl;
 	_entities->erase(
 		std::find(_entities->begin(), _entities->end(),
 			_sptr));
+	std::cout << RED << __PRETTY_FUNCTION__ << " TEST4" << RESET << std::endl;
 	_entities.unlock();
+	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 irr::core::vector3df const is::AEntity::getPosition() const
@@ -115,11 +122,12 @@ bool is::AEntity::isWallPassable() const
 
 void is::AEntity::collide(IEntity *&collider)
 {
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	collider->lock();
 	Debug::debug(_type, " collide with ", collider->getType());
 	collider->unlock();
-	_entities.unlock();
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::AEntity::explode()
@@ -137,38 +145,69 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
+	std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
+	_irrlicht.lock();
+	std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
 	float size = _irrlicht.getNodeSize(_sptr);
+	std::cout << "a" << std::endl;
 	irr::core::vector3df pos(x, 0, z);
+	std::cout << "b" << std::endl;
 	irr::scene::ISceneNode *node = _irrlicht.getSceneManager()->addCubeSceneNode(size, 0, 1, pos);
 
+	std::cout << "c" << std::endl;
 	auto mesh1 = node->getTransformedBoundingBox();
+	std::cout << "d" << std::endl;
 	node->setVisible(false);
 
+	std::cout << "e" << std::endl;
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-		static int i = 0;
 		entity->lock();
+		std::cout << "f" << std::endl;
 
+		auto tmp = _irrlicht.getNode(entity);
+		std::cout << "g" << std::endl;
+		if (!tmp) {
+			entity->unlock();
+			std::cout << "h" << std::endl;
+			return false;
+		}
+		std::cout << "i" << std::endl;
 		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
+		std::cout << "j" << std::endl;
 		bool test = false;
+		std::cout << "l" << std::endl;
 
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
+		std::cout << "m" << std::endl;
 		entity->unlock();
-		i++;
+		std::cout << "n" << std::endl;
 		return test;
 	};
+	std::cout << "o" << std::endl;
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
+	std::cout << "p" << std::endl;
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
+	std::cout << "q" << std::endl;
 	while (it != _entities->end()) {
+		std::cout << "r" << std::endl;
 
 		ret.push_back(*it.base());
+		std::cout << "s" << std::endl;
 		it++;
 		if (it != _entities->end()) {
+			std::cout << "t" << std::endl;
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
-	_entities.unlock();
-	node->getSceneManager()->addToDeletionQueue(node);
+	std::cout << "u" << std::endl;
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	std::cout << "v" << std::endl;
+	node->removeAll();
+	//node->remove();
+	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
+	_irrlicht.unlock();
 	return ret;
 }
 
