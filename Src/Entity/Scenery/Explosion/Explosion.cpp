@@ -44,11 +44,12 @@ void is::Explosion::explode()
 
 void is::Explosion::collide(is::IEntity *&entity)
 {
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	if (entity) {
 		Debug::debug("Character type : ", entity->getType(),
 			" die at ", getX(), ", ", getY(), ", ", getZ());
 		entity->explode();
 	}
-	_entities.unlock();
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }

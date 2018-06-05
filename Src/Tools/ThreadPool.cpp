@@ -23,11 +23,15 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 					});
 					if (_stop)
 						break;
-					task = std::move(_tasks.front());
-					_tasks.pop();
+					if (_tasks.front()) {
+						task = std::move(_tasks.front());
+						_tasks.pop();
+					}
 				}
-				task();
+				if (task)
+					task();
 			}
+			return false;
 		}));
 		_threads.push_back(thread);
 	}

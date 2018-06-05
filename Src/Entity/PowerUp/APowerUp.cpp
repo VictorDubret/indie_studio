@@ -22,15 +22,16 @@ is::APowerUp::APowerUp(
 	_type = "PowerUp";
 }
 
-
-
 void is::APowerUp::collide(is::IEntity *&entity)
 {
 	auto character = dynamic_cast<ACharacter *>(entity);
 
 	if (character) {
+		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+		_entities.lock();
 		Debug::debug("Character take ", _type, " in ", _irrlicht.getNode(_sptr)->getPosition().X , ", ", _irrlicht.getNode(_sptr)->getPosition().Y, ", ", _irrlicht.getNode(_sptr)->getPosition().Z);
 		action(character);
+		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		this->~APowerUp();
 	}
 }

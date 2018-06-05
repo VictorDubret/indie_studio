@@ -39,6 +39,7 @@ void is::Bomb::explode()
 	if (_stopTimer) {
 		return;
 	}
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
@@ -56,10 +57,11 @@ void is::Bomb::explode()
 		this->~Bomb();
 		_eventManager.unlock();
 		_entities.unlock();
+		std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		return;
 	});
 	_eventManager.unlock();
-	_entities.unlock();
+	_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::Bomb::timer(size_t time)
@@ -117,23 +119,25 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::vector<std::shared_ptr<IEntity>> tmp =
 		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
 			getEntitiesAt(getX(), 0, f(actualPos));
+	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	for (const auto &it : tmp) {
 		if (it->getType() == "Wall") {
-			_entities.unlock();
+			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
 			return false;
 		} else if (it->getType() == "UnbreakableWall") {
 			std::cout << RED << " UNBREAKABLE" << RESET << std::endl;
-			_entities.unlock();
+			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			return false;
 		}
-		_entities.unlock();
+		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		it->explode();
+		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
 	}
-	_entities.unlock();
+	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	createExplosion(f, which_axes, actualPos);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
 	return false;

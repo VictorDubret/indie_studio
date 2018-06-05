@@ -10,6 +10,7 @@
 
 # include <unordered_map>
 # include <vector>
+#include <mutex>
 # include "ACharacter.hpp"
 # include "EventManager.hpp"
 # include "IManageIrrlicht.hpp"
@@ -68,6 +69,9 @@ namespace nts {
 		irr::video::IVideoDriver *getDriver() const override;
 		irrklang::ISoundEngine *getSoundDevice() const override;
 
+		void lock() override;
+		void unlock() override;
+
 		protected:
 
 		private:
@@ -89,6 +93,8 @@ namespace nts {
 		irrklang::ISoundEngine *_engine = nullptr;
 
 		irr::core::vector2di _mapSize;
+
+		std::mutex _mutex;
 
 		nts::EventManager _eventReceiver;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
