@@ -114,6 +114,8 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::function<float(int)> f, is::Bomb::Axes_t which_axes
 )
 {
+	bool stop = false;
+
 	if (actualPos > lenExplosion)
 		return false;
 	std::vector<std::shared_ptr<IEntity>> tmp =
@@ -121,16 +123,21 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			getEntitiesAt(getX(), 0, f(actualPos));
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
-	for (const auto &it : tmp) {
+	std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it) {
+		auto tmp_it = dynamic_cast<AEntity *>(it.get());
+		if (!tmp_it || stop)
+			return false;
 		if (it->getType() == "Wall") {
 			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			it->lock();
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
+			stop = true;
 			return false;
 		} else if (it->getType() == "UnbreakableWall") {
 			std::cout << RED << " UNBREAKABLE" << RESET << std::endl;
 			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			stop = true;
 			return false;
 		}
 		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
@@ -139,7 +146,10 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 		it->unlock();
 		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
-	}
+		return true;
+	});
+	if (stop)
+		return false;
 	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	createExplosion(f, which_axes, actualPos);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
