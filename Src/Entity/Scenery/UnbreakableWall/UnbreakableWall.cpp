@@ -23,6 +23,13 @@ is::UnbreakableWall::UnbreakableWall(
 	texture();
 }
 
+is::UnbreakableWall::~UnbreakableWall()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::UnbreakableWall::texture()
 {
 	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);

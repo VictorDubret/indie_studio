@@ -22,6 +22,13 @@ is::APowerUp::APowerUp(
 	_type = "PowerUp";
 }
 
+is::APowerUp::~APowerUp()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::APowerUp::collide(is::IEntity *&entity)
 {
 	auto character = dynamic_cast<ACharacter *>(entity);

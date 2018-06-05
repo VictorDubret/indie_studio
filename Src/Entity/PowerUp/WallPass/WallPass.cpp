@@ -17,6 +17,14 @@ is::WallPass::WallPass(
 	_type = "WallPass";
 	texture();
 }
+
+is::WallPass::~WallPass()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 /*
 void is::WallPass::texture()
 {

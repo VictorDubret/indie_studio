@@ -10,6 +10,7 @@
 #include <MapGenerator/MapGenerator.hpp>
 #include <cstdlib>
 #include <irrlicht.h>
+#include <csignal>
 #include "Bomb.hpp"
 #include "ThreadPool.hpp"
 #include "ItemLocker.hpp"
@@ -24,6 +25,7 @@ int main(int ac, char **)
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
+	signal(SIGABRT, [](int ){exit(84);});
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
 	bool splitScreen = false;
@@ -41,7 +43,11 @@ int main(int ac, char **)
 
 	mg::MapGenerator generator(lockList, pool, tmp, mapSize);
 
-	new is::ACharacter(lockList, pool, tmp);
+	is::ACharacter *toto = new is::ACharacter (lockList, pool, tmp);
+	toto->setZ(2);
+	toto->setBombMax(5);
+	toto->setBomb(5);
+//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
 	/* Création floor */
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc

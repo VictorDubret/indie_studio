@@ -33,8 +33,10 @@ void is::ACharacter::texture()
 
 is::ACharacter::~ACharacter()
 {
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
 	std::cout << "NIKE TA MERE CONNARD" << std::endl;
-	this->unlock();
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -110,18 +112,19 @@ is::ACharacter &is::ACharacter::operator++()
 bool is::ACharacter::checkCollision()
 {
 	bool ret = false;
+	_entities.unlock();
 	auto list = getEntitiesAt(getX(), getY(), getZ());
 
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
+	//_entities.lock();
 	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it){
 		auto a = dynamic_cast<AEntity *>(it.get());
 		if (!a || !it || !it.get())
 			return;
-		it->lock();
+		//it->lock();
 		if (it.get() != this && it->isCollidable()) {
 			_eventManager.lock();
-			_eventManager->enqueue([it, this]() {
+			_eventManager->enqueue([&]() {
 				IEntity *tmp_this = this;
 				auto tmp_it = dynamic_cast<AEntity *>(it.get());
 				if (tmp_it) {
@@ -130,9 +133,12 @@ bool is::ACharacter::checkCollision()
 			});
 			_eventManager.unlock();
 		}
-		it->unlock();
+		auto b = dynamic_cast<AEntity *>(it.get());
+		if (!b)
+			return;
+		//it->unlock();
 	});
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	//_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	return ret;
 }
 
@@ -159,7 +165,6 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	checkCollision();
 }
 
@@ -221,7 +226,7 @@ void is::ACharacter::dropBomb()
 		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
 		for (auto &it: _entitiesAt) {
-			std::cout << YEL << it->getType() << RESET << std::endl;
+			//std::cout << YEL << it->getType() << RESET << std::endl;
 			auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 			auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
 			if (checkCharacter == nullptr && checkPowerUp == nullptr) {

@@ -6,9 +6,7 @@
 */
 
 #include <thread>
-#include <chrono>
-#include <functional>
-# include <irrlicht.h>
+#include <irrlicht.h>
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
@@ -27,10 +25,11 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 
 is::AEntity::~AEntity()
 {
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
+	std::cout << RED << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
 	std::cout << RED << __PRETTY_FUNCTION__ << " TEST2" << RESET << std::endl;
-
 	_irrlicht.deleteEntity(_sptr);
 	std::cout << RED << __PRETTY_FUNCTION__ << " TeST3" << RESET << std::endl;
 	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
@@ -39,6 +38,7 @@ is::AEntity::~AEntity()
 	_entities->erase(tmp);
 	std::cout << RED << __PRETTY_FUNCTION__ << " TEST4" << RESET << std::endl;
 	_entities.unlock();
+	unlock();
 	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
@@ -148,7 +148,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
 	_irrlicht.lock();
-	std::cout << __PRETTY_FUNCTION__ <<" AFTER LOCK" << std::endl;
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 	float size = _irrlicht.getNodeSize(_sptr);
 	std::cout << "a" << std::endl;
 	irr::core::vector3df pos(x, 0, z);
@@ -175,7 +175,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		std::cout << "j" << std::endl;
 		bool test = false;
 		std::cout << "l" << std::endl;
-
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
 		std::cout << "m" << std::endl;
@@ -195,7 +194,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		std::cout << "s" << std::endl;
 		it++;
 		if (it != _entities->end()) {
-			std::cout << "t" << std::endl;
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}

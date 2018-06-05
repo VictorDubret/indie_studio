@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.7.2ZZZ)
 project(bomberman)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -26,7 +26,6 @@ add_definitions(-DDEBUG=1)
 
 add_executable(bomberman
         ${FILE})
-
 
 target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3)
 target_link_libraries(bomberman
