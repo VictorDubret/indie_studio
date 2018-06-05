@@ -38,6 +38,7 @@ is::AEntity::~AEntity()
 			_sptr));
 	std::cout << RED << __PRETTY_FUNCTION__ << " TEST4" << RESET << std::endl;
 	_entities.unlock();
+	unlock();
 	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
@@ -161,7 +162,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 
 	std::cout << "e" << std::endl;
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-		entity->lock();
 		std::cout << "f" << std::endl;
 
 		auto tmp = _irrlicht.getNode(entity);
@@ -176,7 +176,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		std::cout << "j" << std::endl;
 		bool test = false;
 		std::cout << "l" << std::endl;
-
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
 		std::cout << "m" << std::endl;
@@ -197,7 +196,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		std::cout << "s" << std::endl;
 		it++;
 		if (it != _entities->end()) {
-			std::cout << "t" << std::endl;
+			std::cout << "TYPE : " << it->get()->getType() << std::endl;
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}

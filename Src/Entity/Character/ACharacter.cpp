@@ -117,6 +117,7 @@ bool is::ACharacter::checkCollision()
 	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it){
 		if (!it || !it.get())
 			return;
+		std::cout << BLU << "TYPE DE LENTITY :" << it->getType()<< RESET << std::endl;
 		it->lock();
 		if (it.get() != this && it->isCollidable()) {
 			_eventManager.lock();

@@ -124,6 +124,7 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	for (const auto &it : tmp) {
 		if (it->getType() == "Wall") {
 			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			it->lock();
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
 			return false;
@@ -133,7 +134,9 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			return false;
 		}
 		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		it->lock();
 		it->explode();
+		it->unlock();
 		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
 	}
