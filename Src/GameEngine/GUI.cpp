@@ -13,19 +13,13 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 	std::cout << "Hey ! I'm in the GUI section" << std::endl;
 	setScene(0);
 
-	_scene[_currentScene]->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(0, 0));
+	_scene[MENU]->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(0, 0));
 
 //	loadImage("title", 0, "media/Bombermon.png", irr::core::position2d<irr::s32>(0, 0), irr::core::dimension2d<irr::u32>(711, 101), -1);
 
-
-	irr::gui::IGUIFont *font = _scene[_currentScene]->getFont("media/fontlucida.png");
-	irr::gui::IGUIButton *bouton = _scene[_currentScene]->addButton(irr::core::rect<irr::s32>(100,80,200,120), 0, -1, L"NICK TAMERE");
-
-	bouton->setOverrideFont(font);                  // changement de police
-
-	bouton->setPressedImage(getDriver()->getTexture("media/fire.jpg"));
-
-	irr::gui::IGUIEditBox *editBox = _scene[_currentScene]->addEditBox(L"Texte de depart", irr::core::rect<irr::s32>(20,20,320,70));
+	addButton(MENU, L"Bonjour", irr::core::rect<irr::s32>(0, 100, 100, 200));
+	addButton(MENU, L"Aurevoir", irr::core::rect<irr::s32>(0, 200, 100, 300));
+	irr::gui::IGUIEditBox *editBox = _scene[MENU]->addEditBox(L"Texte de depart", irr::core::rect<irr::s32>(20,20,320,70));
 }
 
 void nts::GUI::setScene(int scene)
@@ -45,4 +39,13 @@ void nts::GUI::drawGUI()
 
 void nts::GUI::manageEventGui()
 {
+}
+
+void nts::GUI::addButton(int scene, wchar_t *text, const irr::core::rect<irr::s32> &textRect)
+{
+	irr::gui::IGUIFont *font = _scene[MENU]->getFont("media/fontlucida.png");
+	irr::gui::IGUIButton *bouton = _scene[scene]->addButton(textRect, 0, -1, text);
+	bouton->setOverrideFont(font);
+
+	bouton->setPressedImage(getDriver()->getTexture("media/fire.jpg"));
 }

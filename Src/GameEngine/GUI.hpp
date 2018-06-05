@@ -17,6 +17,10 @@ namespace nts {
 		CLICK_SETTINGS,
 		CLICK_PLAYNOW
 	};
+	enum {
+		MENU,
+		SETTINGS
+	};
 
 	class GUI : public virtual AManageIrrlicht {
 		public:
@@ -25,6 +29,7 @@ namespace nts {
 		void manageEventGui();
 		void drawGUI();
 		void setScene(int);
+		void addButton(int scene, wchar_t *text, const irr::core::rect<irr::s32> &textRect);
 
 		protected:
 		private:
