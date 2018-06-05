@@ -18,6 +18,13 @@ is::BombUp::BombUp(
 	texture();
 }
 
+is::BombUp::~BombUp()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::BombUp::action(is::ACharacter *character)
 {
 	character->setBombMax(character->getBombMax() + 1);

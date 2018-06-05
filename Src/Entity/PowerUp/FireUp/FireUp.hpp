@@ -18,7 +18,7 @@ namespace is {
 			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
-		~FireUp() override = default;
+		~FireUp() override;
 
 		// Getter
 

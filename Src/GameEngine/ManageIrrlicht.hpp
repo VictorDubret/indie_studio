@@ -10,7 +10,9 @@
 
 # include <unordered_map>
 # include <vector>
-#include <mutex>
+# include <mutex>
+#include "Debug.hpp"
+
 # include "ACharacter.hpp"
 # include "EventManager.hpp"
 # include "IManageIrrlicht.hpp"

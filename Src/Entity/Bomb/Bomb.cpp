@@ -33,17 +33,23 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	timer(time);
 }
 
+is::Bomb::~Bomb()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::Bomb::explode()
 {
 	std::cout << "Adding explode event !" << std::endl;
 	if (_stopTimer) {
 		return;
 	}
+	_stopTimer = true;
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-		_stopTimer = true;
 
 		fprintf(stderr, "addr :%p\n", this);
 		std::cerr << "Je passe dans la fonction de "
@@ -54,14 +60,14 @@ void is::Bomb::explode()
 		auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 		if (tmp)
 			tmp->operator++();
+		auto tmp_this = dynamic_cast<Bomb *>(this);
+		if (!tmp_this)
+			return;
 		this->~Bomb();
-		_eventManager.unlock();
-		_entities.unlock();
 		std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 		return;
 	});
 	_eventManager.unlock();
-	_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::Bomb::timer(size_t time)
@@ -96,6 +102,7 @@ void is::Bomb::texture()
 void is::Bomb::doExplosions()
 {
 	std::vector<std::shared_ptr<IEntity>> range;
+
 	check_arround(_lenExplosion, 0, [this](int actualPos) {
 		return getX() - actualPos;
 	}, XAXES);
@@ -129,7 +136,13 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			return false;
 		if (it->getType() == "Wall") {
 			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+				return false;
+			}
 			it->lock();
+			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+				return false;
+			}
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
 			stop = true;
@@ -141,9 +154,12 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			return false;
 		}
 		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
-		it->lock();
+//		it->lock();
+		if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+			return false;
+		}
 		it->explode();
-		it->unlock();
+//		it->unlock();
 		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
 		return true;

@@ -20,7 +20,7 @@ namespace is {
 			nts::ManageIrrlicht &irrlicht, size_t time = 2
 		);
 
-		~Bomb() = default;
+		~Bomb() override;
 
 		void explode() override;
 

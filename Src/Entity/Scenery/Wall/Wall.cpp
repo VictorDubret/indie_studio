@@ -29,6 +29,13 @@ is::Wall::Wall(
 	texture();
 }
 
+is::Wall::~Wall()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::Wall::placePowerUp()
 {
 	is::APowerUp *powerUp = nullptr;

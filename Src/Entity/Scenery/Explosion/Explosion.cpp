@@ -31,6 +31,13 @@ is::Explosion::Explosion(
 	_eventManager.unlock();
 }
 
+is::Explosion::~Explosion()
+{
+	if (!_locked)
+		_entities.lock();
+	_locked = true;
+}
+
 void is::Explosion::texture()
 {
 	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
@@ -45,11 +52,11 @@ void is::Explosion::explode()
 void is::Explosion::collide(is::IEntity *&entity)
 {
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	if (entity) {
+		if (dynamic_cast<is::ACharacter *>(entity) == nullptr)
+			return ;
 		Debug::debug("Character type : ", entity->getType(),
 			" die at ", getX(), ", ", getY(), ", ", getZ());
 		entity->explode();
 	}
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
