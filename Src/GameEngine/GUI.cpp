@@ -19,6 +19,7 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 
 	addButton(MENU, L"Bonjour", irr::core::rect<irr::s32>(0, 100, 100, 200));
 	addButton(MENU, L"Aurevoir", irr::core::rect<irr::s32>(0, 200, 100, 300));
+
 	irr::gui::IGUIEditBox *editBox = _scene[MENU]->addEditBox(L"Texte de depart", irr::core::rect<irr::s32>(20,20,320,70));
 }
 
