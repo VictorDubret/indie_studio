@@ -28,8 +28,9 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 						_tasks.pop();
 					}
 				}
-				if (task)
+				if (task) {
 					task();
+				}
 			}
 			return false;
 		}));

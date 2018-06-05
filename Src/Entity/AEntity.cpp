@@ -33,9 +33,10 @@ is::AEntity::~AEntity()
 
 	_irrlicht.deleteEntity(_sptr);
 	std::cout << RED << __PRETTY_FUNCTION__ << " TeST3" << RESET << std::endl;
-	_entities->erase(
-		std::find(_entities->begin(), _entities->end(),
-			_sptr));
+	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
+	if (tmp == _entities->end())
+		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
+	_entities->erase(tmp);
 	std::cout << RED << __PRETTY_FUNCTION__ << " TEST4" << RESET << std::endl;
 	_entities.unlock();
 	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
@@ -161,13 +162,11 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 
 	std::cout << "e" << std::endl;
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-		entity->lock();
 		std::cout << "f" << std::endl;
 
 		auto tmp = _irrlicht.getNode(entity);
 		std::cout << "g" << std::endl;
 		if (!tmp) {
-			entity->unlock();
 			std::cout << "h" << std::endl;
 			return false;
 		}
@@ -180,7 +179,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
 		std::cout << "m" << std::endl;
-		entity->unlock();
 		std::cout << "n" << std::endl;
 		return test;
 	};

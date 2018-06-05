@@ -115,7 +115,8 @@ bool is::ACharacter::checkCollision()
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it){
-		if (!it || !it.get())
+		auto a = dynamic_cast<AEntity *>(it.get());
+		if (!a || !it || !it.get())
 			return;
 		it->lock();
 		if (it.get() != this && it->isCollidable()) {
@@ -143,7 +144,8 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
 	std::for_each(list.begin(), list.end(), [&](std::shared_ptr<IEntity> &it) {
-		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+		auto tmp = dynamic_cast<AEntity *>(it.get());
+		if (!tmp || (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable()))) {
 			std::cout << "COLLIDE" << std::endl;
 			_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			stop = true;
