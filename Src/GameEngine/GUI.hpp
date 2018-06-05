@@ -11,15 +11,26 @@
 # include "AManageIrrlicht.hpp"
 
 namespace nts {
+	enum {
+		HOVER_PLAYNOW,
+		HOVER_SETTINGS,
+		CLICK_SETTINGS,
+		CLICK_PLAYNOW
+	};
+
 	class GUI : public virtual AManageIrrlicht {
 		public:
 		GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
 
 		void manageEventGui();
 		void drawGUI();
+		void setScene(int);
 
 		protected:
 		private:
+		int _currentScene = 0;
+
+		std::map<int, irr::gui::IGUIEnvironment *> _scene;
 	};
 }
 

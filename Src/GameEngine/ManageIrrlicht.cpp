@@ -14,9 +14,10 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
-		if (_displayGUI)
+		if (_displayGUI) {
+			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
 			drawGUI();
-		else if (_splitScreen) {
+		} else if (_splitScreen) {
 			displaySplitScreen();
 		} else {
 			_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
