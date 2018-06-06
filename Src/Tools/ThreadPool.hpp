@@ -30,15 +30,14 @@ namespace my {
 		template<class Callable, class... Args>
 		void enqueue(Callable &&func, Args &&... args)
 		{
-			signal(SIGSEGV, SIG_IGN);
 			auto f = std::bind(std::forward<Callable>(func),
 				std::forward<Args>(args)...);
 
-			_tasks.push(new std::function<void(void)>([f] {
+			auto function = [f](){
 				f();
-			}));
+			};
+			_tasks.push(function);
 			_cond.notify_one();
-			signal(SIGSEGV, nullptr);
 		};
 
 		// Other
@@ -53,7 +52,7 @@ namespace my {
 		std::mutex _mutex;
 
 		std::condition_variable _cond;
-		std::queue<std::function<void(void)> *> _tasks;
+		std::queue<std::function<void(void)>> _tasks;
 		std::vector<std::shared_ptr<my::Thread>> _threads;
 	};
 }
