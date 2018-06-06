@@ -153,7 +153,12 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	std::cout << "a" << std::endl;
 	irr::core::vector3df pos(x, 0, z);
 	std::cout << "b" << std::endl;
-	irr::scene::ISceneNode *node = _irrlicht.getSceneManager()->addCubeSceneNode(size, 0, 1, pos);
+	auto sceneManager = _irrlicht.getSceneManager();
+	if (!sceneManager) {
+		_irrlicht.unlock();
+		return ret;
+	}
+	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
 
 	std::cout << "c" << std::endl;
 	auto mesh1 = node->getTransformedBoundingBox();
