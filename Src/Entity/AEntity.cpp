@@ -121,14 +121,14 @@ bool is::AEntity::isWallPassable() const
 	return _wallPassable;
 }
 
-void is::AEntity::collide(IEntity *&collider)
+void is::AEntity::collide(IEntity *collider)
 {
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
+	//_entities.lock();
 	collider->lock();
 	Debug::debug(_type, " collide with ", collider->getType());
 	collider->unlock();
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	//_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::AEntity::explode()
@@ -183,7 +183,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	};
 	std::cout << "o" << std::endl;
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	std::cout << "p" << std::endl;
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	std::cout << "q" << std::endl;
@@ -198,13 +197,12 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		}
 	}
 	std::cout << "u" << std::endl;
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	std::cout << "v" << std::endl;
 	node->removeAll();
 	//node->remove();
 	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
 	_irrlicht.unlock();
-	return ret;
+	return std::move(ret);
 }
 
 void is::AEntity::lock()

@@ -24,8 +24,8 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 					});
 					if (_stop)
 						break;
-					if (_tasks.front() && *(_tasks.front())) {
-						task = std::move(*(_tasks.front()));
+					if (_tasks.front()) {
+						task = std::move(_tasks.front());
 						_tasks.pop();
 					}
 				}

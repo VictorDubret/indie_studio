@@ -48,7 +48,7 @@ namespace is {
 		void setZ(float) override;
 		void setPosition(irr::core::vector3df) override;
 
-		void collide(is::IEntity *&collider) override;
+		void collide(is::IEntity *collider) override;
 		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float y, float z) const;
 		void explode() override;
 

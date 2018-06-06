@@ -49,7 +49,7 @@ void is::Explosion::explode()
 {
 }
 
-void is::Explosion::collide(is::IEntity *&entity)
+void is::Explosion::collide(is::IEntity *entity)
 {
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	if (entity) {

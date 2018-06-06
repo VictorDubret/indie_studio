@@ -103,6 +103,7 @@ void is::Bomb::doExplosions()
 {
 	std::vector<std::shared_ptr<IEntity>> range;
 
+	_entities.lock();
 	check_arround(_lenExplosion, 0, [this](int actualPos) {
 		return getX() - actualPos;
 	}, XAXES);
@@ -115,6 +116,7 @@ void is::Bomb::doExplosions()
 	check_arround(_lenExplosion, 0, [this](int actualPos) {
 		return getZ() + actualPos;
 	}, ZAXES);
+	_entities.unlock();
 }
 
 bool is::Bomb::check_arround(int lenExplosion, int actualPos,
@@ -128,14 +130,11 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::vector<std::shared_ptr<IEntity>> tmp =
 		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
 			getEntitiesAt(getX(), 0, f(actualPos));
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it) {
 		auto tmp_it = dynamic_cast<AEntity *>(it.get());
 		if (!tmp_it || stop)
 			return false;
 		if (it->getType() == "Wall") {
-			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
 				return false;
 			}
@@ -149,7 +148,7 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			return false;
 		} else if (it->getType() == "UnbreakableWall") {
 			std::cout << RED << " UNBREAKABLE" << RESET << std::endl;
-			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			//_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 			stop = true;
 			return false;
 		}
@@ -161,12 +160,12 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 		it->explode();
 //		it->unlock();
 		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-		_entities.lock();
+		//_entities.lock();
 		return true;
 	});
 	if (stop)
 		return false;
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	//_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	createExplosion(f, which_axes, actualPos);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
 	return false;
@@ -186,6 +185,7 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 {
+	/*_entities.lock();
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
 	for (const auto &it : tmp) {
 		std::cout << "type : " << it->getType() << std::endl;
@@ -193,5 +193,6 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 			return true;
 		}
 	}
+	_entities.unlock();*/
 	return false;
 }

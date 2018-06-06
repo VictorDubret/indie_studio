@@ -25,7 +25,6 @@ int main(int ac, char **)
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
-	signal(SIGABRT, [](int ){exit(84);});
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
 	bool splitScreen = false;
