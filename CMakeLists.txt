@@ -9,8 +9,10 @@ include_directories(Src Src/Entity Src/Entity/Character
         Src
         Src/Entity
         Src/Entity/Character
+		Src/Entity/Character/AI
         Src/Tools
         Src/GameEngine
+		Src/MapGenerator
         Src/Entity/PowerUp/BombUp
         Src/Entity/PowerUp/FireUp
         Src/Entity/PowerUp/WallPass

@@ -28,6 +28,8 @@ namespace is {
 
 		void texture() override;
 
+		size_t getLenExplosion() const;
+
 		private:
 
 		bool isWalkable(std::shared_ptr<is::IEntity> &entity) const override;

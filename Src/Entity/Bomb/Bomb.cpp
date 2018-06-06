@@ -99,6 +99,11 @@ void is::Bomb::texture()
 	unlock();
 }
 
+size_t is::Bomb::getLenExplosion() const
+{
+	return _lenExplosion;
+}
+
 void is::Bomb::doExplosions()
 {
 	std::vector<std::shared_ptr<IEntity>> range;

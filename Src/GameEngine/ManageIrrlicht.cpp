@@ -5,6 +5,7 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <Entity/Character/AI/ArtificialIntelligence.hpp>
 #include "ManageIrrlicht.hpp"
 
 nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen) : _eventManager(eventManager) ,_entities(entities), _eventReceiver(), _mapSize(mapSize), _splitScreen(splitScreen)
@@ -110,6 +111,10 @@ void nts::ManageIrrlicht::manageEventPlayers()
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
 		for (int i = 0; it.key[i].f != nullptr ; ++i) {
+			if (dynamic_cast<is::ArtificialIntelligence *>(it.entity.get()) != nullptr) {
+				unlock();
+				dynamic_cast<is::ArtificialIntelligence *>(it.entity.get())->AIsTurn();
+			}
 			if (_eventReceiver.IsKeyDown(it.key[i].key)) {
 				_eventManager->enqueue(it.key[i].f);
 				doSomething = true;

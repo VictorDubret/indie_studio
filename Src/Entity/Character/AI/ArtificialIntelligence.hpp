@@ -12,13 +12,13 @@
 #include 	"ManageIrrlicht.hpp"
 
 namespace is {
-	class LevelOne: public ACharacter {
+	class ArtificialIntelligence: public ACharacter {
 	public:
-		LevelOne(Entity_t &entities, ThreadPool_t &eventManage,
+		ArtificialIntelligence(Entity_t &entities, ThreadPool_t &eventManage,
 			 nts::ManageIrrlicht &irrlicht);
-		~LevelOne() override = default;
+		~ArtificialIntelligence() override = default;
 
-		void 	beAnAI();
+		void 	AIsTurn();
 
 	private:
 		enum Type {
@@ -43,11 +43,12 @@ namespace is {
 		bool 	inDanger();
 		void	getMapDimensions();
 		void 	setWalls();
-		void 	setDangerRec(std::size_t pos, int range, int dir);
-		void 	setDanger(std::size_t pos, int range);
-		int 	getDist(int pos, std::vector<int> &map);
+		void 	setDangerRec(std::size_t pos, std::size_t range, int dir);
+		void 	setDanger(std::size_t pos, std::size_t range);
+		int 	getDist(int pos, std::vector<int> map);
 		Direction breadthFirst(int pos, std::vector<int> &map);
-		Direction headForAZone(Type type);
+		Direction lookForAZone(Type type);
+		void 	headTowards(Direction dir);
 		void 	addDangerZones();
 		void 	updateMap();
 

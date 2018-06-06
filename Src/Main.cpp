@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <vector>
-#include <MapGenerator/MapGenerator.hpp>
 #include <cstdlib>
 #include <irrlicht.h>
+#include "MapGenerator.hpp"
 #include <csignal>
 #include "Bomb.hpp"
 #include "ThreadPool.hpp"
@@ -17,17 +17,22 @@
 #include "ManageIrrlicht.hpp"
 #include "ManageObject.hpp"
 #include "ACharacter.hpp"
+#include "AAI.hpp"
+#include "ArtificialIntelligence.hpp"
 #include "Wall.hpp"
 
 int main(int ac, char **)
 {
-	my::ThreadPool thpool(20);
+	my::ThreadPool thpool(100);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
 	signal(SIGABRT, [](int ){exit(84);});
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
+	//nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(50, 50));
+
+	std::pair<std::size_t, std::size_t> mapSize(11,13);
 	bool splitScreen = false;
 	if (ac > 1) {
 		splitScreen = true;
@@ -36,23 +41,16 @@ int main(int ac, char **)
 	/* initialisation */
 	std::pair<std::size_t, std::size_t> mapSize(8,8);
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
-
-	//auto a = new is::Wall(lockList, pool, tmp);
-	//a->setX(5);
-	//a->setZ(5);
-
 	mg::MapGenerator generator(lockList, pool, tmp, mapSize);
+	//is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
+	is::IEntity *ai = new is::ArtificialIntelligence(lockList, pool, tmp);
 
-	is::ACharacter *toto = new is::ACharacter (lockList, pool, tmp);
-	toto->setZ(2);
-	toto->setBombMax(5);
-	toto->setBomb(5);
-//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
+
 
 	/* Création floor */
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
-	irr::core::dimension2d<irr::u32> tileCount(mapSize.first + 2, mapSize.second + 2); // taille de la map
-	auto material = new irr::video::SMaterial();
+	irr::core::dimension2d<irr::u32> tileCount(mapSize.first, mapSize.second); // taille de la map
+	auto material = new irreturn _lenExplosion;r::video::SMaterial();
 	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
 
 	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
@@ -79,12 +77,9 @@ int main(int ac, char **)
 
 	/* Set light and texture*/
 
-	std::cout << "Jarrive avant loopDisplay" << std::endl;
-	try {
-		tmp.loopDisplay();
-	} catch(std::exception &e) {
-		std::cout << e.what() << std::endl;
-	}
-	//lockList->clear();
+	srand(time(NULL));
+
+	tmp.loopDisplay();
+	//ai.AIsTurn();
 	return 0;
 }

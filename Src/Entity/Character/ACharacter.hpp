@@ -77,7 +77,7 @@ namespace is {
 		size_t _bomb = 1;
 		size_t _bombMax = 1;
 
-		size_t _bombLength = 1;
+		size_t _bombLength = 2;
 		size_t _speed = 1;
 
 		void move(float, float, float);
