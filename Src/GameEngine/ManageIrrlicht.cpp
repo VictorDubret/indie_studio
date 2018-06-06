@@ -96,11 +96,11 @@ void nts::ManageIrrlicht::loopDisplay()
 			_sceneManager->drawAll();
 			//setCameraPos();
 		}
-		std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
 		//fin test
 		displayFPS();
 
 		_driver->endScene();
+		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
 		unlock();
 	}
 }
@@ -184,6 +184,9 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" LOCK" << RESET << std::endl;
+	lock();
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" AFTER LOCK" << RESET << std::endl;
 	if (tmp && tmp->getType() == "Character") {
 		int idx = 0;
 		for (auto &it : _listPlayer) {
@@ -194,10 +197,12 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			idx++;
 		}
 	}
-	if (_device && _listObj[entity].obj) {
+	if (_device && _listObj.find(entity) != _listObj.end() && _listObj[entity].obj) {
 		_listObj[entity].obj->setVisible(false);
 		_listObj.erase(_listObj.find(entity));
 	}
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
+	unlock();
 	return false;
 }
 

@@ -41,12 +41,12 @@ namespace is {
 
 		bool _stopTimer = false;
 
-		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes);
+		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes, float x, float z);
 
-		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos, std::vector<std::shared_ptr<IEntity>> &tmp);
+		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos, float x_bomb, float z_bomb);
 
 		std::shared_ptr<IEntity> &_player;
-		void doExplosions();
+		void doExplosions(float x, float z);
 	};
 }
 

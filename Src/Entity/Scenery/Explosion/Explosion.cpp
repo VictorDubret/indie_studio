@@ -33,8 +33,10 @@ is::Explosion::Explosion(
 
 is::Explosion::~Explosion()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 }
 
@@ -51,11 +53,11 @@ void is::Explosion::explode()
 
 void is::Explosion::collide(is::IEntity *entity)
 {
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	if (entity) {
 		if (dynamic_cast<is::ACharacter *>(entity) == nullptr ||
 			dynamic_cast<is::AEntity *>(this) == nullptr)
 			return ;
+		std::cout << entity->getType() << std::endl;
 		entity->explode();
 	}
 }

@@ -24,8 +24,10 @@ is::APowerUp::APowerUp(
 
 is::APowerUp::~APowerUp()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 }
 
@@ -34,21 +36,29 @@ void is::APowerUp::collide(is::IEntity *entity)
 	auto character = dynamic_cast<ACharacter *>(entity);
 
 	if (character) {
-		_entities.lock();
+		//_entities.lock();
 		auto tmp = dynamic_cast<is::AEntity *>(entity);
 		if (!tmp) {
 			_entities.unlock();
 			return;
 		}
 		action(character);
-		_entities.unlock();
-		this->~APowerUp();
+		//_entities.unlock();
+		_eventManager.lock();
+		_eventManager->enqueue([this]{
+			this->~APowerUp();
+		});
+		_eventManager.unlock();
 	}
 }
 
 void is::APowerUp::explode()
 {
-	this->~APowerUp();
+	_eventManager.lock();
+	_eventManager->enqueue([this]{
+		this->~APowerUp();
+	});
+	_eventManager.unlock();
 }
 
 void is::APowerUp::texture()

@@ -41,8 +41,10 @@ void is::ACharacter::texture()
 
 is::ACharacter::~ACharacter()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 	std::cout << "NIKE TA MERE CONNARD" << std::endl;
 }
@@ -122,17 +124,9 @@ bool is::ACharacter::checkCollision()
 	bool ret = false;
 	auto list = getEntitiesAt(getX(), getY(), getZ());
 
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET
-		<< std::endl;
 	for (auto it : list) {
 		if (it.get() != this && it->isCollidable()) {
-			_eventManager.lock();
-			_eventManager->enqueue([this, it]() {
-				auto tmp_it = dynamic_cast<AEntity *>(it.get());
-				if (tmp_it)
 					it->collide(this);
-			});
-			_eventManager.unlock();
 		}
 	}
 	return ret;
@@ -141,22 +135,15 @@ bool is::ACharacter::checkCollision()
 void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
-	bool stop = false;
 
-	std::for_each(list.begin(), list.end(),
-		[&](std::shared_ptr<IEntity> &it) {
-			auto tmp = dynamic_cast<AEntity *>(it.get());
-			if (!tmp || (it.get() != this && it->isCollidable() &&
-				!it->isWalkable() &&
-				((it->isWallPassable() && !_wallPass) ||
-					!it->isWallPassable()))) {
-				std::cout << "COLLIDE" << std::endl;
-				stop = true;
-				return;
-			}
-		});
-	if (stop) {
-		return;
+	for (auto &it: list) {
+		it->lock();
+		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+			std::cout << "COLLIDE" << std::endl;
+			it->unlock();
+			return;
+		}
+		it->unlock();
 	}
 	setZ(nextZ);
 	setY(nextY);
@@ -230,26 +217,19 @@ void is::ACharacter::moveRight()
 
 void is::ACharacter::dropBomb()
 {
-	Debug::debug("DROP BOMB");
-	if (_bomb <= 0) {
+	if (_bomb <= 0)
 		return;
-	}
 	float size = _irrlicht.getNodeSize(_sptr);
 	_entities.lock();
-	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0),
-		(int)getY(), (int)(getZ() + size / 2.0));
+	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)getY(), (int)(getZ() + size / 2.0));
 
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET
-		<< std::endl;
 	for (auto &it: _entitiesAt) {
-		//std::cout << YEL << it->getType() << RESET << std::endl;
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 			std::cout << "Can't drop bomb" << std::endl;
 			_entities.unlock();
-			std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK"
-				<< RESET << std::endl;
+			doNothing();
 			return;
 		}
 	}
@@ -257,8 +237,6 @@ void is::ACharacter::dropBomb()
 	--_bomb;
 	unlock();
 	_entities.unlock();
-	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET
-		<< std::endl;
 	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 	std::cerr << "Bomb" << std::endl;
 	bomb->setX((int)(getX() + size / 2.0));
@@ -268,12 +246,13 @@ void is::ACharacter::dropBomb()
 
 void is::ACharacter::explode()
 {
-	lock();
 	//--_pv; //TODO uncomment
-	unlock();
 	if (_pv == 0) {
-		Debug::debug("A player die");
-		this->~ACharacter();
+		_eventManager.lock();
+		_eventManager->enqueue([this]{
+			this->~ACharacter();
+		});
+		_eventManager.unlock();
 	}
 }
 

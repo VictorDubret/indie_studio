@@ -25,8 +25,10 @@ is::UnbreakableWall::UnbreakableWall(
 
 is::UnbreakableWall::~UnbreakableWall()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 }
 
