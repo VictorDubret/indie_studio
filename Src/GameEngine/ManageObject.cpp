@@ -57,7 +57,7 @@ void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<
 	irr::video::ITexture *texture = manage.getDriver()->getTexture(path);
 	auto tmp = manage.getNode(obj);
 	if (texture == nullptr || !tmp)
-		throw std::exception();
+		return;
 	tmp->setMaterialTexture(0, texture);
 }
 

@@ -31,8 +31,10 @@ is::Wall::Wall(
 
 is::Wall::~Wall()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 }
 
@@ -55,16 +57,17 @@ void is::Wall::placePowerUp()
 	default:
 		break;
 	}
-	if (powerUp) {
-		powerUp->setPosition(getPosition());
+	if (powerUp && dynamic_cast<AEntity *>(_sptr.get())) {
+ 		powerUp->setPosition(getPosition());
 	}
 }
 
 void is::Wall::explode()
 {
-	placePowerUp();
-	std::cerr << "Explode " << _type << std::endl;
-	this->~Wall();
+	_eventManager->enqueue([this]{
+		placePowerUp();
+		this->~Wall();
+	});
 }
 
 void is::Wall::setPowerUp(char powerUp)
