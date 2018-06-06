@@ -43,7 +43,7 @@ namespace is {
 
 		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes);
 
-		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos);
+		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos, std::vector<std::shared_ptr<IEntity>> &tmp);
 
 		std::shared_ptr<IEntity> &_player;
 		void doExplosions();

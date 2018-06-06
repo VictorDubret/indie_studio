@@ -130,20 +130,21 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::vector<std::shared_ptr<IEntity>> tmp =
 		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
 			getEntitiesAt(getX(), 0, f(actualPos));
-	std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it) {
+	//std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it) {
+	std::for_each (tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> it){
 		auto tmp_it = dynamic_cast<AEntity *>(it.get());
 		if (!tmp_it || stop)
 			return false;
 		if (it->getType() == "Wall") {
-			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
-				return false;
-			}
+		//	if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+		//		return false;
+		//	}
 			it->lock();
-			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
-				return false;
-			}
+		//	if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+		//		return false;
+		//	}
 			it->explode();
-			createExplosion(f, which_axes, actualPos);
+			createExplosion(f, which_axes, actualPos, tmp);
 			stop = true;
 			return false;
 		} else if (it->getType() == "UnbreakableWall") {
@@ -166,14 +167,20 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	if (stop)
 		return false;
 	//_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
-	createExplosion(f, which_axes, actualPos);
+	createExplosion(f, which_axes, actualPos, tmp);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
 	return false;
 }
 
 void is::Bomb::createExplosion(std::function<float(int)> &f,
-	is::Bomb::Axes_t &which_axes, int &actualPos)
+	is::Bomb::Axes_t &which_axes, int &actualPos, std::vector<std::shared_ptr<IEntity>> &tmp)
 {
+//	if (std::find_if(tmp.begin(), tmp.end(), [](std::shared_ptr<IEntity> entity){
+//		return entity->getType() != "Explosion";
+//	}) != tmp.end()) {
+//		return ;
+//	}
+	std::cerr << YEL << "Hey negger !" << RESET<< std::endl;
 	auto explosion = new is::Explosion(_entities, _eventManager,
 		_irrlicht);
 	(which_axes == XAXES) ? explosion->setX(f(actualPos)) :
