@@ -150,9 +150,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	_irrlicht.lock();
 	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 	float size = _irrlicht.getNodeSize(_sptr);
-	std::cout << "a" << std::endl;
 	irr::core::vector3df pos(x, 0, z);
-	std::cout << "b" << std::endl;
 	auto sceneManager = _irrlicht.getSceneManager();
 	if (!sceneManager) {
 		_irrlicht.unlock();
@@ -160,52 +158,29 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	}
 	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
 
-	std::cout << "c" << std::endl;
 	auto mesh1 = node->getTransformedBoundingBox();
-	std::cout << "d" << std::endl;
 	node->setVisible(false);
 
-	std::cout << "e" << std::endl;
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-		std::cout << "f" << std::endl;
-
 		auto tmp = _irrlicht.getNode(entity);
-		std::cout << "g" << std::endl;
-		if (!tmp) {
-			std::cout << "h" << std::endl;
+		if (!tmp)
 			return false;
-		}
-		std::cout << "i" << std::endl;
 		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
-		std::cout << "j" << std::endl;
 		bool test = false;
-		std::cout << "l" << std::endl;
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
-		std::cout << "m" << std::endl;
-		std::cout << "n" << std::endl;
 		return test;
 	};
-	std::cout << "o" << std::endl;
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	std::cout << "p" << std::endl;
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
-	std::cout << "q" << std::endl;
 	while (it != _entities->end()) {
-		std::cout << "r" << std::endl;
-
-		ret.push_back(*it.base());
-		std::cout << "s" << std::endl;
+		ret.push_back(*(it.base()));
 		it++;
 		if (it != _entities->end()) {
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
-	std::cout << "u" << std::endl;
-	std::cout << "v" << std::endl;
 	node->removeAll();
 	//node->remove();
-	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
 	_irrlicht.unlock();
 	return std::move(ret);
 }

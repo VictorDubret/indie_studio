@@ -46,15 +46,19 @@ irr::core::vector3df nts::ManageObject::getPosition(nts::ManageIrrlicht &manage,
 
 void nts::ManageObject::setMaterialLight(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, bool opt)
 {
-	manage.getNode(obj)->setMaterialFlag(irr::video::EMF_LIGHTING, opt);
+	auto tmp = manage.getNode(obj);
+	if (!tmp)
+		return;
+	tmp->setMaterialFlag(irr::video::EMF_LIGHTING, opt);
 }
 
 void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::io::path &path)
 {
 	irr::video::ITexture *texture = manage.getDriver()->getTexture(path);
-	if (texture == nullptr)
+	auto tmp = manage.getNode(obj);
+	if (texture == nullptr || !tmp)
 		throw std::exception();
-	manage.getNode(obj)->setMaterialTexture(0, texture);
+	tmp->setMaterialTexture(0, texture);
 }
 
 void nts::ManageObject::setAnimation(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::scene::EMD2_ANIMATION_TYPE type)

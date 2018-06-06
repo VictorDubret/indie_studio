@@ -11,6 +11,7 @@
 #include "Debug.hpp"
 #include "Bomb.hpp"
 #include "ManageObject.hpp"
+#include "APowerUp.hpp"
 
 is::ACharacter::ACharacter(
 	my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
@@ -119,7 +120,6 @@ is::ACharacter &is::ACharacter::operator++()
 bool is::ACharacter::checkCollision()
 {
 	bool ret = false;
-	_entities.lock();
 	auto list = getEntitiesAt(getX(), getY(), getZ());
 
 	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET
@@ -128,45 +128,21 @@ bool is::ACharacter::checkCollision()
 		if (it.get() != this && it->isCollidable()) {
 			_eventManager.lock();
 			_eventManager->enqueue([this, it]() {
-				it->collide(this);
+				auto tmp_it = dynamic_cast<AEntity *>(it.get());
+				if (tmp_it)
+					it->collide(this);
 			});
 			_eventManager.unlock();
 		}
 	}
-	/*std::for_each(list.begin(), list.end(),
-		[&](std::shared_ptr<IEntity> it) {
-			auto a = dynamic_cast<AEntity *>(it.get());
-			if (!a || !it || !it.get())
-				return;
-			//it->lock();
-			if (it.get() != this && it->isCollidable()) {
-				_eventManager.lock();
-				_eventManager->enqueue([&]() {
-					IEntity *tmp_this = this;
-					auto tmp_it = dynamic_cast<AEntity *>(it.get());
-					if (tmp_it) {
-						tmp_it->collide(tmp_this);
-					}
-				});
-				_eventManager.unlock();
-			}
-			auto b = dynamic_cast<AEntity *>(it.get());
-			if (!b)
-				return;
-			//it->unlock();
-		});*/
-	_entities.unlock();
 	return ret;
 }
 
 void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
-	_entities.lock();
 	auto list = getEntitiesAt(nextX, nextY, nextZ);
 	bool stop = false;
 
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET
-		<< std::endl;
 	std::for_each(list.begin(), list.end(),
 		[&](std::shared_ptr<IEntity> &it) {
 			auto tmp = dynamic_cast<AEntity *>(it.get());
@@ -175,20 +151,13 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 				((it->isWallPassable() && !_wallPass) ||
 					!it->isWallPassable()))) {
 				std::cout << "COLLIDE" << std::endl;
-				_entities.unlock();
-				std::cout << GRN << __PRETTY_FUNCTION__
-					<< " UNLOCK" << RESET << std::endl;
 				stop = true;
 				return;
 			}
 		});
 	if (stop) {
-		_entities.unlock();
-		std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET
-			<< std::endl;
 		return;
 	}
-	_entities.unlock();
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
@@ -204,9 +173,11 @@ void is::ACharacter::moveUp()
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
+	_entities.lock();
 	float next = getZ() + _speed * _speedCoef;
 
 	move(getX(), getY(), next);
+	_entities.unlock();
 }
 
 void is::ACharacter::moveDown()
@@ -218,9 +189,11 @@ void is::ACharacter::moveDown()
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
+	_entities.lock();
 	float next = getZ() - _speed * _speedCoef;
 
 	move(getX(), getY(), next);
+	_entities.unlock();
 }
 
 void is::ACharacter::moveLeft()
@@ -232,9 +205,11 @@ void is::ACharacter::moveLeft()
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
+	_entities.lock();
 	float next = getX() - _speed * _speedCoef;
 
 	move(next, getY(), getZ());
+	_entities.unlock();
 }
 
 void is::ACharacter::moveRight()
@@ -246,9 +221,11 @@ void is::ACharacter::moveRight()
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
+	_entities.lock();
 	float next = getX() + _speed * _speedCoef;
 
 	move(next, getY(), getZ());
+	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
@@ -267,7 +244,7 @@ void is::ACharacter::dropBomb()
 	for (auto &it: _entitiesAt) {
 		//std::cout << YEL << it->getType() << RESET << std::endl;
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
-		auto checkPowerUp = dynamic_cast<ACharacter *>(it.get());
+		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 			std::cout << "Can't drop bomb" << std::endl;
 			_entities.unlock();

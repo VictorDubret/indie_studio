@@ -41,7 +41,7 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 	_thread =  new my::Thread([&](){
 		while (!_stopThread && _device) {
 			manageEvent();
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
 	});
 }
@@ -109,9 +109,6 @@ void nts::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
 		_device->closeDevice();
-		delete _device;
-		_device = nullptr;
-		_sceneManager = nullptr;
 	}
 	else
 		manageEventPlayers();
