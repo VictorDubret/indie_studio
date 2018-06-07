@@ -24,8 +24,13 @@ is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPoo
 void 	is::ArtificialIntelligence::AIsTurn()
 {
 	Direction	dir;
+
+	//if (!dynamic_cast<ACharacter *>(_sptr.get()))
+		//return;
 	if (stillCrates() == true) {
+		_entities.lock();
 		updateMap();
+		_entities.unlock();
 		std::cout << "I'm in ";
 		std::cout << getX() << " " << getZ();
 		if (inDanger() == true) {
@@ -79,14 +84,14 @@ bool is::ArtificialIntelligence::inDanger()
 
 void	is::ArtificialIntelligence::getMapDimensions()
 {
-	_entities.lock();
+	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (it->getX() > _width)
 			_width = static_cast<size_t>(it->getX());
 		if (it->getZ() > _height)
 			_height = static_cast<size_t>(it->getZ());
 	}
-	_entities.unlock();
+	//_entities.unlock();
 	_height++;
 	_width++;
 	#ifdef DEBUG
@@ -97,14 +102,14 @@ void	is::ArtificialIntelligence::getMapDimensions()
 
 void	is::ArtificialIntelligence::setWalls()
 {
-	_entities.lock();
+	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (it->getType() == "UnbreakableWall") {
 			_map[(int)it->getX() + (int)it->getZ() * _width].first = WALL;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
 	}
-	_entities.unlock();
+	//_entities.unlock();
 	#ifdef DEBUG
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (_map[i].first == SAFE)
@@ -193,8 +198,8 @@ bool 	is::ArtificialIntelligence::addDangerZones(std::vector <std::pair<Type, IE
 
 int 	is::ArtificialIntelligence::getDist(int pos, std::vector<int> map)
 {
-	if (map[pos] == -3 || (map[pos] == -2 && _map[(int)getZ() * _width + (int)getX()].first != DANGER && _map[(int)getZ() * _width + (int)getX()].first != BOMB))
-		return (100);
+	if (map[pos] == -3 || (map[pos] == -2 && _map[(int)(getZ() + 0.15) * _width + (int)(getX() + 0.15)].first != DANGER && _map[(int)(getZ() + 0.15) * _width + (int)(getX() + 0.15)].first != BOMB))
+		return (100); //collision
 	if (map[pos] == -1)
 		return (0);
 
@@ -239,8 +244,8 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(
 {
 	std::vector<int>	map(_width * _height, 0);
 	int 			start = static_cast<int>(
-		static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
-		//static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); collision
+		//static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
+		static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); //collision
 
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (_map[i].first == WALL || _map[i].first == BOMB || _map[i].first == EXPLOSION ||
@@ -258,8 +263,8 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(
 {
 	std::vector<int>	minMap(_width * _height, 0);
 	int 			start = static_cast<int>(
-		static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
-		//static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); collision
+		//static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
+		static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); //collision
 
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (map[i].first == WALL || map[i].first == BOMB || map[i].first == EXPLOSION ||
@@ -303,8 +308,8 @@ void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direct
 	std::cout << "Z: I'm between " << getZ() << " and " << getZ() + _irrlicht.getNodeSize(_sptr) << std::endl;
 	std::cout << "X: I'm between " << getX() << " and " << getX() + _irrlicht.getNodeSize(_sptr) << std::endl;
 	if (dir == LEFT || dir == RIGHT) {
-		if ((int)(getZ()) != (int)(getZ() + _irrlicht.getNodeSize(_sptr))) {
-		//if ((int)(getZ() + 0.15) != (int)(getZ() + _irrlicht.getNodeSize(_sptr) + 0.15)) { collision
+		//if ((int)(getZ()) != (int)(getZ() + _irrlicht.getNodeSize(_sptr))) {
+		if ((int)(getZ() + 0.15) != (int)(getZ() + _irrlicht.getNodeSize(_sptr) + 0.15)) { //collision
 			std::cout << "I'm going down" << std::endl;
 			moveDown();
 		} else if (dir == LEFT) {
@@ -315,8 +320,8 @@ void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direct
 			moveRight();
 		}
 	} else {
-		if ((int)(getX()) != (int)(getX() + _irrlicht.getNodeSize(_sptr))) {
-		//if ((int)(getX() + 0.15) != (int)(getX() + _irrlicht.getNodeSize(_sptr) + 0.15)) { collision
+		//if ((int)(getX()) != (int)(getX() + _irrlicht.getNodeSize(_sptr))) {
+		if ((int)(getX() + 0.15) != (int)(getX() + _irrlicht.getNodeSize(_sptr) + 0.15)) { //collision
 			std::cout << "I'm going left" << std::endl;
 			moveLeft();
 		} else if (dir == DOWN) {
@@ -337,11 +342,11 @@ void 	is::ArtificialIntelligence::updateMap()
 			_map[i].second = nullptr;
 		}
 	}
-	_entities.lock();
+	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (!dynamic_cast<AEntity *>(it.get()))
 			continue;
-		it->lock();
+		//it->lock();
 		if ((int)it->getX() + (int)it->getZ() * _width < _height * _width && _map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
 			if (it->getType() == "Wall")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = CRATE;
@@ -354,9 +359,9 @@ void 	is::ArtificialIntelligence::updateMap()
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = POWERUP;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
-		it->unlock();
+		//it->unlock();
 	}
-	_entities.unlock();
+	//_entities.unlock();
 	addDangerZones();
 	#ifdef DEBUG
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {

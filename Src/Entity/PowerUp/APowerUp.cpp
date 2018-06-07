@@ -46,6 +46,13 @@ void is::APowerUp::collide(is::IEntity *entity)
 		//_entities.unlock();
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
+			_entities.lock();
+			if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+				_entities.unlock();
+				return;
+			}
+			this->lock();
+			_locked = true;
 			this->~APowerUp();
 		});
 		_eventManager.unlock();
@@ -54,8 +61,17 @@ void is::APowerUp::collide(is::IEntity *entity)
 
 void is::APowerUp::explode()
 {
+	std::cout << "Je lock !" << std::endl;
 	_eventManager.lock();
+	std::cout << "Après le lock !"<< std::endl;
 	_eventManager->enqueue([this]{
+		_entities.lock();
+		if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+			_entities.unlock();
+			return;
+		}
+		this->lock();
+		_locked = true;
 		this->~APowerUp();
 	});
 	_eventManager.unlock();

@@ -14,15 +14,12 @@
 # include "ThreadPool.hpp"
 # include "ItemLocker.hpp"
 # include "IEntity.hpp"
+# include "Debug.hpp"
 
 namespace nts {
 
 	class IManageIrrlicht {
 		public:
-		// Constructor & detructor
-		IManageIrrlicht() = default;
-		virtual ~IManageIrrlicht() = default;
-
 		// Update the view of the map, take the 2 farest player
 		virtual void updateView() = 0;
 		// call each function needed on the loop
@@ -33,8 +30,9 @@ namespace nts {
 		virtual bool deleteEntity(std::shared_ptr<is::IEntity> &) = 0;
 
 		// get the object
-		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
+		virtual irr::scene::ISceneNode *getNode(is::IEntity *) = 0;
 		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;
+		virtual void resetListObj() = 0;
 
 		// Getter
 		virtual irr::scene::ISceneManager *getSceneManager() const = 0;
@@ -49,6 +47,7 @@ namespace nts {
 
 		virtual void lock() = 0;
 		virtual void unlock() = 0;
+		virtual void manageEvent() = 0;
 
 		protected:
 		private:

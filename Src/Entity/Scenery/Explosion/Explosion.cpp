@@ -54,10 +54,8 @@ void is::Explosion::explode()
 void is::Explosion::collide(is::IEntity *entity)
 {
 	if (entity) {
-		if (dynamic_cast<is::ACharacter *>(entity) == nullptr ||
-			dynamic_cast<is::AEntity *>(this) == nullptr)
+		if (dynamic_cast<is::ACharacter *>(entity) == nullptr)
 			return ;
-		std::cout << entity->getType() << std::endl;
 		entity->explode();
 	}
 }

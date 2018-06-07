@@ -148,14 +148,18 @@ void		mg::MapGenerator::transposeMap(is::Entity_t &entities,
 {
 	for (std::size_t i = 0 ; i < _map.size() ; ++i) {
 		if (_map[i] == '#' || _map[i] == '.') {
+			entities.lock();
 			auto wall = new is::UnbreakableWall(entities, eventManager, irrlicht);
 			wall->setZ(i / (_width + 2));
 			wall->setX(i % (_width + 2));
+			entities.unlock();
 		} else if (_map[i] != ' ') {
+			entities.lock();
 			auto crate = new is::Wall(entities, eventManager, irrlicht);
 			crate->setPowerUp(_map[i]);
 			crate->setZ(i / (_width + 2));
 			crate->setX(i % (_width + 2));
+			entities.unlock();
 		}
 	}
 }

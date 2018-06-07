@@ -57,6 +57,7 @@ namespace is {
 		void moveRight();
 		void dropBomb();
 		void doNothing();
+		void save();
 
 		void explode() override;
 
@@ -67,7 +68,7 @@ namespace is {
 		/*
 		 * Internal Config
 		 */
-		float _speedCoef = 0.05;
+		float _speedCoef = 0.1;
 
 		uint _pv = 1;
 
@@ -77,7 +78,7 @@ namespace is {
 		size_t _bomb = 1;
 		size_t _bombMax = 1;
 
-		size_t _bombLength = 2;
+		size_t _bombLength = 1;
 		size_t _speed = 1;
 
 		void move(float, float, float);

@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/sahel/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/181.5087.36/bin/cmake/bin/cmake
+CMAKE_COMMAND = /home/lucas/Downloads/clion-2018.1.2/bin/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /home/sahel/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/181.5087.36/bin/cmake/bin/cmake -E remove -f
+RM = /home/lucas/Downloads/clion-2018.1.2/bin/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sahel/Work/Epitech/cpp_indie_studio
+CMAKE_SOURCE_DIR = /home/lucas/delivery/CPP/cpp_indie_studio
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sahel/Work/Epitech/cpp_indie_studio
+CMAKE_BINARY_DIR = /home/lucas/delivery/CPP/cpp_indie_studio
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/sahel/Work/Epitech/cpp_indie_studio
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/home/sahel/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/181.5087.36/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/home/lucas/Downloads/clion-2018.1.2/bin/cmake/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -69,8 +69,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/home/sahel/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/181.5087.36/bin/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/home/lucas/Downloads/clion-2018.1.2/bin/cmake/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/sahel/Work/Epitech/cpp_indie_studio/CMakeFiles /home/sahel/Work/Epitech/cpp_indie_studio/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lucas/delivery/CPP/cpp_indie_studio/CMakeFiles /home/lucas/delivery/CPP/cpp_indie_studio/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/sahel/Work/Epitech/cpp_indie_studio/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lucas/delivery/CPP/cpp_indie_studio/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -501,6 +501,33 @@ Src/Entity/Scenery/Wall/Wall.cpp.s:
 	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/Entity/Scenery/Wall/Wall.cpp.s
 .PHONY : Src/Entity/Scenery/Wall/Wall.cpp.s
 
+Src/GameEngine/AManageIrrlicht.o: Src/GameEngine/AManageIrrlicht.cpp.o
+
+.PHONY : Src/GameEngine/AManageIrrlicht.o
+
+# target to build an object file
+Src/GameEngine/AManageIrrlicht.cpp.o:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/AManageIrrlicht.cpp.o
+.PHONY : Src/GameEngine/AManageIrrlicht.cpp.o
+
+Src/GameEngine/AManageIrrlicht.i: Src/GameEngine/AManageIrrlicht.cpp.i
+
+.PHONY : Src/GameEngine/AManageIrrlicht.i
+
+# target to preprocess a source file
+Src/GameEngine/AManageIrrlicht.cpp.i:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/AManageIrrlicht.cpp.i
+.PHONY : Src/GameEngine/AManageIrrlicht.cpp.i
+
+Src/GameEngine/AManageIrrlicht.s: Src/GameEngine/AManageIrrlicht.cpp.s
+
+.PHONY : Src/GameEngine/AManageIrrlicht.s
+
+# target to generate assembly for a file
+Src/GameEngine/AManageIrrlicht.cpp.s:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/AManageIrrlicht.cpp.s
+.PHONY : Src/GameEngine/AManageIrrlicht.cpp.s
+
 Src/GameEngine/EventManager.o: Src/GameEngine/EventManager.cpp.o
 
 .PHONY : Src/GameEngine/EventManager.o
@@ -527,6 +554,60 @@ Src/GameEngine/EventManager.s: Src/GameEngine/EventManager.cpp.s
 Src/GameEngine/EventManager.cpp.s:
 	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/EventManager.cpp.s
 .PHONY : Src/GameEngine/EventManager.cpp.s
+
+Src/GameEngine/GUI.o: Src/GameEngine/GUI.cpp.o
+
+.PHONY : Src/GameEngine/GUI.o
+
+# target to build an object file
+Src/GameEngine/GUI.cpp.o:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/GUI.cpp.o
+.PHONY : Src/GameEngine/GUI.cpp.o
+
+Src/GameEngine/GUI.i: Src/GameEngine/GUI.cpp.i
+
+.PHONY : Src/GameEngine/GUI.i
+
+# target to preprocess a source file
+Src/GameEngine/GUI.cpp.i:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/GUI.cpp.i
+.PHONY : Src/GameEngine/GUI.cpp.i
+
+Src/GameEngine/GUI.s: Src/GameEngine/GUI.cpp.s
+
+.PHONY : Src/GameEngine/GUI.s
+
+# target to generate assembly for a file
+Src/GameEngine/GUI.cpp.s:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/GUI.cpp.s
+.PHONY : Src/GameEngine/GUI.cpp.s
+
+Src/GameEngine/Game.o: Src/GameEngine/Game.cpp.o
+
+.PHONY : Src/GameEngine/Game.o
+
+# target to build an object file
+Src/GameEngine/Game.cpp.o:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/Game.cpp.o
+.PHONY : Src/GameEngine/Game.cpp.o
+
+Src/GameEngine/Game.i: Src/GameEngine/Game.cpp.i
+
+.PHONY : Src/GameEngine/Game.i
+
+# target to preprocess a source file
+Src/GameEngine/Game.cpp.i:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/Game.cpp.i
+.PHONY : Src/GameEngine/Game.cpp.i
+
+Src/GameEngine/Game.s: Src/GameEngine/Game.cpp.s
+
+.PHONY : Src/GameEngine/Game.s
+
+# target to generate assembly for a file
+Src/GameEngine/Game.cpp.s:
+	$(MAKE) -f CMakeFiles/bomberman.dir/build.make CMakeFiles/bomberman.dir/Src/GameEngine/Game.cpp.s
+.PHONY : Src/GameEngine/Game.cpp.s
 
 Src/GameEngine/ManageIrrlicht.o: Src/GameEngine/ManageIrrlicht.cpp.o
 
@@ -741,9 +822,18 @@ help:
 	@echo "... Src/Entity/Scenery/Wall/Wall.o"
 	@echo "... Src/Entity/Scenery/Wall/Wall.i"
 	@echo "... Src/Entity/Scenery/Wall/Wall.s"
+	@echo "... Src/GameEngine/AManageIrrlicht.o"
+	@echo "... Src/GameEngine/AManageIrrlicht.i"
+	@echo "... Src/GameEngine/AManageIrrlicht.s"
 	@echo "... Src/GameEngine/EventManager.o"
 	@echo "... Src/GameEngine/EventManager.i"
 	@echo "... Src/GameEngine/EventManager.s"
+	@echo "... Src/GameEngine/GUI.o"
+	@echo "... Src/GameEngine/GUI.i"
+	@echo "... Src/GameEngine/GUI.s"
+	@echo "... Src/GameEngine/Game.o"
+	@echo "... Src/GameEngine/Game.i"
+	@echo "... Src/GameEngine/Game.s"
 	@echo "... Src/GameEngine/ManageIrrlicht.o"
 	@echo "... Src/GameEngine/ManageIrrlicht.i"
 	@echo "... Src/GameEngine/ManageIrrlicht.s"
