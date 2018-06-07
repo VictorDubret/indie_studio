@@ -28,7 +28,7 @@ void is::ACharacter::texture()
 {
 	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2",
 		0.75);
-	_irrlicht.getNode(_sptr)->setPosition(
+	_irrlicht.getNode(_sptr.get())->setPosition(
 		irr::core::vector3df(1.1f, 0.1f, 1.1f));
 	nts::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(0.05, 0.05, 0.05));
@@ -138,8 +138,8 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 
 	for (auto &it: list) {
 		it->lock();
-		if (it.get() != this && it->isCollidable() && !it->isWalkable() && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
-			std::cout << "COLLIDE" << std::endl;
+		if (it.get() != this && it->isCollidable() && !it->isWalkable(_sptr) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+			std::cout << "COLLIDE with : " << it->getType() << std::endl;
 			it->unlock();
 			return;
 		}
@@ -161,7 +161,13 @@ void is::ACharacter::moveUp()
 		_lastMove = MoveCharacter::UP;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
+	lock();
 	float next = getZ() + _speed * _speedCoef;
+	unlock();
 
 	move(getX(), getY(), next);
 	_entities.unlock();
@@ -177,8 +183,13 @@ void is::ACharacter::moveDown()
 		_lastMove = MoveCharacter::DOWN;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
+	lock();
 	float next = getZ() - _speed * _speedCoef;
-
+	unlock();
 	move(getX(), getY(), next);
 	_entities.unlock();
 }
@@ -193,7 +204,13 @@ void is::ACharacter::moveLeft()
 		_lastMove = MoveCharacter::LEFT;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
+	lock();
 	float next = getX() - _speed * _speedCoef;
+	unlock();
 
 	move(next, getY(), getZ());
 	_entities.unlock();
@@ -209,18 +226,29 @@ void is::ACharacter::moveRight()
 		_lastMove = MoveCharacter::RIGHT;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
+	lock();
 	float next = getX() + _speed * _speedCoef;
-
+	unlock();
 	move(next, getY(), getZ());
 	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
 {
-	if (_bomb <= 0)
-		return;
-	float size = _irrlicht.getNodeSize(_sptr);
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
+	if (_bomb <= 0) {
+		_entities.unlock();
+		return;
+	}
+	float size = _irrlicht.getNodeSize(_sptr);
 	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)getY(), (int)(getZ() + size / 2.0));
 
 	for (auto &it: _entitiesAt) {
@@ -229,27 +257,33 @@ void is::ACharacter::dropBomb()
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 			std::cout << "Can't drop bomb" << std::endl;
 			_entities.unlock();
-			doNothing();
 			return;
 		}
 	}
 	lock();
 	--_bomb;
-	unlock();
-	_entities.unlock();
 	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 	std::cerr << "Bomb" << std::endl;
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
+	unlock();
+	_entities.unlock();
 }
 
 void is::ACharacter::explode()
 {
-	//--_pv; //TODO uncomment
+	--_pv;
 	if (_pv == 0) {
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
+			_entities.lock();
+			if (!dynamic_cast<AEntity *>(_sptr.get())) {
+				_entities.unlock();
+				return;
+			}
+			lock();
+			_locked = true;
 			this->~ACharacter();
 		});
 		_eventManager.unlock();

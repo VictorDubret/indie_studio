@@ -33,7 +33,7 @@ namespace nts {
 		virtual bool deleteEntity(std::shared_ptr<is::IEntity> &) = 0;
 
 		// get the object
-		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
+		virtual irr::scene::ISceneNode *getNode(is::IEntity *) = 0;
 		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;
 
 		// Getter

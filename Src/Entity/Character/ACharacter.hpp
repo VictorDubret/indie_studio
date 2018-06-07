@@ -67,7 +67,7 @@ namespace is {
 		/*
 		 * Internal Config
 		 */
-		float _speedCoef = 0.15;
+		float _speedCoef = 0.1;
 
 		uint _pv = 1;
 

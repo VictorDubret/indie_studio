@@ -36,7 +36,6 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 is::Bomb::~Bomb()
 {
 	if (!_locked) {
-		std::cerr << BLU << "je suis pas détruit" << RESET <<std::endl;
 		_entities.lock();
 		lock();
 	}
@@ -52,13 +51,7 @@ void is::Bomb::explode()
 	_stopTimer = true;
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-		std::cout << std::this_thread::get_id() << YEL << " " << this
-			<< " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET
-			<< std::endl;
 		lock();
-		std::cout << std::this_thread::get_id() << YEL << " " << this
-			<< " : " << __PRETTY_FUNCTION__ << " AFTER LOCK"
-			<< RESET << std::endl;
 		float x = getX();
 		float z = getZ();
 		_eventManager.lock();
@@ -71,13 +64,16 @@ void is::Bomb::explode()
 			tmp->operator++();
 		_eventManager.lock();
 		_eventManager->enqueue([this] {
-			std::cerr << BLU << "mmmmmmmmmmmmmmmmmmmmmmmh" << RESET << std::endl;
+			_entities.lock();
+			if (!dynamic_cast<Bomb *>(_sptr.get())) {
+				_entities.unlock();
+				return;
+			}
+			this->lock();
+			_locked = true;
 			this->~Bomb();
 		});
 		_eventManager.unlock();
-		std::cout << std::this_thread::get_id() << YEL << " " << this
-			<< " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET
-			<< std::endl;
 		unlock();
 		return;
 	});
@@ -106,17 +102,11 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
-	std::cout << std::this_thread::get_id() << YEL << " " << this << " : "
-		<< __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	lock();
-	std::cout << std::this_thread::get_id() << YEL << " " << this << " : "
-		<< __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 	unlock();
-	std::cout << std::this_thread::get_id() << YEL << " " << this << " : "
-		<< __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::Bomb::doExplosions(float x, float z)
@@ -130,11 +120,7 @@ void is::Bomb::doExplosions(float x, float z)
 	_eventManager.lock();
 	std::cerr << RED << "-----------------------------------" << RESET << std::endl;
 	_eventManager->enqueue([&] {
-		std::cout << std::this_thread::get_id() << " : "
-			<< __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 		_entities.lock();
-		std::cout << std::this_thread::get_id() << " : "
-			<< __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 		check_arround(_lenExplosion, 0, [x](int actualPos) {
 			return x - actualPos;
 		}, XAXES, x, z);
@@ -147,13 +133,9 @@ void is::Bomb::doExplosions(float x, float z)
 		check_arround(_lenExplosion, 1, [z](int actualPos) {
 			return z + actualPos;
 		}, ZAXES, x, z);
-		std::cout << std::this_thread::get_id() << " : "
-			<< __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 		_entities.unlock();
 	});
 	_eventManager.unlock();
-	std::cout << std::this_thread::get_id() << YEL << " " << this << " : "
-		<< __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 bool is::Bomb::check_arround(int lenExplosion, int actualPos,
@@ -218,11 +200,13 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 	std::cerr << "lol mdr" << std::endl;
 	_eventManager.lock();
 	_eventManager->enqueue([this, x, z]() {
+		_entities.lock();
 		auto explosion = new is::Explosion(_entities, _eventManager,
 			_irrlicht);
 		std::cerr << "Je suis en cour de crea de l'explo " << std::endl;
 		explosion->setX(x);
 		explosion->setZ(z);
+		_entities.unlock();
 	});
 	_eventManager.unlock();
 	std::cerr << "J'ai fini de creer l'explo" << std::endl;
@@ -230,17 +214,18 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 	//_eventManager.unlock();
 }
 
-bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
+bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 {
-	/*_entities.lock();
+	unlock();
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
+	lock();
 	for (const auto &it : tmp) {
 		std::cout << "type : " << it->getType() << std::endl;
 		if (entity.get() == it.get()) {
+			std::cerr << RED << "Je suis bien true :(" << RESET << std::endl;
 			return true;
 		}
 	}
-	_entities.unlock();
-	return false;*/
+	std::cerr << YEL << "Je suis bien false !!!!!!!!! :(" << RESET << std::endl;
 	return false;
 }

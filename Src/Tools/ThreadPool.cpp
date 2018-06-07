@@ -41,12 +41,7 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 
 my::ThreadPool::~ThreadPool()
 {
-	_stop = true;
-	_cond.notify_all();
-	for (auto &it: _threads) {
-		if (it->joinable())
-			it->join();
-	}
+	finishAll();
 }
 
 

@@ -128,11 +128,12 @@ void nts::ManageIrrlicht::loopDisplay()
 			_sceneManager->drawAll();
 			//setCameraPos();
 		}
+		unlock();
 		//fin test
 		displayFPS();
 
 		_driver->endScene();
-		unlock();
+		std::this_thread::yield();
 	}
 }
 
@@ -148,7 +149,10 @@ void nts::ManageIrrlicht::manageEventPlayers()
 {
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
-		for (int i = 0; it.key[i].f != nullptr; ++i) {
+		if (!dynamic_cast<is::AEntity *>(it.entity))
+			return;
+
+		for (int i = 0; it.key[i].f != nullptr ; ++i) {
 			if (_eventReceiver.IsKeyDown(it.key[i].key)) {
 				_eventManager.lock();
 				_eventManager->enqueue(it.key[i].f);
@@ -169,7 +173,7 @@ void nts::ManageIrrlicht::manageEventPlayers()
 }
 
 irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(
-	const std::shared_ptr<is::IEntity> &entity
+	is::IEntity *entity
 )
 {
 	return _listObj[entity].obj;
@@ -179,7 +183,7 @@ float &nts::ManageIrrlicht::getNodeSize(
 	const std::shared_ptr<is::IEntity> &entity
 )
 {
-	return _listObj[entity].size;
+	return _listObj[entity.get()].size;
 }
 
 bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity,
@@ -191,7 +195,7 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity,
 	if (tmp != nullptr && tmp->getType() == "Character") {
 		player_t player;
 		if (_listPlayer.empty())
-			player = {std::shared_ptr<is::ACharacter>(tmp),
+			player = {(tmp),
 				{irr::KEY_ESCAPE, [tmp]() {
 					tmp->doNothing();
 				}}, {irr::KEY_RETURN, [tmp]() {
@@ -206,7 +210,7 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity,
 					tmp->moveDown();
 				}}, {irr::KEY_ESCAPE, nullptr}}};
 		else
-			player = {std::shared_ptr<is::ACharacter>(tmp),
+			player = {(tmp),
 				{irr::KEY_ESCAPE, [tmp]() {
 					tmp->doNothing();
 				}}, {irr::KEY_SPACE, [tmp]() {
@@ -222,14 +226,14 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity,
 				}}, {irr::KEY_ESCAPE, nullptr}}};
 		_listPlayer.push_back(player);
 	}
-	_listObj[entity] = {obj, size};
+	_listObj[entity.get()] = {obj, size};
 	return false;
 }
 
 bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	lock();
-	if (entity->getType() == "Character") {
+	/*if (entity->getType() == "Character") {
 		int idx = 0;
 		for (auto &it : _listPlayer) {
 			if (it.entity == entity) {
@@ -238,9 +242,14 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			}
 			idx++;
 		}
-	}
-	nts::irrObj_t tmp_obj = _listObj[entity];
-	auto tmp_find = _listObj.find(entity);
+	}*/
+	//if (entity->getType() == "Character") {
+
+	//	unlock();
+	//	return false;
+	//}
+	nts::irrObj_t tmp_obj = _listObj[entity.get()];
+	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
 		tmp_obj.obj->setVisible(false);
 		_listObj.erase(tmp_find);

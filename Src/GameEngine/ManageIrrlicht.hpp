@@ -26,7 +26,7 @@ namespace nts {
 	} event_t;
 
 	typedef struct {
-		std::shared_ptr<is::ACharacter> entity;
+		is::ACharacter *entity;
 		event_t nothing;
 		event_t doSomething;
 		event_t key[5];
@@ -64,7 +64,7 @@ namespace nts {
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
 		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
 
-		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
+		irr::scene::ISceneNode *getNode(is::IEntity *) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
@@ -86,7 +86,7 @@ namespace nts {
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
-		std::unordered_map<std::shared_ptr<is::IEntity>, nts::irrObj_t> _listObj;
+		std::unordered_map<is::IEntity *, nts::irrObj_t> _listObj;
 		std::vector<nts::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 

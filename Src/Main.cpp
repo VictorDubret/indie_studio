@@ -86,7 +86,6 @@ int main(int ac, char **)
 
 	/* Set light and texture*/
 
-	std::cout << "Jarrive avant loopDisplay" << std::endl;
 	tmp.loopDisplay();
 	pool->finishAll();
 	return 0;

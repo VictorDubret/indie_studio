@@ -30,7 +30,7 @@ namespace is {
 
 		private:
 
-		bool isWalkable(std::shared_ptr<is::IEntity> &entity) const override;
+		bool isWalkable(std::shared_ptr<is::IEntity> &entity) override;
 
 		typedef enum {
 			XAXES = 0,
