@@ -23,6 +23,8 @@ namespace nts {
 		event_t nothing;
 		event_t doSomething;
 		event_t key[6];
+
+		bool alive;
 	} player_t;
 
 	typedef struct {

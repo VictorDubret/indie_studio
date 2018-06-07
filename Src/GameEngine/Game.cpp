@@ -143,6 +143,7 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 				{irr::KEY_KEY_S, [tmp]() {tmp->moveDown();}},
 				{irr::KEY_KEY_P, [tmp](){tmp->save();}},
 				{irr::KEY_ESCAPE, nullptr}}};
+		player.alive = true;
 		_listPlayer.push_back(player);
 	}
 	_listObj[entity.get()] = {obj, size};
@@ -167,6 +168,13 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 	//	unlock();
 	//	return false;
 	//}
+	if (entity->getType() == "Character") {
+		for (auto &it : _listPlayer) {
+			if (it.entity == entity.get()) {
+				it.alive = false;
+			}
+		}
+	}
 	nts::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
@@ -189,11 +197,15 @@ irr::core::vector2di nts::Game::getMapSize() const
 
 void nts::Game::setCameraPos()
 {
+	if (_listPlayer.empty())
+		return;
 	int i = 0;
 	irr::f32 tmpX = 0;
 	irr::f32 tmpY = 0;
 
 	for (auto &it : _listPlayer) {
+		if (!it.alive)
+			continue;
 		tmpX = getNode(it.entity)->getPosition().X;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {

@@ -34,8 +34,7 @@ int main(int ac, char **)
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
-	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(
-		list);
+	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
 	bool splitScreen = false;
 	if (ac == 2) {
@@ -44,7 +43,7 @@ int main(int ac, char **)
 
 	/* initialisation */
 	std::pair<std::size_t, std::size_t> mapSize(13, 13);
-	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
+	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
 
 	if (ac == 1) {
 		is::ACharacter *toto = new is::ACharacter(lockList, pool, tmp);
