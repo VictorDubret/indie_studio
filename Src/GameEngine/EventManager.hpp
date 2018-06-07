@@ -22,7 +22,6 @@ namespace nts {
 			bool LeftButtonDown;
 		} MouseState;
 
-
 		EventManager();
 
 		bool OnEvent(const irr::SEvent& event);

@@ -5,10 +5,12 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <iostream>
 #include "EventManager.hpp"
 
 nts::EventManager::EventManager()
 {
+	MouseState.LeftButtonDown = false;
 	for (irr::u32 i = 0; i < irr::KEY_KEY_CODES_COUNT; ++i)
 		KeyIsDown[i] = false;
 }

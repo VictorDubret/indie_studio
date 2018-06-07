@@ -13,6 +13,7 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 {
 	_gui = getDevice()->getGUIEnvironment();
 
+	initSettingsScene();
 	initBaseScene();
 }
 
@@ -23,7 +24,6 @@ void nts::GUI::drawGUI()
 
 void nts::GUI::manageEventGui()
 {
-	std::cout << "Hey olalala" << std::endl;
 	for (auto &&it : _hoverManage[_currentScene]) {
 		nts::EventManager::SMouseState tmp = _eventReceiver.GetMouseState();
 		if (it.second.sq.UpperLeftCorner.X < tmp.Position.X && it.second.sq.LowerRightCorner.X > tmp.Position.X &&
@@ -54,6 +54,8 @@ void nts::GUI::addButton(const wchar_t *text, const irr::core::rect<irr::s32> &t
 
 void nts::GUI::addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f)
 {
+	getDriver()->getTexture(no_hover);
+	getDriver()->getTexture(hover);
 	irr::gui::IGUIImage *base = _gui->addImage(getDriver()->getTexture(no_hover), irr::core::position2d<irr::s32>(sq.UpperLeftCorner.X, sq.UpperLeftCorner.Y));
 	if (!base)
 		throw std::exception();
