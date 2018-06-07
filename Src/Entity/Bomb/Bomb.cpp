@@ -204,6 +204,7 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 			_irrlicht);
 		explosion->setX(x);
 		explosion->setZ(z);
+		_entities.unlock();
 	});
 	_eventManager.unlock();
 }
@@ -221,5 +222,5 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 		}
 	}
 	_entities.unlock();*/
-	return false;
+	return true;
 }

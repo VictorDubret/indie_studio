@@ -83,7 +83,6 @@ void nts::Game::manageEventPlayers()
 		if (!dynamic_cast<is::AEntity *>(it.entity))
 			return;
 
-		std::cout << "manageEventPlayers" << std::endl;
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
 		if (tmp)
 			tmp->AIsTurn();

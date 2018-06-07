@@ -84,14 +84,12 @@ bool is::ArtificialIntelligence::inDanger()
 
 void	is::ArtificialIntelligence::getMapDimensions()
 {
-	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (it->getX() > _width)
 			_width = static_cast<size_t>(it->getX());
 		if (it->getZ() > _height)
 			_height = static_cast<size_t>(it->getZ());
 	}
-	//_entities.unlock();
 	_height++;
 	_width++;
 	#ifdef DEBUG
@@ -102,14 +100,12 @@ void	is::ArtificialIntelligence::getMapDimensions()
 
 void	is::ArtificialIntelligence::setWalls()
 {
-	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (it->getType() == "UnbreakableWall") {
 			_map[(int)it->getX() + (int)it->getZ() * _width].first = WALL;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
 	}
-	//_entities.unlock();
 	#ifdef DEBUG
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (_map[i].first == SAFE)
@@ -342,11 +338,9 @@ void 	is::ArtificialIntelligence::updateMap()
 			_map[i].second = nullptr;
 		}
 	}
-	//_entities.lock();
 	for (const auto &it : _entities.get()) {
 		if (!dynamic_cast<AEntity *>(it.get()))
 			continue;
-		//it->lock();
 		if ((int)it->getX() + (int)it->getZ() * _width < _height * _width && _map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
 			if (it->getType() == "Wall")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = CRATE;
@@ -359,9 +353,7 @@ void 	is::ArtificialIntelligence::updateMap()
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = POWERUP;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
-		//it->unlock();
 	}
-	//_entities.unlock();
 	addDangerZones();
 	#ifdef DEBUG
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
