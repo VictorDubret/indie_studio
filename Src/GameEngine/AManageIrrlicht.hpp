@@ -34,12 +34,14 @@ namespace nts {
 		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
 		void resetListObj() override;
 
-		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
+		irr::scene::ISceneNode *getNode(is::IEntity *) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
 		irr::core::vector2di getMapSize() const override;
 		void setMapSize(const irr::core::vector2di &mapSize) override;
 		void setCameraPos() override;
+
+		void manageEvent() override;
 
 		protected:
 		nts::ManageIrrlicht *_base;

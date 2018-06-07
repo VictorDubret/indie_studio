@@ -51,14 +51,6 @@ irrklang::ISoundEngine *nts::AManageIrrlicht::getSoundDevice() const
 	return _engine;
 }
 
-void nts::AManageIrrlicht::updateView()
-{
-}
-
-void nts::AManageIrrlicht::loopDisplay()
-{
-}
-
 bool nts::AManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float)
 {
 	return true;
@@ -69,9 +61,17 @@ bool nts::AManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &)
 	return true;
 }
 
-irr::scene::ISceneNode *nts::AManageIrrlicht::getNode(const std::shared_ptr<is::IEntity> &)
+irr::scene::ISceneNode *nts::AManageIrrlicht::getNode(is::IEntity *)
 {
 	return nullptr;
+}
+
+void nts::AManageIrrlicht::updateView()
+{
+}
+
+void nts::AManageIrrlicht::loopDisplay()
+{
 }
 
 float &nts::AManageIrrlicht::getNodeSize(const std::shared_ptr<is::IEntity> &)
@@ -89,5 +89,9 @@ void nts::AManageIrrlicht::setMapSize(const irr::core::vector2di &)
 }
 
 void nts::AManageIrrlicht::setCameraPos()
+{
+}
+
+void nts::AManageIrrlicht::manageEvent()
 {
 }

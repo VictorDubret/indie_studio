@@ -39,7 +39,7 @@ namespace is {
 		bool isCollidable() const override;
 		bool isPickable() const override;
 		bool isWallPassable() const override;
-		bool isWalkable(std::shared_ptr<is::IEntity> &) const override;
+		bool isWalkable(std::shared_ptr<is::IEntity> &) override;
 		bool isWalkable() const override;
 
 		// Setter
@@ -67,6 +67,7 @@ namespace is {
 		bool _wallPassable = true;
 
 		std::mutex _mutex;
+		bool _locked = false;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 
 		std::shared_ptr<IEntity> _sptr;

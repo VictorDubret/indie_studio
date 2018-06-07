@@ -17,6 +17,15 @@ is::FireUp::FireUp(
 	texture();
 }
 
+is::FireUp::~FireUp()
+{
+	if (!_locked) {
+		_entities.lock();
+		lock();
+	}
+	_locked = true;
+}
+
 void is::FireUp::action(is::ACharacter *character)
 {
 	character->setBombLength(character->getBombLength() + 1);

@@ -5,6 +5,7 @@
 ** Created by sahel.lucas-saoudi@epitech.eu,
 */
 
+#include <csignal>
 #include "ThreadPool.hpp"
 
 my::ThreadPool::ThreadPool(unsigned int threadNumber)
@@ -23,11 +24,16 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 					});
 					if (_stop)
 						break;
-					task = std::move(_tasks.front());
-					_tasks.pop();
+					if (_tasks.front()) {
+						task = std::move(_tasks.front());
+						_tasks.pop();
+					}
 				}
-				task();
+				if (task) {
+					task();
+				}
 			}
+			return false;
 		}));
 		_threads.push_back(thread);
 	}
@@ -35,13 +41,10 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 
 my::ThreadPool::~ThreadPool()
 {
-	_stop = true;
-	_cond.notify_all();
-	for (auto &it: _threads) {
-		if (it->joinable())
-			it->join();
-	}
+	finishAll();
 }
+
+
 
 bool my::ThreadPool::empty() const
 {
@@ -51,4 +54,14 @@ bool my::ThreadPool::empty() const
 unsigned long my::ThreadPool::getEnqueuedTaskNumber() const
 {
 	return _tasks.size();
+}
+
+void my::ThreadPool::finishAll()
+{
+	_stop = true;
+	_cond.notify_all();
+	for (auto &it: _threads) {
+		if (it->joinable())
+			it->join();
+	}
 }

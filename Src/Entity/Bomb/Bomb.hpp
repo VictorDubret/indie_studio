@@ -20,7 +20,7 @@ namespace is {
 			nts::ManageIrrlicht &irrlicht, size_t time = 2
 		);
 
-		~Bomb() = default;
+		~Bomb() override;
 
 		void explode() override;
 
@@ -30,7 +30,7 @@ namespace is {
 
 		private:
 
-		bool isWalkable(std::shared_ptr<is::IEntity> &entity) const override;
+		bool isWalkable(std::shared_ptr<is::IEntity> &entity) override;
 
 		typedef enum {
 			XAXES = 0,
@@ -41,12 +41,12 @@ namespace is {
 
 		bool _stopTimer = false;
 
-		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes);
+		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes, float x, float z);
 
-		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos);
+		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos, float x_bomb, float z_bomb);
 
 		std::shared_ptr<IEntity> &_player;
-		void doExplosions();
+		void doExplosions(float x, float z);
 	};
 }
 

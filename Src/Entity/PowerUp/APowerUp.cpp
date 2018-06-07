@@ -22,22 +22,56 @@ is::APowerUp::APowerUp(
 	_type = "PowerUp";
 }
 
-
+is::APowerUp::~APowerUp()
+{
+	if (!_locked) {
+		_entities.lock();
+		lock();
+	}
+	_locked = true;
+}
 
 void is::APowerUp::collide(is::IEntity *entity)
 {
 	auto character = dynamic_cast<ACharacter *>(entity);
 
 	if (character) {
-		Debug::debug("Character take ", _type, " in ", _irrlicht.getNode(_sptr)->getPosition().X , ", ", _irrlicht.getNode(_sptr)->getPosition().Y, ", ", _irrlicht.getNode(_sptr)->getPosition().Z);
+		//_entities.lock();
+		auto tmp = dynamic_cast<is::AEntity *>(entity);
+		if (!tmp) {
+			_entities.unlock();
+			return;
+		}
 		action(character);
-		this->~APowerUp();
+		//_entities.unlock();
+		_eventManager.lock();
+		_eventManager->enqueue([this]{
+			_entities.lock();
+			if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+				_entities.unlock();
+				return;
+			}
+			this->lock();
+			_locked = true;
+			this->~APowerUp();
+		});
+		_eventManager.unlock();
 	}
 }
 
 void is::APowerUp::explode()
 {
-	this->~APowerUp();
+	_eventManager.lock();
+	_eventManager->enqueue([this]{
+		_entities.lock();
+		if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+			_entities.unlock();
+			return;
+		}
+		this->lock();
+		_locked = true;
+	});
+	_eventManager.unlock();
 }
 
 void is::APowerUp::texture()

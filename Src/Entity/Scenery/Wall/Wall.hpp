@@ -19,7 +19,7 @@ namespace is {
 			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		// Destructor
-		~Wall() override = default;
+		~Wall() override;
 
 		// Getter
 

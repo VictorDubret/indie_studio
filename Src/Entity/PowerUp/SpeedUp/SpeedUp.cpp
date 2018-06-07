@@ -17,6 +17,15 @@ is::SpeedUp::SpeedUp(
 	texture();
 }
 
+is::SpeedUp::~SpeedUp()
+{
+	if (!_locked) {
+		_entities.lock();
+		lock();
+	}
+	_locked = true;
+}
+
 void is::SpeedUp::action(is::ACharacter *character)
 {
 	character->setSpeed(character->getSpeed() + 1);

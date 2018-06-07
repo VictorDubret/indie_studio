@@ -23,9 +23,18 @@ is::UnbreakableWall::UnbreakableWall(
 	texture();
 }
 
+is::UnbreakableWall::~UnbreakableWall()
+{
+	if (!_locked) {
+		_entities.lock();
+		lock();
+	}
+	_locked = true;
+}
+
 void is::UnbreakableWall::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.bmp");
 }

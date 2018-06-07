@@ -6,8 +6,7 @@
 */
 
 #include <thread>
-#include <chrono>
-#include <functional>
+#include <irrlicht.h>
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
@@ -17,31 +16,33 @@
 is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
-	_entities.lock();
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
-	_entities.unlock();
 }
 
 is::AEntity::~AEntity()
 {
-	_entities.lock();
-	lock();
-	try {
-		_irrlicht.deleteEntity(_sptr);
-		_entities->erase(
-			std::find(_entities->begin(), _entities->end(),
-				_sptr));
-	} catch (std::exception &){
-
+	if (!_locked) {
+		_entities.lock();
+		lock();
 	}
+	_locked = true;
+	std::cout << "Je vais delete entity : " << _type << std::endl;
+	_irrlicht.deleteEntity(_sptr);
+	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
+//	if (tmp == _entities->end())
+//		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
+	_entities->erase(tmp);
 	unlock();
 	_entities.unlock();
 }
 
 irr::core::vector3df const is::AEntity::getPosition() const
 {
-	return (!_irrlicht.getNode(_sptr)) ? irr::core::vector3df({0, 0, 0}) : _irrlicht.getNode(_sptr)->getPosition();
+	_irrlicht.lock();
+	irr::core::vector3df tmp = (!_irrlicht.getNode(_sptr.get())) ? irr::core::vector3df({0, 0, 0}) : _irrlicht.getNode(_sptr.get())->getPosition();
+	_irrlicht.unlock();
+	return tmp;
 }
 
 std::string const& is::AEntity::getType() const
@@ -71,26 +72,30 @@ void is::AEntity::setX(float x)
 {
 	auto pos = getPosition();
 	pos.X = x;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setY(float y)
 {
 	auto pos = getPosition();
 	pos.Y = y;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setZ(float z)
 {
 	auto pos = getPosition();
 	pos.Z = z;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setPosition(irr::core::vector3df position)
 {
-	_irrlicht.getNode(_sptr)->setPosition(position);
+	_irrlicht.lock();
+	auto node = _irrlicht.getNode(_sptr.get());
+	if (node)
+		node->setPosition(position);
+	_irrlicht.unlock();
 }
 
 bool is::AEntity::isCollidable() const
@@ -108,7 +113,7 @@ bool is::AEntity::isWalkable() const
 	return _walkable;
 }
 
-bool is::AEntity::isWalkable(std::shared_ptr<is::IEntity> &) const
+bool is::AEntity::isWalkable(std::shared_ptr<is::IEntity> &)
 {
 	return _walkable;
 }
@@ -131,66 +136,55 @@ void is::AEntity::explode()
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
 	auto size = _irrlicht.getNodeSize(_sptr);
-
 	return (((getX() >= entity->getX() && getX() < entity->getX() + size) || (getX() + size > entity->getX() && getX() + size < entity->getX() + size)) &&
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float, float z) const
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
+	_irrlicht.lock();
 	float size = _irrlicht.getNodeSize(_sptr);
-	auto f = [x, z, this, size](std::shared_ptr<is::IEntity> entity) {
-		if (dynamic_cast<IEntity *>(entity.get()) == nullptr) {
-			std::cerr << "JE TAIME PAS" << std::endl;
+	irr::core::vector3df pos(x, 0, z);
+	auto sceneManager = _irrlicht.getSceneManager();
+	_irrlicht.unlock();
+	if (!sceneManager) {
+		return ret;
+	}
+	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
+
+	auto mesh1 = node->getTransformedBoundingBox();
+	node->setVisible(false);
+
+	auto f = [&](std::shared_ptr<is::IEntity> entity) {
+		entity->lock();
+		if (std::abs(entity->getX() - x) > 2 ||
+			std::abs(entity->getZ() - z) > 2) {
+			entity->unlock();
 			return false;
 		}
-		entity->lock();
-		float esize = _irrlicht.getNodeSize(entity);
-
-		std::pair<float, float> e1a(x, z);
-		std::pair<float, float> e1b(x + size, z);
-		std::pair<float, float> e1c(x , z + size);
-		std::pair<float, float> e1d(x + size, z + size);
-
-		std::pair<float, float> e2a(entity->getX(), entity->getZ());
-		std::pair<float, float> e2b(entity->getX() + esize, entity->getZ());
-		std::pair<float, float> e2c(entity->getX() , entity->getZ() + esize);
-		std::pair<float, float> e2d(entity->getX() + esize, entity->getZ() + esize);
-
-		bool a = (e1d.first > e2a.first && e1d.first < e2b.first &&
-			e1d.second > e2a.second && e1d.second < e2c.second);
-
-		bool b = (e2d.first > e1a.first && e2d.first < e1b.first &&
-			e2d.second > e1a.second && e2d.second < e1c.second);
-
-		bool c = (e2b.first > e1a.first && e2b.first < e1b.first &&
-			e2b.second > e1a.second && e2b.second < e1c.second);
-
-		bool d = (e1b.first > e2a.first && e1b.first < e2b.first &&
-			e1b.second > e2a.second && e1b.second < e2c.second);
-
-		bool e = (e1a.first > e2a.first && e1a.first < e2b.first &&
-			e1a.second > e2a.second && e1a.second < e2c.second);
-
-		if (a || b || c || d || e) {
-			std::cout << entity->getType() << " MAIS MDR NIKE TOI" << std::endl;
-		}
+		_irrlicht.lock();
+		auto tmp = _irrlicht.getNode(entity.get());
 		entity->unlock();
-		return (a || b || c || d || e);
+		_irrlicht.unlock();
+		if (!tmp)
+			return false;
+		auto mesh2 = tmp->getTransformedBoundingBox();
+		return mesh1.intersectsWithBox(mesh2);
 	};
-	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
-
-		ret.push_back(*it.base());
+		ret.push_back(*(it.base()));
 		it++;
 		if (it != _entities->end()) {
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
-	_entities.unlock();
-	return ret;
+	_irrlicht.lock();
+	node->removeAll();
+	_irrlicht.unlock();
+	//node->remove();
+	return std::move(ret);
 }
 
 void is::AEntity::lock()

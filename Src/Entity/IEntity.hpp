@@ -30,7 +30,7 @@ namespace is {
 		virtual bool isCollidable() const = 0;
 		virtual bool isPickable() const = 0;
 		virtual bool isWallPassable() const = 0;
-		virtual bool isWalkable(std::shared_ptr<is::IEntity> &) const = 0;
+		virtual bool isWalkable(std::shared_ptr<is::IEntity> &) = 0;
 		virtual bool isWalkable() const = 0;
 
 		virtual void setX(float) = 0;
@@ -38,7 +38,7 @@ namespace is {
 		virtual void setZ(float) = 0;
 		virtual void setPosition(irr::core::vector3df) = 0;
 
-		virtual void collide(IEntity *collider) = 0;
+		virtual void collide(IEntity * collider) = 0;
 		virtual void explode() = 0;
 
 		virtual void lock() = 0;

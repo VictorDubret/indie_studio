@@ -14,6 +14,7 @@
 # include "ThreadPool.hpp"
 # include "ItemLocker.hpp"
 # include "IEntity.hpp"
+# include "Debug.hpp"
 
 namespace nts {
 
@@ -29,7 +30,7 @@ namespace nts {
 		virtual bool deleteEntity(std::shared_ptr<is::IEntity> &) = 0;
 
 		// get the object
-		virtual irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) = 0;
+		virtual irr::scene::ISceneNode *getNode(is::IEntity *) = 0;
 		virtual float &getNodeSize(const std::shared_ptr<is::IEntity> &) = 0;
 		virtual void resetListObj() = 0;
 
@@ -43,6 +44,10 @@ namespace nts {
 		// Setter
 		virtual void setMapSize(const irr::core::vector2di &mapSize) = 0;
 		virtual void setCameraPos() = 0;
+
+		virtual void lock() = 0;
+		virtual void unlock() = 0;
+		virtual void manageEvent() = 0;
 
 		protected:
 		private:

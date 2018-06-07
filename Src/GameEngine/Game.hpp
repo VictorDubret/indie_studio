@@ -8,7 +8,7 @@
 #ifndef BOMBERMAN_GAME_HPP
 # define BOMBERMAN_GAME_HPP
 
-#include <unordered_map>
+# include <unordered_map>
 # include "AManageIrrlicht.hpp"
 
 namespace nts {
@@ -19,7 +19,7 @@ namespace nts {
 	} event_t;
 
 	typedef struct {
-		std::shared_ptr<is::ACharacter> entity;
+		is::ACharacter *entity;
 		event_t nothing;
 		event_t doSomething;
 		event_t key[5];
@@ -44,6 +44,7 @@ namespace nts {
 	class Game : public virtual AManageIrrlicht {
 		public:
 		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen);
+		~Game() override;
 
 		void updateView() override;
 
@@ -55,28 +56,32 @@ namespace nts {
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
 		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
 
-		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
+		irr::scene::ISceneNode *getNode(is::IEntity *) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
-		void resetListObj() override;
+		void lock() override;
+		void unlock() override;
 
 		protected:
-		std::unordered_map<std::shared_ptr<is::IEntity>, nts::irrObj_t> _listObj;
-		std::vector<nts::player_t> _listPlayer;
+		std::mutex _mutex;
 
+		void manageEventPlayers();
+		void displayFPS();
+		void displaySplitScreen();
+
+		std::unordered_map<is::IEntity *, nts::irrObj_t> _listObj;
+		std::vector<nts::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
 
 		irr::core::vector2di _mapSize;
 
+		my::Thread *_thread = nullptr;
+		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
 		bool _splitScreen = false;
-
-		void manageEventPlayers();
-		void displayFPS();
-		void displaySplitScreen();
-		private:
 	};
+
 }
 
 #endif //BOMBERMAN_GAME_HPP

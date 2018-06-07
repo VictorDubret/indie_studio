@@ -29,31 +29,54 @@ is::Wall::Wall(
 	texture();
 }
 
+is::Wall::~Wall()
+{
+	if (!_locked) {
+		_entities.lock();
+		lock();
+	}
+	_locked = true;
+}
+
 void is::Wall::placePowerUp()
 {
+	is::APowerUp *powerUp = nullptr;
+	_entities.lock();
 	switch (_powerUp) {
 	case 'b':
-		(new is::BombUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::BombUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 'f':
-		(new is::FireUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::FireUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 's':
-		(new is::SpeedUp(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::SpeedUp(_entities, _eventManager, _irrlicht);
 		break;
 	case 'w':
-		(new is::WallPass(_entities, _eventManager, _irrlicht))->setPosition(_irrlicht.getNode(_sptr)->getPosition());
+		powerUp = new is::WallPass(_entities, _eventManager, _irrlicht);
 		break;
 	default:
 		break;
 	}
+	if (powerUp && dynamic_cast<AEntity *>(_sptr.get())) {
+ 		powerUp->setPosition(getPosition());
+	}
+	_entities.unlock();
 }
 
 void is::Wall::explode()
 {
-	placePowerUp();
-	std::cerr << "Explode " << _type << std::endl;
-	this->~Wall();
+	_eventManager->enqueue([this]{
+		placePowerUp();
+		_entities.lock();
+		if (!dynamic_cast<is::Wall *>(_sptr.get())) {
+			_entities.unlock();
+			return;
+		}
+		this->lock();
+		_locked = true;
+		this->~Wall();
+	});
 }
 
 void is::Wall::setPowerUp(char powerUp)
@@ -63,7 +86,7 @@ void is::Wall::setPowerUp(char powerUp)
 
 void is::Wall::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
+	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/stones.jpg");
 }

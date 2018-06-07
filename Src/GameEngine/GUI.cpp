@@ -13,7 +13,6 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 {
 	_gui = getDevice()->getGUIEnvironment();
 
-//	initSettingsScene();
 	initBaseScene();
 }
 
@@ -24,6 +23,7 @@ void nts::GUI::drawGUI()
 
 void nts::GUI::manageEventGui()
 {
+	std::cout << "Hey olalala" << std::endl;
 	for (auto &&it : _hoverManage[_currentScene]) {
 		nts::EventManager::SMouseState tmp = _eventReceiver.GetMouseState();
 		if (it.second.sq.UpperLeftCorner.X < tmp.Position.X && it.second.sq.LowerRightCorner.X > tmp.Position.X &&
