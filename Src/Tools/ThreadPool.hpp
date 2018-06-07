@@ -37,6 +37,8 @@ namespace my {
 			_cond.notify_one();
 		};
 
+		void finishAll();
+
 		// Other
 		bool empty() const;
 

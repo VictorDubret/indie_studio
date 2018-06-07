@@ -28,18 +28,16 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 is::AEntity::~AEntity()
 {
 	if (!_locked) {
-		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
-		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		lock();
 	}
 	_locked = true;
+	std::cout << "Je vais delete entity : " << _type << std::endl;
 	_irrlicht.deleteEntity(_sptr);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
-	if (tmp == _entities->end())
-		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
+//	if (tmp == _entities->end())
+//		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
 	_entities->erase(tmp);
-	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	unlock();
 	_entities.unlock();
 }

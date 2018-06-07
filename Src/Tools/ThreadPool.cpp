@@ -49,6 +49,8 @@ my::ThreadPool::~ThreadPool()
 	}
 }
 
+
+
 bool my::ThreadPool::empty() const
 {
 	return _tasks.empty();
@@ -57,4 +59,14 @@ bool my::ThreadPool::empty() const
 unsigned long my::ThreadPool::getEnqueuedTaskNumber() const
 {
 	return _tasks.size();
+}
+
+void my::ThreadPool::finishAll()
+{
+	_stop = true;
+	_cond.notify_all();
+	for (auto &it: _threads) {
+		if (it->joinable())
+			it->join();
+	}
 }
