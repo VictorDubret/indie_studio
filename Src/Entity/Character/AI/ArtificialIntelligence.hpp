@@ -44,12 +44,17 @@ namespace is {
 		void	getMapDimensions();
 		void 	setWalls();
 		void 	setDangerRec(std::size_t pos, std::size_t range, int dir);
-		void 	setDanger(std::size_t pos, std::size_t range);
+		bool 	setDangerRec(std::size_t pos, std::size_t range, int dir,
+			std::vector<std::pair<Type, IEntity *>> map);
 		int 	getDist(int pos, std::vector<int> map);
 		Direction breadthFirst(int pos, std::vector<int> &map);
 		Direction lookForAZone(Type type);
+		Direction lookForAZone(Type type, std::vector<std::pair<Type, IEntity *>>map);
+		bool	safeBombDrop();
+		bool	onCrate();
 		void 	headTowards(Direction dir);
 		void 	addDangerZones();
+		bool 	addDangerZones(std::vector<std::pair<Type, IEntity *>>map);
 		void 	updateMap();
 
 		Entity_t	&_entities;

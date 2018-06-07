@@ -25,28 +25,35 @@ void 	is::ArtificialIntelligence::AIsTurn()
 {
 	Direction	dir;
 	if (stillCrates() == true) {
-		//dropBomb();
 		updateMap();
+		std::cout << "I'm in ";
+		std::cout << getX() << " " << getZ();
 		if (inDanger() == true) {
-			std::cout << "I'm in ";
-			std::cout << getX() << " " << getZ();
 			std::cout << " and I don't feel safe." << std::endl;
 			dir = lookForAZone(SAFE);
 			headTowards(dir);
-		} else {
-			dir = lookForAZone(POWERUP);
-			if (dir != NONE)
-				headTowards(dir);
-			else {
-				std::cout << "I'm in ";
-				std::cout << getX() << " " << getZ();
-				std::cout << ", I'm safe and there are no powerups I can reach."
-					<< std::endl;
-			}
+			return;
 		}
-		/*} else if (lookForAZone(POWERUP) == NONE) {
-			//go for crates
-		}*/
+		dir = lookForAZone(POWERUP);
+		if (dir != NONE) {
+			std::cout << " and I head towards a power-up." << std::endl;
+			headTowards(dir);
+			return;
+		}
+		if (safeBombDrop() == true) {
+			if (onCrate() == false) {
+				std::cout << " and I can drop a bomb." << std::endl;
+				dropBomb();
+			} else {
+				std::cout << " and I can't drop a bomb." << std::endl;
+				dir = lookForAZone(SAFE);
+				headTowards(dir);
+			}
+		} else {
+			std::cout << " and I'm looking for a crate." << std::endl;
+			dir = lookForAZone(CRATE);
+			headTowards(dir);
+		}
 	}
 }
 
@@ -121,29 +128,67 @@ void 	is::ArtificialIntelligence::setDangerRec(std::size_t pos, std::size_t rang
 	}
 }
 
-void 	is::ArtificialIntelligence::setDanger(std::size_t pos, std::size_t range)
+bool 	is::ArtificialIntelligence::setDangerRec(std::size_t pos, std::size_t range, int dir, std::vector <std::pair<Type, IEntity *>> map)
 {
-	int	dir[4] = { -1, 1, static_cast<int>(_width), static_cast<int>(_width * -1)};
+	bool 	reachCrate = false;
 
-	for (std::size_t i = 0 ; i < 4 ; ++i) {
-		if (_map[pos + dir[i]].first != WALL && range > 0) {
-			if (_map[pos + dir[i]].first != CRATE)
-				setDangerRec(pos, range - 1, dir[i]);
-			if (_map[pos + dir[i]].first != EXPLOSION)
-				_map[pos + dir[i]].first = DANGER;
-			_map[pos + dir[i]].second = nullptr;
-		}
+	if (map[pos + dir].first != WALL && range > 0) {
+		if (map[pos + dir].first != CRATE)
+			reachCrate = setDangerRec(pos + dir, range - 1, dir, map);
+		else
+			reachCrate = true;
+		if (map[pos + dir].first != EXPLOSION)
+			map[pos + dir].first = DANGER;
+		map[pos - 1].second = nullptr;
+		map[pos - 1].second = nullptr;
 	}
+	if (reachCrate)
+		std::cout << "A crate can be reached." << std::endl;
+	else
+		std::cout << "No crate can be reached." << std::endl;
+	return (reachCrate);
 }
 
 void 	is::ArtificialIntelligence::addDangerZones()
 {
+	int	dir[4] = { -1, 1, static_cast<int>(_width), static_cast<int>(_width * -1)};
+
 	for (std::size_t i = _width + 1 ; i < _width * _height - _width ; ++i) {
 		if (_map[i].first == BOMB) {
-			setDanger(i, dynamic_cast<is::Bomb *>(_map[i].second)->getLenExplosion());
-			std::cout << "bomb range " << dynamic_cast<is::Bomb *>(_map[i].second)->getLenExplosion() << std::endl;
+			auto tmp_bomb = dynamic_cast<is::Bomb *>(_map[i].second);
+			if (tmp_bomb) {
+				for (std::size_t j = 0; j < 4; ++j)
+					setDangerRec(i, tmp_bomb->getLenExplosion(), dir[j]);
+				std::cout << "bomb range " << tmp_bomb->getLenExplosion() << std::endl;
+			}
 		}
 	}
+}
+
+bool 	is::ArtificialIntelligence::addDangerZones(std::vector <std::pair<Type, IEntity *>> map)
+{
+	int	dir[4] = { -1, 1, static_cast<int>(_width), static_cast<int>(_width * -1)};
+	bool 	reachCrate = false;
+
+	for (std::size_t i = _width + 1 ; i < _width * _height - _width ; ++i) {
+		if (map[i].first == BOMB) {
+			auto tmp_bomb = dynamic_cast<is::Bomb *>(map[i].second);
+			if (tmp_bomb) {
+				for (std::size_t j = 0; j < 4; ++j)
+					setDangerRec(i, tmp_bomb->getLenExplosion(), dir[j], map);
+				std::cout << "bomb range " << tmp_bomb->getLenExplosion() << std::endl;
+			} else {
+				for (std::size_t j = 0; j < 4; ++j)
+					reachCrate = setDangerRec(i, getBombLength(), dir[j], map) ? true : reachCrate;
+				std::cout << "supposed bomb range " << getBombLength() << std::endl;
+			}
+		}
+	}
+	if (reachCrate)
+		std::cout << "Glob: A crate can be reached." << std::endl;
+	else
+		std::cout << "Glob: No crate can be reached." << std::endl;
+	return reachCrate;
 }
 
 int 	is::ArtificialIntelligence::getDist(int pos, std::vector<int> map)
@@ -194,7 +239,8 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(
 {
 	std::vector<int>	map(_width * _height, 0);
 	int 			start = static_cast<int>(
-		static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15));
+		static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
+		//static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); collision
 
 	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
 		if (_map[i].first == WALL || _map[i].first == BOMB || _map[i].first == EXPLOSION ||
@@ -208,12 +254,57 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(
 	return (breadthFirst(start, map));
 }
 
+is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(Type type, std::vector<std::pair<Type, IEntity *>>map)
+{
+	std::vector<int>	minMap(_width * _height, 0);
+	int 			start = static_cast<int>(
+		static_cast<int>(getZ()) * _width + static_cast<int>(getX()));
+		//static_cast<int>(getZ() + 0.15) * _width + static_cast<int>(getX() + 0.15)); collision
+
+	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
+		if (map[i].first == WALL || map[i].first == BOMB || map[i].first == EXPLOSION ||
+			(getWallPass() == false && map[i].first == CRATE))
+			minMap[i] = -3;
+		if (map[i].first == DANGER)
+			minMap[i] = -2;
+		if (map[i].first == type)
+			minMap[i] = -1;
+	}
+	return (breadthFirst(start, minMap));
+}
+
+bool	is::ArtificialIntelligence::safeBombDrop()
+{
+	std::vector<std::pair<Type, IEntity *>> map = _map;
+
+	map[(int)getX() + (int)getZ() * _width].first = BOMB;
+	map[(int)getX() + (int)getZ() * _width].second = nullptr;
+	if (addDangerZones(map) == false) {
+		std::cout << "No use in dropping a bomb." << std::endl;
+		return (false);
+	}
+	if (lookForAZone(SAFE, map) == NONE) {
+		std::cout << "Too dangerous to drop a bomb." << std::endl;
+		return (false);
+	}
+	return (true);
+}
+
+bool 	is::ArtificialIntelligence::onCrate()
+{
+	if (_map[(int)getX() + (int)getZ() * _width].first == BOMB ||
+		_map[(int)getX() + (int)getZ() * _width].first == CRATE)
+		return (true);
+	return (false);
+}
+
 void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direction dir)
 {
 	std::cout << "Z: I'm between " << getZ() << " and " << getZ() + _irrlicht.getNodeSize(_sptr) << std::endl;
 	std::cout << "X: I'm between " << getX() << " and " << getX() + _irrlicht.getNodeSize(_sptr) << std::endl;
 	if (dir == LEFT || dir == RIGHT) {
-		if ((int)(getZ() + 0.15) != (int)(getZ() + _irrlicht.getNodeSize(_sptr) + 0.15)) {
+		if ((int)(getZ()) != (int)(getZ() + _irrlicht.getNodeSize(_sptr))) {
+		//if ((int)(getZ() + 0.15) != (int)(getZ() + _irrlicht.getNodeSize(_sptr) + 0.15)) { collision
 			std::cout << "I'm going down" << std::endl;
 			moveDown();
 		} else if (dir == LEFT) {
@@ -224,7 +315,8 @@ void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direct
 			moveRight();
 		}
 	} else {
-		if ((int)(getX() + 0.15) != (int)(getX() + _irrlicht.getNodeSize(_sptr) + 0.15)) {
+		if ((int)(getX()) != (int)(getX() + _irrlicht.getNodeSize(_sptr))) {
+		//if ((int)(getX() + 0.15) != (int)(getX() + _irrlicht.getNodeSize(_sptr) + 0.15)) { collision
 			std::cout << "I'm going left" << std::endl;
 			moveLeft();
 		} else if (dir == DOWN) {
@@ -247,7 +339,10 @@ void 	is::ArtificialIntelligence::updateMap()
 	}
 	_entities.lock();
 	for (const auto &it : _entities.get()) {
-		if (_map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
+		if (!dynamic_cast<AEntity *>(it.get()))
+			continue;
+		it->lock();
+		if ((int)it->getX() + (int)it->getZ() * _width < _height * _width && _map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
 			if (it->getType() == "Wall")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = CRATE;
 			if (it->getType() == "Explosion")
@@ -259,6 +354,7 @@ void 	is::ArtificialIntelligence::updateMap()
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = POWERUP;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
+		it->unlock();
 	}
 	_entities.unlock();
 	addDangerZones();
