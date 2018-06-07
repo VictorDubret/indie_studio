@@ -160,10 +160,20 @@ void is::ACharacter::moveUp()
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	_entities.lock();
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
+		return;
+	}
+	lock();
 	float next = getZ() + _speed * _speedCoef;
+	unlock();
 
 	move(getX(), getY(), next);
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
@@ -176,13 +186,19 @@ void is::ACharacter::moveDown()
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get()))
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
 		return;
+	}
 	lock();
 	float next = getZ() - _speed * _speedCoef;
 	unlock();
 	move(getX(), getY(), next);
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
@@ -195,14 +211,20 @@ void is::ACharacter::moveLeft()
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get()))
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
 		return;
+	}
 	lock();
 	float next = getX() - _speed * _speedCoef;
 	unlock();
 
 	move(next, getY(), getZ());
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
@@ -215,25 +237,37 @@ void is::ACharacter::moveRight()
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get()))
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
 		return;
+	}
 	lock();
 	float next = getX() + _speed * _speedCoef;
 	unlock();
 	move(next, getY(), getZ());
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
 {
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	_entities.lock();
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 		_entities.unlock();
 		return;
 	}
-	if (_bomb <= 0)
+	if (_bomb <= 0) {
+		std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
 		return;
+	}
 	float size = _irrlicht.getNodeSize(_sptr);
 	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)getY(), (int)(getZ() + size / 2.0));
 
@@ -242,31 +276,43 @@ void is::ACharacter::dropBomb()
 		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 			std::cout << "Can't drop bomb" << std::endl;
+			std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 			_entities.unlock();
 			return;
 		}
 	}
+	std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 	lock();
+	std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 	--_bomb;
 	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 	std::cerr << "Bomb" << std::endl;
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
+	std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	unlock();
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
 void is::ACharacter::explode()
 {
-	--_pv; //TODO uncomment
+	--_pv;
 	if (_pv == 0) {
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
+			std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 			_entities.lock();
-			if (!dynamic_cast<AEntity *>(_sptr.get()))
+			std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+			if (!dynamic_cast<AEntity *>(_sptr.get())) {
+				std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+				_entities.unlock();
 				return;
+			}
+			std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
 			lock();
+			std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
 			_locked = true;
 			this->~ACharacter();
 		});

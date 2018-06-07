@@ -39,6 +39,7 @@ is::AEntity::~AEntity()
 	_entities->erase(tmp);
 	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	unlock();
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
 	_entities.unlock();
 }
 
