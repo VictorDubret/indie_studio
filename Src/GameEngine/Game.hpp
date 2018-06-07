@@ -22,7 +22,7 @@ namespace nts {
 		is::ACharacter *entity;
 		event_t nothing;
 		event_t doSomething;
-		event_t key[5];
+		event_t key[6];
 	} player_t;
 
 	typedef struct {

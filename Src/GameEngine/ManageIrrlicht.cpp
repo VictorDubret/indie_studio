@@ -37,7 +37,7 @@ void nts::ManageIrrlicht::loopDisplay()
 		} else {
 			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 			_sceneManager->drawAll();
-			//setCameraPos();
+			setCameraPos();
 		}
 		unlock();
 		//fin test

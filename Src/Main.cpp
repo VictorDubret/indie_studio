@@ -18,9 +18,18 @@
 #include "ManageObject.hpp"
 #include "ACharacter.hpp"
 #include "Wall.hpp"
+#include "UnbreakableWall.hpp"
+
+/*void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht tmp)
+{
+	irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
+	tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(tmpPos));
+	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2)->getPosition().X << "][" << tmp.getNode(player_tmp2)->getPosition().Z;
+}*/
 
 int main(int ac, char **)
 {
+	/* 1 argument == Jeu Normal, 2 arguments == SplitScreen, 3 arguments == Load sauvegarde */
 	my::ThreadPool thpool(20);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
@@ -29,62 +38,92 @@ int main(int ac, char **)
 		list);
 
 	bool splitScreen = false;
-	if (ac > 1) {
+	if (ac == 2) {
 		splitScreen = true;
 	}
 
 	/* initialisation */
-	std::pair<std::size_t, std::size_t> mapSize(8, 8);
-	nts::ManageIrrlicht tmp(lockList, pool,
-		irr::core::vector2di(mapSize.first + 2, mapSize.second + 2),
-		splitScreen);
+	std::pair<std::size_t, std::size_t> mapSize(13, 13);
+	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first + 2, mapSize.second + 2), splitScreen);
 
-	//auto a = new is::Wall(lockList, pool, tmp);
-	//a->setX(5);
-	//a->setZ(5);
+	if (ac == 1) {
+		is::ACharacter *toto = new is::ACharacter(lockList, pool, tmp);
+		toto->setZ(1);
+		toto->setX(1);
+		toto->setBombMax(5);
+		toto->setBomb(5);
 
-	mg::MapGenerator generator(lockList, pool, tmp, mapSize);
 
-	is::ACharacter *toto = new is::ACharacter(lockList, pool, tmp);
-	toto->setZ(2);
-	toto->setBombMax(5);
-	toto->setBomb(5);
+		is::ACharacter *toto2 = new is::ACharacter(lockList, pool, tmp);
+		toto2->setZ(13);
+		toto2->setX(13);
+		toto2->setBombMax(5);
+		toto2->setBomb(5);
+
+		mg::MapGenerator generator(lockList, pool, tmp, mapSize);
+
+	}
+	/* Chargement textures */
+	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
+
 	//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
-	/* Création floor */
-	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
-	irr::core::dimension2d<irr::u32> tileCount(mapSize.first + 2,
-		mapSize.second + 2); // taille de la map
-	auto material = new irr::video::SMaterial();
-	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
+	/*if (ac == 3) {
 
-	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
-	material->Wireframe = false;
-	material->Lighting = false;
-	irr::scene::IMesh *cube = tmp.getSceneManager()->getGeometryCreator()->createPlaneMesh(
-		tileSize, tileCount, material, textureRepeatCount);
-	material->ColorMaterial = irr::video::E_COLOR_PLANE::ECP_BLUE;
-	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
-	irr::video::ITexture *texture = tmp.getDriver()->getTexture(
-		irr::io::path("media/earth.jpg"));
+		std::stringstream streamLine;
+		std::string line;
+		std::string temp;
+		std::ifstream myfile("save.indie");
+		if (myfile.is_open()) {
+			while (getline(myfile, line)) {
+				std::cout << line << std::endl;
 
-	irr::scene::IMeshSceneNode *cubeNode = tmp.getSceneManager()->addMeshSceneNode(
-		cube);
-	cubeNode->setMaterialTexture(0, texture);
-	cubeNode->setPosition(irr::core::vector3df(mapSize.first / 2, -1.0f,
-		mapSize.second / 2));
-	cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
-	cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+				streamLine << line;
+				std::vector<std::string> tmpVector;
+				while (streamLine >> temp) {
+					tmpVector.push_back(temp);
+					std::cout << "J split ma commande: " << temp << std::endl;
+				}
+				streamLine.clear();
+				if (tmpVector.size() == 12) {
+					if (tmpVector[0] == "Character") {
+						std::cout << "J'ai trouvé un character" << std::endl;
 
+						is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
 
-	/* Create cube */
+						irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
+						tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(tmpPos));
+						std::cout << "Mon joueur est en :" << tmp.getNode(player_tmp2)->getPosition().X << "][" << tmp.getNode(player_tmp2)->getPosition().Z;
 
-	//	nts::ManageObject::createCube(tmp, player_tmp2, 1);
-
-	/* Set all positions */
+						 IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
 
 
-	/* Set light and texture*/
+					} else if (tmpVector[0] == "Wall") {
+						is::IEntity *tmp_data = new is::Wall(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "UnbreakableWall") {
+						is::IEntity *tmp_data = new is::UnbreakableWall(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "Bomb") {
+
+
+
+						is::IEntity *tmp_data = new is::Bomb(lockList, pool, player_tmp2, tmp, 5);
+						std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						//setEntity(tmpVector, bomb, tmp);
+					}
+
+				}
+			}
+			myfile.close();
+
+		}
+	}*/
+
+
 
 	tmp.loopDisplay();
 	pool->finishAll();

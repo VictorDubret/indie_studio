@@ -57,6 +57,7 @@ namespace is {
 		void moveRight();
 		void dropBomb();
 		void doNothing();
+		void save();
 
 		void explode() override;
 

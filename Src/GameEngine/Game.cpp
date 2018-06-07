@@ -18,20 +18,23 @@ nts::Game::Game(
 	_distBetweenPlayer.push_back(tmpDist);
 	tmpDist.X = _mapSize.X / 2;
 	_distBetweenPlayer.push_back(tmpDist);
+
+	/* Setting Global Camera */
 	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
 		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
 		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
-	/* Split Screen Camera */
+
+	/* Setting Split Screen Camera */
 	if (_splitScreen) {
-		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3),	irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
-		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3),	irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
+		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
+		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
 	}
-	//_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, 15 , -10), irr::core::vector3df(0, 10, 0));
-	_engine->play2D("media/AMemoryAway.ogg", true, false, true,
-		irrklang::ESM_AUTO_DETECT, true);
-	//_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(0, getMapSize().X / 10, 0));
-	//	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(90, getMapSize().X / 10, 90));
-	//_sceneManager->getActiveCamera()->setPosition(irr::core::vector3df(30 , 20, 30));
+
+	/* Loading Sound */
+	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
+
+
+
 }
 
 nts::Game::~Game()
@@ -48,35 +51,25 @@ void nts::Game::updateView()
 
 void nts::Game::displaySplitScreen()
 {
-	std::cout << "jaffiche la map" << RESET << std::endl;
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900));
-	//_driver->beginScene(true, true, irr::video::SColor(0, 220, 220, 220));
-	_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-	// test split screen
+	_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
+
+	/* Display of Player 1 */
 	_sceneManager->setActiveCamera(_camera[PLAYER1]);
-	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900 / 2));
+	_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900/2));
 	_sceneManager->drawAll();
 
+	/* Display of Player 2 */
 	_sceneManager->setActiveCamera(_camera[PLAYER2]);
-	_driver->setViewPort(irr::core::rect<irr::s32>(0, 450, 1600, 900));
+	_driver->setViewPort(irr::core::rect<irr::s32>(0,450,1600,900));
 	_sceneManager->drawAll();
 
 	int i = 0;
+	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
-		std::cout << "Joueur[" << i << "] X["
-			<< getNode(it.entity)->getPosition().X << "] Y["
-			<< getNode(it.entity)->getPosition().Y << "] Z["
-			<< getNode(it.entity)->getPosition().Z << "]" << RESET
-			<< std::endl;
-
-		_camera[i]->setPosition(irr::core::vector3df(
-			getNode(it.entity)->getPosition().X,
-			(getMapSize().X / 2),
-			getNode(it.entity)->getPosition().Z - 5));
-		_camera[i]->setTarget(irr::core::vector3df(
-			getNode(it.entity)->getPosition().X,
-			getMapSize().X / 10,
-			getNode(it.entity)->getPosition().Z));
+		std::cout << "C'est le joueur :" << i  << std::endl;
+		_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
+		_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
 		i++;
 	}
 }
@@ -132,34 +125,24 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 		player_t player;
 		if (_listPlayer.empty())
 			player = {(tmp),
-				{irr::KEY_ESCAPE, [tmp]() {
-					tmp->doNothing();
-				}}, {irr::KEY_RETURN, [tmp]() {
-					tmp->dropBomb();
-				}}, {{irr::KEY_LEFT, [tmp]() {
-					tmp->moveLeft();
-				}}, {irr::KEY_RIGHT, [tmp]() {
-					tmp->moveRight();
-				}}, {irr::KEY_UP, [tmp]() {
-					tmp->moveUp();
-				}}, {irr::KEY_DOWN, [tmp]() {
-					tmp->moveDown();
-				}}, {irr::KEY_ESCAPE, nullptr}}};
+				{irr::KEY_ESCAPE, [tmp]() {tmp->doNothing();}},
+				{irr::KEY_RETURN, [tmp]() {tmp->dropBomb();}},
+				{{irr::KEY_LEFT, [tmp]() {tmp->moveLeft();}},
+				{irr::KEY_RIGHT, [tmp]() {tmp->moveRight();}},
+				{irr::KEY_UP, [tmp]() {tmp->moveUp();}},
+				{irr::KEY_DOWN, [tmp]() {tmp->moveDown();}},
+				{irr::KEY_KEY_P, [tmp](){tmp->save();}},
+				{irr::KEY_ESCAPE, nullptr}}};
 		else
 			player = {(tmp),
-				{irr::KEY_ESCAPE, [tmp]() {
-					tmp->doNothing();
-				}}, {irr::KEY_SPACE, [tmp]() {
-					tmp->dropBomb();
-				}}, {{irr::KEY_KEY_Q, [tmp]() {
-					tmp->moveLeft();
-				}}, {irr::KEY_KEY_D, [tmp]() {
-					tmp->moveRight();
-				}}, {irr::KEY_KEY_Z, [tmp]() {
-					tmp->moveUp();
-				}}, {irr::KEY_KEY_S, [tmp]() {
-					tmp->moveDown();
-				}}, {irr::KEY_ESCAPE, nullptr}}};
+				{irr::KEY_ESCAPE, [tmp]() {tmp->doNothing();}},
+				{irr::KEY_SPACE, [tmp]() {tmp->dropBomb();}},
+				{{irr::KEY_KEY_Q, [tmp]() {tmp->moveLeft();}},
+				{irr::KEY_KEY_D, [tmp]() {tmp->moveRight();}},
+				{irr::KEY_KEY_Z, [tmp]() {tmp->moveUp();}},
+				{irr::KEY_KEY_S, [tmp]() {tmp->moveDown();}},
+				{irr::KEY_KEY_P, [tmp](){tmp->save();}},
+				{irr::KEY_ESCAPE, nullptr}}};
 		_listPlayer.push_back(player);
 	}
 	_listObj[entity.get()] = {obj, size};
@@ -207,27 +190,70 @@ irr::core::vector2di nts::Game::getMapSize() const
 void nts::Game::setCameraPos()
 {
 	int i = 0;
+	irr::f32 tmpX = 0;
+	irr::f32 tmpY = 0;
+
 	for (auto &it : _listPlayer) {
-		if (getNode(it.entity)->getPosition().X <
-			_distBetweenPlayer[NEAREST].X)
-			_distBetweenPlayer[NEAREST].X = getNode(
-				it.entity)->getPosition().X;
-		else if (getNode(it.entity)->getPosition().X >
-			_distBetweenPlayer[FAREST].X)
-			_distBetweenPlayer[FAREST].X = getNode(
-				it.entity)->getPosition().X;
-		//std::cout << "Map[NEAREST].x [" << _distBetweenPlayer[NEAREST].X << "]" << "Map[FAREST].X [" << _distBetweenPlayer[FAREST].X << "]" << RESET << std::endl;
-		//std::cout << "Joueur[" << i << "] X["  << getNode(it.entity)->getPosition().X << "] Y[" << getNode(it.entity)->getPosition().Y << "] Z[" << getNode(it.entity)->getPosition().Z << "]" << RESET << std::endl;
+		tmpX = getNode(it.entity)->getPosition().X;
+		tmpY = getNode(it.entity)->getPosition().Z;
+		if (i == 0) {
+			_distBetweenPlayer[NEAREST].X = tmpX;
+			_distBetweenPlayer[FAREST].X = tmpX;
+
+			_distBetweenPlayer[NEAREST].Y = tmpY;
+			_distBetweenPlayer[FAREST].Y = tmpY;
+		} else {
+			if (tmpX < _distBetweenPlayer[NEAREST].X)
+				_distBetweenPlayer[NEAREST].X = tmpX;
+			if (tmpX > _distBetweenPlayer[FAREST].X)
+				_distBetweenPlayer[FAREST].X = tmpX;
+
+			if (tmpY < _distBetweenPlayer[NEAREST].Y)
+				_distBetweenPlayer[NEAREST].Y = tmpY;
+			if (tmpY > _distBetweenPlayer[FAREST].Y)
+				_distBetweenPlayer[FAREST].Y = tmpY;
+		}
 		i++;
 	}
-	_sceneManager->getActiveCamera()->setPosition(
-		irr::core::vector3df(getMapSize().X / 2 + 1,
-			static_cast<irr::f32>(
-				(_distBetweenPlayer[NEAREST].X * -1 +
-					_distBetweenPlayer[FAREST].X) / 2),
-			-3));
-	_distBetweenPlayer[NEAREST].X = -_mapSize.X;
-	_distBetweenPlayer[FAREST].X = _mapSize.X;
+	irr::f32 saveHeight = _camera[GLOBAL]->getPosition().Y;
+	float tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X)));
+	/*std::cout << "tmpHeight X "<< _distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X << std::endl;
+	std::cout << "tmpHeight Y "<< _distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y << std::endl;
+	std::cout << "Je vais check si ma distance X : " << (_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) << "] est inférieur à [" << getMapSize().X / 2 + 1 << std::endl;
+	std::cout << "Je vais check si ma distance Y : " << (_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y) << "] est inférieur à [" << getMapSize().Y / 2 + 1 << std::endl;*/
+
+	static bool locked = false;
+
+	if (locked) {
+		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 &&
+			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1)) {
+			tmpHeight = saveHeight;
+			locked = true;
+		} else {
+			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)))) {
+				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
+				locked = false;
+			}
+		}
+	} else {
+		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 ||
+			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1)) {
+			tmpHeight = saveHeight;
+			locked = true;
+		} else {
+			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y))))
+				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
+		}
+	}
+	/*	std::cout << "A la fin, ma hauteur vaut :" << tmpHeight << std::endl;
+		if (locked)
+			std::cout << "Et mon verrou est LOCKED" << std::endl;
+		else
+			std::cout << "Et mon verrou est UNLOCKED" << std::endl;
+		std::cout << std::endl;*/
+
+	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
+	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
 }
 
 void nts::Game::displayFPS()

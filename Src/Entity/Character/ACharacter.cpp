@@ -6,6 +6,7 @@
 */
 
 #include <algorithm>
+#include <fstream>
 #include "ThreadPool.hpp"
 #include "ACharacter.hpp"
 #include "Debug.hpp"
@@ -297,4 +298,23 @@ void is::ACharacter::doNothing()
 			irr::scene::EMAT_STAND);
 		_lastMove = MoveCharacter::NOTHING;
 	}
+}
+
+void is::ACharacter::save()
+{
+	std::cout << "Bonjour je vais sauvegarder" << std::endl;
+	std::streambuf *_psbuf;
+	std::streambuf *_backup;
+	std::ofstream _filestr;
+
+	remove("save.indie");
+	_filestr.open("save.indie", std::ios_base::app);
+	_backup = std::cout.rdbuf();
+	_psbuf = _filestr.rdbuf();
+
+	std::cout.rdbuf(_psbuf);
+	for (auto &it : _entities.get()) {
+		std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
+	}
+	std::cout.rdbuf(_backup);
 }
