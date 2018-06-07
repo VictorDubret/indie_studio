@@ -26,8 +26,6 @@ namespace nts {
 
 		private:
 		void manageEvent();
-
-		bool _displayGUI = true;
 		};
 
 }

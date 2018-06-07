@@ -12,3 +12,4 @@ my_cat
 [a-zA-Z0-9]
 toto
 bomberman
+.gui_*

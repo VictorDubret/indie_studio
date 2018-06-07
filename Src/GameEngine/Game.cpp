@@ -24,7 +24,7 @@ nts::Game::Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entit
 		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
 	}
 	//_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, 15 , -10), irr::core::vector3df(0, 10, 0));
-	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
+//	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 	//_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(0, getMapSize().X / 10, 0));
 	//	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(90, getMapSize().X / 10, 90));
 	//_sceneManager->getActiveCamera()->setPosition(irr::core::vector3df(30 , 20, 30));
@@ -32,6 +32,12 @@ nts::Game::Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entit
 
 void nts::Game::updateView()
 {
+}
+
+void nts::Game::resetListObj()
+{
+	_listObj.clear();
+	_listPlayer.clear();
 }
 
 void nts::Game::displaySplitScreen()

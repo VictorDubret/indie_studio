@@ -17,10 +17,24 @@ namespace nts {
 		CLICK_SETTINGS,
 		CLICK_PLAYNOW
 	};
+
 	enum {
-		MENU,
-		SETTINGS
+		MENU = 0,
+		SETTINGS = 1
 	};
+
+	typedef struct hover_s {
+		irr::gui::IGUIImage *base;
+		std::string name;
+
+		irr::io::path no_hover;
+		irr::io::path hover;
+		irr::core::rect<irr::s32> sq;
+
+		std::function<void(const struct nts::hover_s &)> click;
+		bool status;
+		bool used = true;
+	} hover_t;
 
 	class GUI : public virtual AManageIrrlicht {
 		public:
@@ -28,14 +42,20 @@ namespace nts {
 
 		void manageEventGui();
 		void drawGUI();
-		void setScene(int);
-		void addButton(int scene, wchar_t *text, const irr::core::rect<irr::s32> &textRect);
+		void addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger = "");
+		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f);
 
 		protected:
-		private:
-		int _currentScene = 0;
 
-		std::map<int, irr::gui::IGUIEnvironment *> _scene;
+		private:
+		void initBaseScene();
+		void initSettingsScene();
+
+		irr::io::path _currentScene = "";
+
+		irr::gui::IGUIEnvironment *_gui = nullptr;
+		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
+
 	};
 }
 

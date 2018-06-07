@@ -58,9 +58,12 @@ namespace nts {
 		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
 
+		void resetListObj() override;
+
 		protected:
 		std::unordered_map<std::shared_ptr<is::IEntity>, nts::irrObj_t> _listObj;
 		std::vector<nts::player_t> _listPlayer;
+
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
 

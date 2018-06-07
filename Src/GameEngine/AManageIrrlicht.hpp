@@ -15,6 +15,8 @@
 
 namespace nts {
 
+	class ManageIrrlicht;
+
 	class AManageIrrlicht : public IManageIrrlicht {
 		public:
 		AManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
@@ -30,6 +32,7 @@ namespace nts {
 
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float) override;
 		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
+		void resetListObj() override;
 
 		irr::scene::ISceneNode *getNode(const std::shared_ptr<is::IEntity> &) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
@@ -38,8 +41,8 @@ namespace nts {
 		void setMapSize(const irr::core::vector2di &mapSize) override;
 		void setCameraPos() override;
 
-
 		protected:
+		nts::ManageIrrlicht *_base;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
@@ -48,6 +51,12 @@ namespace nts {
 		irr::scene::ISceneManager *_sceneManager = nullptr;
 		irrklang::ISoundEngine *_engine = nullptr;
 		nts::EventManager _eventReceiver;
+		bool _displayGUI = true;
+
+		// Game settings
+		int _nb_player = 1;
+		int _nb_ia = 0;
+		std::pair<std::size_t, std::size_t> _mapSizeSettings = {21, 21};
 
 		private:
 		float _tmp = 0;

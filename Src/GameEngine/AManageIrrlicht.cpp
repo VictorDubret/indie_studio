@@ -27,6 +27,10 @@ nts::AManageIrrlicht::AManageIrrlicht(
 		throw std::exception();
 }
 
+void nts::AManageIrrlicht::resetListObj()
+{
+}
+
 irr::scene::ISceneManager *nts::AManageIrrlicht::getSceneManager() const
 {
 	return _sceneManager;

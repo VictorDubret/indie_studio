@@ -9,6 +9,7 @@
 
 nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen) : AManageIrrlicht(entities, eventManager), Game(entities, eventManager, mapSize, splitScreen), GUI(entities, eventManager)
 {
+	_base = this;
 }
 
 void nts::ManageIrrlicht::loopDisplay()
@@ -34,11 +35,9 @@ void nts::ManageIrrlicht::loopDisplay()
 
 void nts::ManageIrrlicht::manageEvent()
 {
-	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
-		_device->closeDevice();
-		delete _device;
-		_device = nullptr;
-	} else if (_displayGUI)
+	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE))
+		_displayGUI = true;
+	else if (_displayGUI)
 		manageEventGui();
 	 else
 		manageEventPlayers();
