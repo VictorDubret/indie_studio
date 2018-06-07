@@ -63,15 +63,24 @@ void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<
 
 void nts::ManageObject::setAnimation(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::scene::EMD2_ANIMATION_TYPE type)
 {
-	static_cast<irr::scene::IAnimatedMeshSceneNode *>(manage.getNode(obj))->setMD2Animation(type);
+	auto tmp = manage.getNode(obj);
+	if (!tmp)
+		return;
+	static_cast<irr::scene::IAnimatedMeshSceneNode *>(tmp)->setMD2Animation(type);
 }
 
 void nts::ManageObject::setScale(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &vect)
 {
-	manage.getNode(obj)->setScale(vect);
+	auto tmp = manage.getNode(obj);
+	if (!tmp)
+		return;
+	tmp->setScale(vect);
 }
 
 void nts::ManageObject::setRotation(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &rotation)
 {
-	manage.getNode(obj)->setRotation(rotation);
+	auto tmp = manage.getNode(obj);
+	if (!tmp)
+		return;
+	tmp->setRotation(rotation);
 }

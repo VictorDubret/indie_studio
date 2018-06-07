@@ -17,12 +17,10 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::Manage
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
 	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
 	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
-	_entities.unlock();
 }
 
 is::AEntity::~AEntity()
@@ -46,7 +44,10 @@ is::AEntity::~AEntity()
 
 irr::core::vector3df const is::AEntity::getPosition() const
 {
-	return (!_irrlicht.getNode(_sptr)) ? irr::core::vector3df({0, 0, 0}) : _irrlicht.getNode(_sptr)->getPosition();
+	_irrlicht.lock();
+	irr::core::vector3df tmp = (!_irrlicht.getNode(_sptr)) ? irr::core::vector3df({0, 0, 0}) : _irrlicht.getNode(_sptr)->getPosition();
+	_irrlicht.unlock();
+	return tmp;
 }
 
 std::string const& is::AEntity::getType() const
@@ -95,9 +96,11 @@ void is::AEntity::setZ(float z)
 
 void is::AEntity::setPosition(irr::core::vector3df position)
 {
+	_irrlicht.lock();
 	auto node = _irrlicht.getNode(_sptr);
 	if (node)
 		node->setPosition(position);
+	_irrlicht.unlock();
 }
 
 bool is::AEntity::isCollidable() const
@@ -145,15 +148,12 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" <<  RESET << std::endl;
 	_irrlicht.lock();
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET <<  std::endl;
 	float size = _irrlicht.getNodeSize(_sptr);
 	irr::core::vector3df pos(x, 0, z);
 	auto sceneManager = _irrlicht.getSceneManager();
+	_irrlicht.unlock();
 	if (!sceneManager) {
-		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
-		_irrlicht.unlock();
 		return ret;
 	}
 	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
@@ -162,22 +162,20 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	node->setVisible(false);
 
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << entity->getType() << RESET << std::endl;
 		entity->lock();
-		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
-		auto tmp = _irrlicht.getNode(entity);
-		if (!tmp) {
-			std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		if (std::abs(entity->getX() - x) > 2 ||
+			std::abs(entity->getZ() - z) > 2) {
 			entity->unlock();
 			return false;
 		}
-		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
-		bool test = false;
-		if (mesh1.intersectsWithBox(mesh2))
-			test = true;
-		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		_irrlicht.lock();
+		auto tmp = _irrlicht.getNode(entity);
 		entity->unlock();
-		return test;
+		_irrlicht.unlock();
+		if (!tmp)
+			return false;
+		auto mesh2 = tmp->getTransformedBoundingBox();
+		return mesh1.intersectsWithBox(mesh2);
 	};
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
@@ -187,10 +185,10 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
+	_irrlicht.lock();
 	node->removeAll();
-	//node->remove();
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	_irrlicht.unlock();
+	//node->remove();
 	return std::move(ret);
 }
 

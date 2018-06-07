@@ -177,8 +177,11 @@ void is::ACharacter::moveDown()
 		_lastMove = MoveCharacter::DOWN;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get()))
+		return;
+	lock();
 	float next = getZ() - _speed * _speedCoef;
-
+	unlock();
 	move(getX(), getY(), next);
 	_entities.unlock();
 }
@@ -193,7 +196,11 @@ void is::ACharacter::moveLeft()
 		_lastMove = MoveCharacter::LEFT;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get()))
+		return;
+	lock();
 	float next = getX() - _speed * _speedCoef;
+	unlock();
 
 	move(next, getY(), getZ());
 	_entities.unlock();
@@ -209,18 +216,25 @@ void is::ACharacter::moveRight()
 		_lastMove = MoveCharacter::RIGHT;
 	}
 	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get()))
+		return;
+	lock();
 	float next = getX() + _speed * _speedCoef;
-
+	unlock();
 	move(next, getY(), getZ());
 	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
 {
+	_entities.lock();
+	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+		_entities.unlock();
+		return;
+	}
 	if (_bomb <= 0)
 		return;
 	float size = _irrlicht.getNodeSize(_sptr);
-	_entities.lock();
 	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)getY(), (int)(getZ() + size / 2.0));
 
 	for (auto &it: _entitiesAt) {
@@ -229,27 +243,31 @@ void is::ACharacter::dropBomb()
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
 			std::cout << "Can't drop bomb" << std::endl;
 			_entities.unlock();
-			doNothing();
 			return;
 		}
 	}
 	lock();
 	--_bomb;
-	unlock();
-	_entities.unlock();
 	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
 	std::cerr << "Bomb" << std::endl;
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
+	unlock();
+	_entities.unlock();
 }
 
 void is::ACharacter::explode()
 {
-	//--_pv; //TODO uncomment
+	--_pv; //TODO uncomment
 	if (_pv == 0) {
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
+			_entities.lock();
+			if (!dynamic_cast<AEntity *>(_sptr.get()))
+				return;
+			lock();
+			_locked = true;
 			this->~ACharacter();
 		});
 		_eventManager.unlock();

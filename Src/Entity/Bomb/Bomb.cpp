@@ -80,6 +80,13 @@ void is::Bomb::explode()
 			tmp->operator++();
 		_eventManager.lock();
 		_eventManager->enqueue([this] {
+			_entities.lock();
+			if (!dynamic_cast<Bomb *>(_sptr.get())) {
+				_entities.unlock();
+				return;
+			}
+			this->lock();
+			_locked = true;
 			this->~Bomb();
 		});
 		_eventManager.unlock();
@@ -275,11 +282,13 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 	std::cerr << "lol mdr" << std::endl;
 	_eventManager.lock();
 	_eventManager->enqueue([this, x, z]() {
+		_entities.lock();
 		auto explosion = new is::Explosion(_entities, _eventManager,
 			_irrlicht);
 		std::cerr << "Je suis en cour de crea de l'explo " << std::endl;
 		explosion->setX(x);
 		explosion->setZ(z);
+		_entities.unlock();
 	});
 	_eventManager.unlock();
 	std::cerr << "J'ai fini de creer l'explo" << std::endl;

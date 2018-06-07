@@ -41,6 +41,7 @@ is::Wall::~Wall()
 void is::Wall::placePowerUp()
 {
 	is::APowerUp *powerUp = nullptr;
+	_entities.lock();
 	switch (_powerUp) {
 	case 'b':
 		powerUp = new is::BombUp(_entities, _eventManager, _irrlicht);
@@ -60,12 +61,20 @@ void is::Wall::placePowerUp()
 	if (powerUp && dynamic_cast<AEntity *>(_sptr.get())) {
  		powerUp->setPosition(getPosition());
 	}
+	_entities.unlock();
 }
 
 void is::Wall::explode()
 {
 	_eventManager->enqueue([this]{
 		placePowerUp();
+		_entities.lock();
+		if (!dynamic_cast<is::Wall *>(_sptr.get())) {
+			_entities.unlock();
+			return;
+		}
+		this->lock();
+		_locked = true;
 		this->~Wall();
 	});
 }

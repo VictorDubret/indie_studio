@@ -96,12 +96,13 @@ void nts::ManageIrrlicht::loopDisplay()
 			_sceneManager->drawAll();
 			//setCameraPos();
 		}
+		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
+		unlock();
 		//fin test
 		displayFPS();
 
 		_driver->endScene();
-		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
-		unlock();
+		std::this_thread::yield();
 	}
 }
 
@@ -118,6 +119,9 @@ void nts::ManageIrrlicht::manageEventPlayers()
 {
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
+		if (!dynamic_cast<is::AEntity *>(it.entity.get()))
+			return;
+
 		for (int i = 0; it.key[i].f != nullptr ; ++i) {
 			if (_eventReceiver.IsKeyDown(it.key[i].key)) {
 				_eventManager.lock();
@@ -159,14 +163,14 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 	if (tmp != nullptr && tmp->getType() == "Character") {
 		player_t player;
 		if (_listPlayer.empty())
-			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_RETURN, [tmp](){tmp->dropBomb();}},
+			player = {std::shared_ptr<is::ACharacter>(tmp, [](is::ACharacter *){}), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_RETURN, [tmp](){tmp->dropBomb();}},
 			        {{irr::KEY_LEFT, [tmp](){tmp->moveLeft();}},
 				{irr::KEY_RIGHT, [tmp](){tmp->moveRight();}},
 				{irr::KEY_UP, [tmp](){tmp->moveUp();}},
 				{irr::KEY_DOWN, [tmp](){tmp->moveDown();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		else
-			player = {std::shared_ptr<is::ACharacter>(tmp), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_SPACE, [tmp](){tmp->dropBomb();}},
+			player = {std::shared_ptr<is::ACharacter>(tmp, [](is::ACharacter *){}), {irr::KEY_ESCAPE, [tmp](){tmp->doNothing();}}, {irr::KEY_SPACE, [tmp](){tmp->dropBomb();}},
 			        {{irr::KEY_KEY_Q, [tmp](){tmp->moveLeft();}},
 				{irr::KEY_KEY_D, [tmp](){tmp->moveRight();}},
 				{irr::KEY_KEY_Z, [tmp](){tmp->moveUp();}},
