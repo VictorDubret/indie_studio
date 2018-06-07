@@ -6,9 +6,7 @@
 */
 
 #include <thread>
-#include <chrono>
-#include <functional>
-# include <irrlicht.h>
+#include <irrlicht.h>
 #include <algorithm>
 #include "AEntity.hpp"
 #include "Debug.hpp"
@@ -18,31 +16,32 @@
 is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_entities.lock();
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
 	_entities->push_back(_sptr);
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	_entities.unlock();
 }
 
 is::AEntity::~AEntity()
 {
-	std::cout << RED << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	if (!_locked)
+	if (!_locked) {
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+		lock();
+	}
 	_locked = true;
-	std::cout << RED << __PRETTY_FUNCTION__ << " TEST2" << RESET << std::endl;
-
 	_irrlicht.deleteEntity(_sptr);
-	std::cout << RED << __PRETTY_FUNCTION__ << " TeST3" << RESET << std::endl;
 	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
 	if (tmp == _entities->end())
 		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
 	_entities->erase(tmp);
-	std::cout << RED << __PRETTY_FUNCTION__ << " TEST4" << RESET << std::endl;
-	_entities.unlock();
+	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	unlock();
-	std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+	_entities.unlock();
 }
 
 irr::core::vector3df const is::AEntity::getPosition() const
@@ -77,26 +76,28 @@ void is::AEntity::setX(float x)
 {
 	auto pos = getPosition();
 	pos.X = x;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setY(float y)
 {
 	auto pos = getPosition();
 	pos.Y = y;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setZ(float z)
 {
 	auto pos = getPosition();
 	pos.Z = z;
-	_irrlicht.getNode(_sptr)->setPosition(pos);
+	setPosition(pos);
 }
 
 void is::AEntity::setPosition(irr::core::vector3df position)
 {
-	_irrlicht.getNode(_sptr)->setPosition(position);
+	auto node = _irrlicht.getNode(_sptr);
+	if (node)
+		node->setPosition(position);
 }
 
 bool is::AEntity::isCollidable() const
@@ -124,14 +125,9 @@ bool is::AEntity::isWallPassable() const
 	return _wallPassable;
 }
 
-void is::AEntity::collide(IEntity *&collider)
+void is::AEntity::collide(IEntity *collider)
 {
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
-	collider->lock();
 	Debug::debug(_type, " collide with ", collider->getType());
-	collider->unlock();
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 void is::AEntity::explode()
@@ -149,46 +145,53 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
-	std::cout << __PRETTY_FUNCTION__ <<" LOCK" << std::endl;
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " LOCK" <<  RESET << std::endl;
 	_irrlicht.lock();
-	std::cout << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET <<  std::endl;
 	float size = _irrlicht.getNodeSize(_sptr);
 	irr::core::vector3df pos(x, 0, z);
-	irr::scene::ISceneNode *node = _irrlicht.getSceneManager()->addCubeSceneNode(size, 0, 1, pos);
+	auto sceneManager = _irrlicht.getSceneManager();
+	if (!sceneManager) {
+		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
+		_irrlicht.unlock();
+		return ret;
+	}
+	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
 
 	auto mesh1 = node->getTransformedBoundingBox();
 	node->setVisible(false);
 
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
-
+		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << entity->getType() << RESET << std::endl;
+		entity->lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 		auto tmp = _irrlicht.getNode(entity);
 		if (!tmp) {
+			std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			entity->unlock();
 			return false;
 		}
 		auto mesh2 = _irrlicht.getNode(entity)->getTransformedBoundingBox();
 		bool test = false;
-
 		if (mesh1.intersectsWithBox(mesh2))
 			test = true;
+		std::cout << std::this_thread::get_id() << YEL << " " << entity.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		entity->unlock();
 		return test;
 	};
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
-
-		ret.push_back(*it.base());
+		ret.push_back(*(it.base()));
 		it++;
 		if (it != _entities->end()) {
 			it = std::find_if(it, _entities->end(), f);
 		}
 	}
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	node->removeAll();
 	//node->remove();
-	std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << std::endl;
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	_irrlicht.unlock();
-	return ret;
+	return std::move(ret);
 }
 
 void is::AEntity::lock()

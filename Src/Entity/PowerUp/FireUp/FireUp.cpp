@@ -19,8 +19,10 @@ is::FireUp::FireUp(
 
 is::FireUp::~FireUp()
 {
-	if (!_locked)
+	if (!_locked) {
 		_entities.lock();
+		lock();
+	}
 	_locked = true;
 }
 

@@ -11,6 +11,7 @@
 # include <unordered_map>
 # include <vector>
 # include <mutex>
+# include <thread>
 #include "Debug.hpp"
 
 # include "ACharacter.hpp"
@@ -50,7 +51,7 @@ namespace nts {
 	class ManageIrrlicht : public nts::IManageIrrlicht {
 		public:
 		ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen);
-		~ManageIrrlicht() override = default;
+		~ManageIrrlicht() override;
 
 		void updateView() override;
 		void loopDisplay() override;
@@ -99,6 +100,8 @@ namespace nts {
 		std::mutex _mutex;
 
 		nts::EventManager _eventReceiver;
+		my::Thread *_thread = nullptr;
+		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
 		bool _splitScreen = false;
 	};

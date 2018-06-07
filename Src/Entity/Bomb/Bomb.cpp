@@ -35,36 +35,44 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 
 is::Bomb::~Bomb()
 {
-	if (!_locked)
+	if (!_locked) {
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 		_entities.lock();
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
+		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+		lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
+
+	}
 	_locked = true;
 }
 
 void is::Bomb::explode()
 {
-	std::cout << "Adding explode event !" << std::endl;
 	if (_stopTimer) {
 		return;
 	}
 	_stopTimer = true;
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-
-		fprintf(stderr, "addr :%p\n", this);
-		std::cerr << "Je passe dans la fonction de "
-			"destruction d'une bombe ^^" << std::endl;
-		std::cout << "I'll explode all blocks around me ! MOUAHAHAH"
-			<< std::endl;
-		doExplosions();
+		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+		lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << this << " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
+		_eventManager.lock();
+		_eventManager->enqueue([this]{
+			doExplosions();
+		});
+		_eventManager.unlock();
 		auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 		if (tmp)
 			tmp->operator++();
-		auto tmp_this = dynamic_cast<Bomb *>(this);
-		if (!tmp_this)
-			return;
-		this->~Bomb();
-		std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		_eventManager.lock();
+		_eventManager->enqueue([this]{
+			this->~Bomb();
+		});
+		_eventManager.unlock();
+		std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		unlock();
 		return;
 	});
 	_eventManager.unlock();
@@ -92,11 +100,14 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
+	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
 	lock();
+	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
 	unlock();
+	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 size_t is::Bomb::getLenExplosion() const
@@ -108,18 +119,32 @@ void is::Bomb::doExplosions()
 {
 	std::vector<std::shared_ptr<IEntity>> range;
 
-	check_arround(_lenExplosion, 0, [this](int actualPos) {
-		return getX() - actualPos;
-	}, XAXES);
-	check_arround(_lenExplosion, 0, [this](int actualPos) {
-		return getX() + actualPos;
-	}, XAXES);
-	check_arround(_lenExplosion, 0, [this](int actualPos) {
-		return getZ() - actualPos;
-	}, ZAXES);
-	check_arround(_lenExplosion, 0, [this](int actualPos) {
-		return getZ() + actualPos;
-	}, ZAXES);
+	auto tmp = dynamic_cast<AEntity *>(_sptr.get());
+	if (!tmp) {
+		return;
+	}
+	_eventManager.lock();
+	_eventManager->enqueue([&]{
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << std::endl;
+		_entities.lock();
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << std::endl;
+		check_arround(_lenExplosion, 0, [this](int actualPos) {
+			return getX() - actualPos;
+		}, XAXES);
+		check_arround(_lenExplosion, 0, [this](int actualPos) {
+			return getX() + actualPos;
+		}, XAXES);
+		check_arround(_lenExplosion, 0, [this](int actualPos) {
+			return getZ() - actualPos;
+		}, ZAXES);
+		check_arround(_lenExplosion, 0, [this](int actualPos) {
+			return getZ() + actualPos;
+		}, ZAXES);
+		std::cout << std::this_thread::get_id() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << std::endl;
+		_entities.unlock();
+	});
+	_eventManager.unlock();
+	std::cout << std::this_thread::get_id() << YEL << " " << this <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 }
 
 bool is::Bomb::check_arround(int lenExplosion, int actualPos,
@@ -127,51 +152,71 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 )
 {
 	bool stop = false;
-
 	if (actualPos > lenExplosion)
 		return false;
-	std::vector<std::shared_ptr<IEntity>> tmp =
-		(which_axes == XAXES) ? getEntitiesAt(f(actualPos), 0, getZ()) :
-			getEntitiesAt(getX(), 0, f(actualPos));
-	std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-	_entities.lock();
-	std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it) {
+
+	if (dynamic_cast<AEntity *>(_sptr.get()) == nullptr)
+		return false;
+	float x = (which_axes != XAXES) ? getX() : f(actualPos);
+	float z = (which_axes != ZAXES) ? getZ() : f(actualPos);
+
+	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(x, 0, z);
+
+	std::for_each(tmp.begin(), tmp.end(), [&](std::shared_ptr<IEntity> &it){
 		auto tmp_it = dynamic_cast<AEntity *>(it.get());
 		if (!tmp_it || stop)
 			return false;
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << it->getType() << RESET << std::endl;
+		it->lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
 		if (it->getType() == "Wall") {
-			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
-			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
-				return false;
-			}
-			it->lock();
-			if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
-				return false;
-			}
 			it->explode();
 			createExplosion(f, which_axes, actualPos);
+			std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			it->unlock();
 			stop = true;
 			return false;
 		} else if (it->getType() == "UnbreakableWall") {
-			std::cout << RED << " UNBREAKABLE" << RESET << std::endl;
-			_entities.unlock();std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+			it->unlock();
 			stop = true;
 			return false;
 		}
-		_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
-//		it->lock();
-		if (dynamic_cast<is::AEntity *>(it.get()) == nullptr) {
+		it->explode();
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		it->unlock();
+	});
+	/*
+	for (auto &it: tmp) {
+		auto tmp_it = dynamic_cast<AEntity *>(it.get());
+		if (!tmp_it)
+			continue;
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
+		it->lock();
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " AFTER LOCK" << RESET << std::endl;
+		if (it->getType() == "Wall") {
+			_eventManager.lock();
+			_eventManager->enqueue([it]{
+				it->explode();
+			});
+			_eventManager.unlock();
+			createExplosion(f, which_axes, actualPos);
+			it->unlock();
+			return false;
+		} else if (it->getType() == "UnbreakableWall") {
+			it->unlock();
 			return false;
 		}
-		it->explode();
-//		it->unlock();
-		std::cout << RED << __PRETTY_FUNCTION__ << " LOCK" << RESET << std::endl;
-		_entities.lock();
-		return true;
-	});
+		_eventManager.lock();
+		_eventManager->enqueue([it]{
+			it->explode();
+		});
+		_eventManager.unlock();
+		std::cout << std::this_thread::get_id() << YEL << " " << it.get() <<  " : " << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
+		it->unlock();
+	}*/
 	if (stop)
 		return false;
-	_entities.unlock(); std::cout << GRN << __PRETTY_FUNCTION__ << " UNLOCK" << RESET << std::endl;
 	createExplosion(f, which_axes, actualPos);
 	check_arround(lenExplosion, actualPos + 1, f, which_axes);
 	return false;
@@ -180,17 +225,26 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 void is::Bomb::createExplosion(std::function<float(int)> &f,
 	is::Bomb::Axes_t &which_axes, int &actualPos)
 {
-	auto explosion = new is::Explosion(_entities, _eventManager,
-		_irrlicht);
-	(which_axes == XAXES) ? explosion->setX(f(actualPos)) :
-		explosion->setX(getX());
-	explosion->setY(0);
-	(which_axes == ZAXES) ? explosion->setZ(f(actualPos)) :
-		explosion->setZ(getZ());
+	if (dynamic_cast<AEntity *>(_sptr.get()) == nullptr)
+		return;
+	float x = (which_axes == XAXES) ? f(actualPos) : getX();
+	float z = (which_axes == ZAXES) ? f(actualPos) : getZ();
+	std::cout << "####### " << x << " " << z << std::endl;
+
+	_eventManager.lock();
+	_eventManager->enqueue([&]{
+		std::cout << "lol mdr" << std::endl;
+		auto explosion = new is::Explosion(_entities, _eventManager,
+			_irrlicht);
+		explosion->setX(x);
+		explosion->setZ(z);
+	});
+	_eventManager.unlock();
 }
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 {
+	/*_entities.lock();
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(), getY(), getZ());
 	for (const auto &it : tmp) {
 		std::cout << "type : " << it->getType() << std::endl;
@@ -198,5 +252,6 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity) const
 			return true;
 		}
 	}
+	_entities.unlock();*/
 	return false;
 }

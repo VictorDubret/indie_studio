@@ -16,7 +16,27 @@
 mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
 			       nts::ManageIrrlicht &irrlicht,
 			       std::pair<std::size_t, std::size_t> &size) :
-	_height(size.first), _width(size.second)
+	_height(size.first), _width(size.second), _dropRate(65), _bombUpRate(50),
+	_fireUpRate(29), _speedUpRate(19), _wallPassRate(2)
+{
+	if (_height % 2 == 0) {
+		size.first++;
+		_height++;
+	}
+	if (_width % 2 == 0) {
+		size.second++;
+		_width++;
+	}
+	_map = std::string(_height * _width, '.');
+	createMap(entities, eventManager, irrlicht);
+}
+
+mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
+	nts::ManageIrrlicht &irrlicht,
+	std::pair<std::size_t, std::size_t> &size, int dropRate, int bombUpRate,
+	int fireUpRate, int speedUpRate, int wallPassRate) :
+	_height(size.first), _width(size.second), _dropRate(100 - dropRate), _bombUpRate(bombUpRate),
+	_fireUpRate(fireUpRate), _speedUpRate(speedUpRate), _wallPassRate(wallPassRate)
 {
 	if (_height % 2 == 0) {
 		size.first++;
@@ -90,13 +110,13 @@ char		mg::MapGenerator::definePowerup()
 {
 	int	type = rand();
 
-	if (type % 300 < 200)
+	if (rand() % 100 < _dropRate)
 		return '0';
-	if (type % 300 < 250)
+	if (type % 100 < _bombUpRate)
 		return 'b';
-	if (type % 300 < 279)
+	if (type % 100 < _bombUpRate + _fireUpRate)
 		return 'f';
-	if (type % 300 < 298)
+	if (type % 100 < _bombUpRate + _fireUpRate + _speedUpRate)
 		return 's';
 	return 'w';
 }

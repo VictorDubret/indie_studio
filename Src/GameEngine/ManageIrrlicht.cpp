@@ -13,7 +13,7 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 	_device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(1200, 800), 32, false, false, false, &_eventReceiver);
 	_engine = irrklang::createIrrKlangDevice();
 	if (!_device || !_engine)
-	_device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(1600, 900), 32, false, false, false, &_eventReceiver);
+		_device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(1600, 900), 32, false, false, false, &_eventReceiver);
 
 	_driver = _device->getVideoDriver();
 	_sceneManager = _device->getSceneManager();
@@ -38,6 +38,21 @@ nts::ManageIrrlicht::ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<i
 	//_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(0, getMapSize().X / 10, 0));
 //	_sceneManager->addCameraSceneNode(0, irr::core::vector3df(0, (getMapSize().X / 2), -10), irr::core::vector3df(90, getMapSize().X / 10, 90));
 	//_sceneManager->getActiveCamera()->setPosition(irr::core::vector3df(30 , 20, 30));
+
+	_thread =  new my::Thread([&](){
+		while (!_stopThread && _device) {
+			manageEvent();
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		}
+	});
+}
+
+nts::ManageIrrlicht::~ManageIrrlicht()
+{
+	_stopThread = true;
+	delete _device;
+	delete _engine;
+	delete _thread;
 }
 
 void nts::ManageIrrlicht::updateView()
@@ -82,13 +97,12 @@ void nts::ManageIrrlicht::loopDisplay()
 			_sceneManager->drawAll();
 			//setCameraPos();
 		}
-		std::cout << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
 		//fin test
 		displayFPS();
 
 		_driver->endScene();
+		std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
 		unlock();
-		manageEvent();
 	}
 }
 
@@ -96,8 +110,6 @@ void nts::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
 		_device->closeDevice();
-		delete _device;
-		_device = nullptr;
 	}
 	else
 		manageEventPlayers();
@@ -105,9 +117,6 @@ void nts::ManageIrrlicht::manageEvent()
 
 void nts::ManageIrrlicht::manageEventPlayers()
 {
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" LOCK" << RESET << std::endl;
-	lock();
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" AFTER LOCK" << RESET << std::endl;
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
 		for (int i = 0; it.key[i].f != nullptr ; ++i) {
@@ -116,17 +125,23 @@ void nts::ManageIrrlicht::manageEventPlayers()
 				dynamic_cast<is::ArtificialIntelligence *>(it.entity.get())->AIsTurn();
 			}
 			if (_eventReceiver.IsKeyDown(it.key[i].key)) {
+				_eventManager.lock();
 				_eventManager->enqueue(it.key[i].f);
+				_eventManager.unlock();
 				doSomething = true;
 			}
 		}
-		if (_eventReceiver.IsKeyDown(it.doSomething.key))
+		if (_eventReceiver.IsKeyDown(it.doSomething.key)) {
+			_eventManager.lock();
 			_eventManager->enqueue(it.doSomething.f);
-		else if (!doSomething)
+			_eventManager.unlock();
+		}
+		else if (!doSomething) {
+			_eventManager.lock();
 			_eventManager->enqueue(it.nothing.f);
+			_eventManager.unlock();
+		}
 	}
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
-	unlock();
 }
 
 irr::scene::ISceneNode *nts::ManageIrrlicht::getNode(const std::shared_ptr<is::IEntity> &entity)
@@ -143,9 +158,9 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
-	std::cout << BLU << std::this_thread::get_id() << " : "<< __PRETTY_FUNCTION__ <<" LOCK" << RESET << std::endl;
-	lock();
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" AFTER LOCK" << RESET << std::endl;
+	//std::cout << BLU << std::this_thread::get_id() << " : "<< __PRETTY_FUNCTION__ <<" LOCK" << RESET << std::endl;
+	//lock();
+	//std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" AFTER LOCK" << RESET << std::endl;
 	if (tmp != nullptr && tmp->getType() == "Character") {
 		player_t player;
 		if (_listPlayer.empty())
@@ -165,8 +180,8 @@ bool nts::ManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &entity, irr::s
 		_listPlayer.push_back(player);
 	}
 	_listObj[entity] = {obj, size};
-	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
-	unlock();
+	//std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
+	//unlock();
 	return false;
 }
 
@@ -174,6 +189,9 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" LOCK" << RESET << std::endl;
+	lock();
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" AFTER LOCK" << RESET << std::endl;
 	if (tmp && tmp->getType() == "Character") {
 		int idx = 0;
 		for (auto &it : _listPlayer) {
@@ -184,10 +202,12 @@ bool nts::ManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			idx++;
 		}
 	}
-	if (_device && _listObj[entity].obj) {
+	if (_device && _listObj.find(entity) != _listObj.end() && _listObj[entity].obj) {
 		_listObj[entity].obj->setVisible(false);
 		_listObj.erase(_listObj.find(entity));
 	}
+	std::cout << BLU << std::this_thread::get_id() << " : " << __PRETTY_FUNCTION__ <<" UNLOCK" << RESET << std::endl;
+	unlock();
 	return false;
 }
 

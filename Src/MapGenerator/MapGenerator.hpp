@@ -19,8 +19,12 @@ namespace mg {
 	class MapGenerator {
 	public:
 		MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
-			     nts::ManageIrrlicht &irrlicht,
-			     std::pair<std::size_t, std::size_t> &size);
+			nts::ManageIrrlicht &irrlicht,
+			std::pair<std::size_t, std::size_t> &size);
+		MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
+			nts::ManageIrrlicht &irrlicht,
+			std::pair<std::size_t, std::size_t> &size, int dropRate, int bombUpRate,
+			int fireUpRate, int speedUpRate, int wallPassRate);
 		~MapGenerator();
 
 	private:
@@ -41,6 +45,11 @@ namespace mg {
 		std::size_t	_height;
 		std::size_t	_width;
 		std::string	_map;
+		int	_dropRate;
+		int	_bombUpRate;
+		int	_fireUpRate;
+		int	_speedUpRate;
+		int	_wallPassRate;
 	};
 }
 
