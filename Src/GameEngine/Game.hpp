@@ -45,7 +45,7 @@ namespace nts {
 
 	class Game : public virtual AManageIrrlicht {
 		public:
-		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen);
+		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,  irr::core::vector2di mapSize, bool splitScreen);
 		~Game() override;
 
 		void updateView() override;
@@ -57,6 +57,7 @@ namespace nts {
 
 		bool addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float size = 1.f) override;
 		bool deleteEntity(std::shared_ptr<is::IEntity> &) override;
+		void resetListObj() override;
 
 		irr::scene::ISceneNode *getNode(is::IEntity *) override;
 		float &getNodeSize(const std::shared_ptr<is::IEntity> &) override;
@@ -75,8 +76,6 @@ namespace nts {
 		std::vector<nts::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
-
-		irr::core::vector2di _mapSize;
 
 		my::Thread *_thread = nullptr;
 		bool _stopThread = false;

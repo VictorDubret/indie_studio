@@ -38,7 +38,7 @@ namespace nts {
 
 	class GUI : public virtual AManageIrrlicht {
 		public:
-		GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
+		GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 
 		void manageEventGui();
 		void drawGUI();
@@ -46,6 +46,9 @@ namespace nts {
 		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f);
 
 		protected:
+		void addPlayerAndIA();
+		void addPlayer(float x, float z);
+		void addIA(float x, float z);
 
 		private:
 		void initBaseScene();
