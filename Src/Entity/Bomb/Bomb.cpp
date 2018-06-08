@@ -31,7 +31,6 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
-
 }
 
 is::Bomb::~Bomb()
@@ -128,11 +127,16 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
-	lock();
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d",
+		0.75);
+	_irrlicht.getNode(_sptr.get())->setPosition(
+		irr::core::vector3df(1.1f, 0.1f, 1.1f));
+	nts::ManageObject::setScale(_irrlicht, _sptr,
+		irr::core::vector3df(1, 1, 1));
+	nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
-	unlock();
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/bomb.png");
 }
 
 size_t is::Bomb::getLenExplosion() const
