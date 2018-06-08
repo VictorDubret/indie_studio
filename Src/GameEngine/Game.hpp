@@ -64,6 +64,8 @@ namespace nts {
 
 		void lock() override;
 		void unlock() override;
+		void setPause();
+
 
 		protected:
 		std::mutex _mutex;
@@ -81,6 +83,7 @@ namespace nts {
 		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
 		bool _splitScreen = false;
+		bool _pause = false;
 	};
 
 }

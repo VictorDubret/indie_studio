@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2018
 ** cpp_indie_studio
@@ -25,7 +26,9 @@ is::Explosion::Explosion(
 	texture();
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		do {
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		} while(_isPaused);
 		this->~Explosion();
 	});
 	_eventManager.unlock();
@@ -58,4 +61,9 @@ void is::Explosion::collide(is::IEntity *entity)
 			return ;
 		entity->explode();
 	}
+}
+
+void is::Explosion::setIsPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
 }

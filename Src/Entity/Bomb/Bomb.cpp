@@ -31,6 +31,7 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
+
 }
 
 is::Bomb::~Bomb()
@@ -40,6 +41,11 @@ is::Bomb::~Bomb()
 		lock();
 	}
 	_locked = true;
+}
+
+void is::Bomb::isPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
 }
 
 void is::Bomb::explode()
@@ -89,9 +95,28 @@ void is::Bomb::timer(size_t time)
 
 		t.startTimer(time);
 
-		while (!t.isOver() && !_stopTimer);
-		std::cout << "I'll explode in " << time << " seconds"
-			<< std::endl;
+		bool paused = false;
+		bool wait = false;
+		bool test = false;
+		while (!wait) {
+			while (_isPaused) {
+				paused = true;
+					wait = true;
+					test = true;
+			}
+			if (!_isPaused && !test) {
+				if ((t.isOver() || _stopTimer)) {
+					wait = true;
+					break;
+				}
+			}
+		}
+		if (paused) {
+			t.startTimer(time);
+		}
+
+		while ((!t.isOver() && !_stopTimer));
+		std::cout << "I'll explode in " << time << " seconds" << std::endl;
 		fprintf(stderr, "Bouum de %p\n", this);
 		if (_stopTimer) {
 			return;
