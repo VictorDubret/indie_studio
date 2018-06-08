@@ -40,7 +40,6 @@ int main(int ac, char **)
 	}
 
 	/* initialisation */
-	std::pair<std::size_t, std::size_t> mapSize(13, 13);
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
 
 	if (ac == 1) {
@@ -52,18 +51,16 @@ int main(int ac, char **)
 
 
 		is::ACharacter *toto2 = new is::ACharacter(lockList, pool, tmp);
-		toto2->setZ(13);
+		toto2->setZ(11);
 		toto2->setX(13);
 		toto2->setBombMax(5);
 		toto2->setBomb(5);
 
 		mg::MapGenerator generator(lockList, pool, tmp, mapSize);
-		is::IEntity *ai = new is::ArtificialIntelligence(lockList, pool, tmp);
 
 	}
 	/* Chargement textures */
 	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
-	is::IEntity *ai = new is::ArtificialIntelligence(lockList, pool, tmp);
 	//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
 	/*if (ac == 3) {

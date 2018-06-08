@@ -161,7 +161,8 @@ void is::ACharacter::moveUp()
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
-	_entities.lock();
+	if (!_entities.trylock())
+		return;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
 		_entities.unlock();
 		return;
@@ -183,7 +184,8 @@ void is::ACharacter::moveDown()
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
-	_entities.lock();
+	if (!_entities.trylock())
+		return;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
 		_entities.unlock();
 		return;
@@ -204,7 +206,8 @@ void is::ACharacter::moveLeft()
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
-	_entities.lock();
+	if (!_entities.trylock())
+		return;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
 		_entities.unlock();
 		return;
@@ -226,7 +229,8 @@ void is::ACharacter::moveRight()
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
-	_entities.lock();
+	if (!_entities.trylock())
+		return;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
 		_entities.unlock();
 		return;
@@ -240,7 +244,8 @@ void is::ACharacter::moveRight()
 
 void is::ACharacter::dropBomb()
 {
-	_entities.lock();
+	if (!_entities.trylock())
+		return;
 	if (!dynamic_cast<AEntity *>(_sptr.get())) {
 		_entities.unlock();
 		return;
