@@ -10,6 +10,7 @@
 
 #include "AEntity.hpp"
 #include "ACharacter.hpp"
+#include "ManageObject.hpp"
 
 namespace is {
 	class APowerUp: public AEntity {
