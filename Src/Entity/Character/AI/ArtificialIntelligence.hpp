@@ -39,7 +39,7 @@ namespace is {
 			NONE
 		};
 
-		bool 	stillCrates();
+		//bool 	stillCrates();
 		bool 	inDanger();
 		void	getMapDimensions();
 		void 	setWalls();
@@ -61,6 +61,8 @@ namespace is {
 		std::size_t	_height;
 		std::size_t	_width;
 		std::vector<std::pair<Type, IEntity *>>	_map;
+		Direction	_direction = NONE;
+		std::pair<float, float>	_position;
 	};
 }
 
