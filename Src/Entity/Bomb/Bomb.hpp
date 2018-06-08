@@ -30,6 +30,8 @@ namespace is {
 
 		size_t getLenExplosion() const;
 
+		void setPaused(const bool isPaused);
+
 		private:
 
 		bool isWalkable(std::shared_ptr<is::IEntity> &entity) override;
@@ -49,6 +51,8 @@ namespace is {
 
 		std::shared_ptr<IEntity> &_player;
 		void doExplosions(float x, float z);
+
+		bool _isPaused = false;
 	};
 }
 

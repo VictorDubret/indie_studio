@@ -30,6 +30,76 @@ add_definitions(-DDEBUG=1)
 add_executable(bomberman
         ${FILE})
 
+add_custom_command(
+        OUTPUT
+        ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
+        COMMAND
+        mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/include
+        COMMAND
+        wget https://datapacket.dl.sourceforge.net/project/irrlicht/Irrlicht%20SDK/1.8/1.8.4/irrlicht-1.8.4.zip
+        COMMAND
+        unzip irrlicht-1.8.4.zip
+        COMMAND
+        make -C ${CMAKE_CURRENT_SOURCE_DIR}/irrlicht-1.8.4/source/Irrlicht
+        COMMAND
+        cp -r ${CMAKE_CURRENT_SOURCE_DIR}/irrlicht-1.8.4/include ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/
+        COMMAND
+        cp ${CMAKE_CURRENT_SOURCE_DIR}/irrlicht-1.8.4/lib/Linux/libIrrlicht.a ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs
+        COMMAND
+        rm -rf irrlicht-1.8.4
+        COMMAND
+        rm -f irrlicht-1.8.4.zip
+        COMMENT
+        "Installing Irrlicht"
+        VERBATIM
+)
+
+add_custom_target(
+        installIrrlicht
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
+)
+
+add_dependencies(bomberman installIrrlicht)
+
+
+add_custom_command(
+        OUTPUT
+        ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so
+        COMMAND
+        mkdir -p ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/include
+        COMMAND
+        wget http://www.ambiera.at/downloads/irrKlang-64bit-1.6.0.zip
+        COMMAND
+        unzip irrKlang-64bit-1.6.0.zip
+        COMMAND
+        cp -r ${CMAKE_CURRENT_SOURCE_DIR}/irrKlang-64bit-1.6.0/include ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/
+        COMMAND
+        cp ${CMAKE_CURRENT_SOURCE_DIR}/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs
+        COMMAND
+        rm -rf irrKlang-64bit-1.6.0
+        COMMAND
+        rm -f irrKlang-64bit-1.6.0.zip
+        COMMENT
+        "Installing IrrKlang"
+        VERBATIM
+)
+
+add_custom_target(
+        installIrrKlang
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so
+)
+
+add_dependencies(bomberman installIrrKlang)
+
+include_directories(externalLibs/include)
+
 target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
+        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs
+        )
+
+link_directories(externalLibs)
+
 target_link_libraries(bomberman
-        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor /usr/bin/libIrrKlang.so)
+        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so)

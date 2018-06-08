@@ -120,10 +120,9 @@ is::ACharacter &is::ACharacter::operator++()
 	return *this;
 }
 
-bool is::ACharacter::checkCollision()
+bool is::ACharacter::checkCollision(std::vector<std::shared_ptr<is::IEntity>> &list)
 {
 	bool ret = false;
-	auto list = getEntitiesAt(getX(), getY(), getZ());
 
 	for (auto it : list) {
 		if (it.get() != this && it->isCollidable()) {
@@ -149,7 +148,7 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 	setZ(nextZ);
 	setY(nextY);
 	setX(nextX);
-	checkCollision();
+	checkCollision(list);
 }
 
 void is::ACharacter::moveUp()

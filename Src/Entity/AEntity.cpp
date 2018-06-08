@@ -181,9 +181,8 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		}
 	}
 	_irrlicht.lock();
-	node->removeAll();
+	node->remove();
 	_irrlicht.unlock();
-	//node->remove();
 	return std::move(ret);
 }
 

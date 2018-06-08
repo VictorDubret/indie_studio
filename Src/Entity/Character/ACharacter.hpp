@@ -61,7 +61,7 @@ namespace is {
 
 		void explode() override;
 
-		bool checkCollision();
+		bool checkCollision(std::vector<std::shared_ptr<is::IEntity>> &);
 
 		void texture() override;
 	protected:

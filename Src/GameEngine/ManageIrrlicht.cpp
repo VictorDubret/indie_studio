@@ -28,7 +28,6 @@ nts::ManageIrrlicht::ManageIrrlicht(
 void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
-		lock();
 		if (_displayGUI) {
 			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
 			drawGUI();
@@ -36,10 +35,11 @@ void nts::ManageIrrlicht::loopDisplay()
 			displaySplitScreen();
 		} else {
 			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+			lock();
 			_sceneManager->drawAll();
+			unlock();
 			setCameraPos();
 		}
-		unlock();
 		//fin test
 		displayFPS();
 

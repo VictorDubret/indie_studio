@@ -59,12 +59,15 @@ void nts::Game::displaySplitScreen()
 	/* Display of Player 1 */
 	_sceneManager->setActiveCamera(_camera[PLAYER1]);
 	_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900/2));
+	lock();
 	_sceneManager->drawAll();
-
+	unlock();
 	/* Display of Player 2 */
 	_sceneManager->setActiveCamera(_camera[PLAYER2]);
 	_driver->setViewPort(irr::core::rect<irr::s32>(0,450,1600,900));
+	lock();
 	_sceneManager->drawAll();
+	unlock();
 
 	int i = 0;
 	/* Setting Camera pos to player's position */
@@ -160,22 +163,6 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 
 bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
-	lock();
-	/*if (entity->getType() == "Character") {
-		int idx = 0;
-		for (auto &it : _listPlayer) {
-			if (it.entity == entity) {
-				_listPlayer.erase(_listPlayer.begin() + idx);
-				return false;
-			}
-			idx++;
-		}
-	}*/
-	//if (entity->getType() == "Character") {
-
-	//	unlock();
-	//	return false;
-	//}
 	if (entity->getType() == "Character") {
 		for (auto &it : _listPlayer) {
 			if (it.entity == entity.get()) {
@@ -183,6 +170,7 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 			}
 		}
 	}
+	lock();
 	nts::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {

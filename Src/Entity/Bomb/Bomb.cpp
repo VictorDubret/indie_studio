@@ -224,3 +224,8 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 	_entities.unlock();*/
 	return true;
 }
+
+void is::Bomb::setPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
+}
