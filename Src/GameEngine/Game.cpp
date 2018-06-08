@@ -10,22 +10,11 @@
 
 nts::Game::Game(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager,
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,
 	irr::core::vector2di mapSize, bool splitScreen
-) : AManageIrrlicht(entities, eventManager), _mapSize(mapSize), _splitScreen(splitScreen)
+) : AManageIrrlicht(entities, eventManager, irrlicht), _splitScreen(splitScreen)
 {
-	irr::core::vector2df tmpDist;
-	tmpDist.X = -(_mapSize.X / 2);
-	tmpDist.Y = 0;
-	_distBetweenPlayer.push_back(tmpDist);
-	tmpDist.X = _mapSize.X / 2;
-	_distBetweenPlayer.push_back(tmpDist);
-
-	/* Setting Global Camera */
-	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
-		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
-		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
-
+	updateView();
 	/* Setting Split Screen Camera */
 	if (_splitScreen) {
 		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
@@ -33,10 +22,7 @@ nts::Game::Game(
 	}
 
 	/* Loading Sound */
-	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
-
-
-
+//	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
 nts::Game::~Game()
@@ -49,6 +35,18 @@ nts::Game::~Game()
 
 void nts::Game::updateView()
 {
+	irr::core::vector2df tmpDist;
+	tmpDist.X = -(_mapSize.first / 2);
+	tmpDist.Y = 0;
+	_distBetweenPlayer.push_back(tmpDist);
+	tmpDist.X = _mapSize.first / 2;
+	_distBetweenPlayer.push_back(tmpDist);
+
+	/* Setting Global Camera */
+	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
+		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
+		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
+
 }
 
 void nts::Game::displaySplitScreen()
@@ -194,12 +192,13 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 
 void nts::Game::setMapSize(const irr::core::vector2di &mapSize)
 {
-	_mapSize = mapSize;
+	_mapSize.first = (std::size_t)mapSize.X;
+	_mapSize.second = (std::size_t)mapSize.Y;
 }
 
 irr::core::vector2di nts::Game::getMapSize() const
 {
-	return _mapSize;
+	return irr::core::vector2di(irr::s32(_mapSize.first), irr::s32(_mapSize.second));
 }
 
 void nts::Game::setCameraPos()
@@ -273,6 +272,12 @@ void nts::Game::setCameraPos()
 
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
+}
+
+void nts::Game::resetListObj()
+{
+	_listPlayer.clear();
+	_listObj.clear();
 }
 
 void nts::Game::displayFPS()

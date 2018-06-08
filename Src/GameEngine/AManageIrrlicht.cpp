@@ -9,8 +9,8 @@
 
 nts::AManageIrrlicht::AManageIrrlicht(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager
-) : _eventManager(eventManager), _entities(entities), _eventReceiver()
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+) : _base(irrlicht), _eventManager(eventManager), _entities(entities), _eventReceiver()
 {
 	_device = irr::createDevice(irr::video::EDT_OPENGL,
 		irr::core::dimension2d<irr::u32>(1600, 900), 32, false, false,

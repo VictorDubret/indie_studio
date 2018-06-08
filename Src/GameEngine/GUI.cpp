@@ -7,9 +7,10 @@
 
 #include <iostream>
 #include "MapGenerator.hpp"
+#include "ArtificialIntelligence.hpp"
 #include "GUI.hpp"
 
-nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager) : AManageIrrlicht(entities, eventManager)
+nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
 	_gui = getDevice()->getGUIEnvironment();
 
@@ -78,7 +79,13 @@ void nts::GUI::initBaseScene()
 	_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(30, 50));
 	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(420, 60));
 
-	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(800, 400, 1100, 700), [this](const struct nts::hover_s &) {/*_base->resetListObj(); getSceneManager()->clear(); mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSizeSettings);*/_displayGUI = false;});
+	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(800, 400, 1100, 700), [this](const struct nts::hover_s &) {
+		_base.resetListObj();
+		getSceneManager()->clear();
+		updateView();
+		addPlayerAndIA();
+		_displayGUI = false;
+	});
 	addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(900, 160, 1113, 226), [this](const struct nts::hover_s &) {initSettingsScene();});
 }
 
@@ -90,10 +97,6 @@ void nts::GUI::initSettingsScene()
 	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(30, 30));
 	_gui->addImage(getDriver()->getTexture("media/number_player.png"), irr::core::position2d<irr::s32>(30, 180));
 	_gui->addImage(getDriver()->getTexture("media/number_ia.png"), irr::core::position2d<irr::s32>(30, 300));
-
-	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1090, 10, 1190, 110), [this](const struct nts::hover_s &) {initBaseScene();});
-	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(500, 150, 600, 250), [this](const struct nts::hover_s &) {_nb_player = 1;_hoverManage["settings"]["number1"].used = false;_hoverManage["settings"]["number2"].used = true;_hoverManage["settings"]["number2"].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number2"].no_hover));});
-	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(610, 150, 700, 250), [this](const struct nts::hover_s &) {_nb_player = 2;_hoverManage["settings"]["number2"].used = false;_hoverManage["settings"]["number1"].used = true;_hoverManage["settings"]["number1"].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number1"].no_hover));});
 
 	auto f = [this](const struct nts::hover_s &obj) {
 		for (auto &&it : _hoverManage[_currentScene]) {
@@ -108,15 +111,55 @@ void nts::GUI::initSettingsScene()
 		}
 	};
 
+	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1090, 10, 1190, 110), [this](const struct nts::hover_s &) {initBaseScene();});
+	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(500, 150, 600, 250), [this](const struct nts::hover_s &) {_nb_player = 1;initSettingsScene();});
+	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(610, 150, 700, 250), [this](const struct nts::hover_s &) {_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");initSettingsScene();});
+
 	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(500, 270, 600, 370), f);
 	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(610, 270, 710, 370), f);
 	addButtonImage("number_ia2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(720, 270, 820, 370), f);
-	addButtonImage("number_ia3", "settings", "media/number3_hover.png", "media/number3.png", irr::core::rect<irr::s32>(830, 270, 930, 370), f);
+	if (_nb_player == 1)
+		addButtonImage("number_ia3", "settings", "media/number3_hover.png", "media/number3.png", irr::core::rect<irr::s32>(830, 270, 930, 370), f);
 
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number" + std::to_string(_nb_player)].hover));
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].used = false;
 
 	_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].hover));
-	_hoverManage["settings"]["number_ia" + std::to_string(_nb_player)].used = false;
+	_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].used = false;
+
+}
+
+void nts::GUI::addPlayer(float x, float z)
+{
+	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base);
+	player->setZ(x);
+	player->setX(z);
+	player->setBombMax(5);
+	player->setBomb(5);
+}
+
+void nts::GUI::addIA(float x, float z)
+{
+	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base);
+	player->setZ(x);
+	player->setX(z);
+	player->setBombMax(5);
+	player->setBomb(5);
+}
+
+void nts::GUI::addPlayerAndIA()
+{
+	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize);
+
+	addPlayer(1, 1);
+	if (_nb_player == 2)
+		addPlayer(_base.getMapSize().X, _base.getMapSize().Y);
+	if (_nb_ia >= 1)
+		addIA(_base.getMapSize().X, 1);
+	if (_nb_ia >= 2)
+		addIA(1, _base.getMapSize().Y);
+	if (_nb_ia >= 3)
+		addIA(_base.getMapSize().X, _base.getMapSize().Y);
+
 
 }
