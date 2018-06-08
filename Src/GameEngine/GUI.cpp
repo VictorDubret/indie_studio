@@ -6,6 +6,15 @@
 */
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <Entity/Scenery/Wall/Wall.hpp>
+#include <Entity/PowerUp/FireUp/FireUp.hpp>
+#include <Entity/PowerUp/BombUp/BombUp.hpp>
+#include <Entity/PowerUp/WallPass/WallPass.hpp>
+#include <Entity/PowerUp/SpeedUp/SpeedUp.hpp>
+#include <Entity/Scenery/UnbreakableWall/UnbreakableWall.hpp>
+#include <Entity/Bomb/Bomb.hpp>
 #include "MapGenerator.hpp"
 #include "ArtificialIntelligence.hpp"
 #include "GUI.hpp"
@@ -20,7 +29,8 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 
 void nts::GUI::drawGUI()
 {
-	_gui->drawAll();
+	if (_device->run())
+		_gui->drawAll();
 }
 
 void nts::GUI::manageEventGui()
@@ -71,22 +81,131 @@ void nts::GUI::addButtonImage(const std::string &name, const irr::io::path &scen
 	_hoverManage[scene][name].used = true;
 }
 
+void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &base)
+{
+	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
+	_base.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
+	//	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
+
+
+	// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
+	if (tmpVector[4] == "IsPickable")
+		player_tmp2.get()->setPickable(static_cast<bool>(stoi(tmpVector[5])));
+	if (tmpVector[6] == "IsWalkable")
+		player_tmp2.get()->setWalkable(static_cast<bool>(stoi(tmpVector[7])));
+	if (tmpVector[8] == "Iscollidable")
+		player_tmp2.get()->setCollidable(static_cast<bool>(stoi(tmpVector[9])));
+	if (tmpVector[10] == "IsWallPassable")
+		player_tmp2.get()->setWallPassable(static_cast<bool>(stoi(tmpVector[11])));
+	if (tmpVector.size() == 14) {
+		auto isWall = dynamic_cast<is::Wall *>(player_tmp2.get());
+		if (isWall != nullptr)
+			isWall->setPowerUp(tmpVector[13][0]);
+	}
+}
+
 void nts::GUI::initBaseScene()
 {
 	_gui->clear();
 	_currentScene = "base";
 
-	_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(30, 50));
-	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(420, 60));
+	_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(230, 100));
+	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(620, 110));
 
-	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(800, 400, 1100, 700), [this](const struct nts::hover_s &) {
+	std::ifstream infile(".save.indie");
+	if (infile.good()) {
+		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct nts::hover_s &) {
+			/////////////////////////////////////////////////
+
+			is::ACharacter *player2;
+
+			std::stringstream streamLine;
+			std::string line;
+			std::string temp;
+			std::ifstream myfile("save.indie");
+			if (myfile.is_open()) {
+				while (getline(myfile, line)) {
+					std::cout << line << std::endl;
+
+					streamLine << line;
+					std::vector<std::string> tmpVector;
+					while (streamLine >> temp) {
+						tmpVector.push_back(temp);
+						std::cout << "J split ma commande: " << temp << std::endl;
+					}
+					streamLine.clear();
+					if (tmpVector.size() == 12 || tmpVector.size() == 14) {
+						if (tmpVector[0] == "Character") {
+							std::cout << "J'ai trouvé un character" << std::endl;
+
+							player2 = new is::ACharacter(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
+
+							irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
+							getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
+							std::cout << "Mon joueur est en :" << _base.getNode(player_tmp2.get())->getPosition().X << "][" << _base.getNode(player_tmp2.get())->getPosition().Z;
+
+
+
+						} else if (tmpVector[0] == "Wall") {
+							is::IEntity *tmp_data = new is::Wall(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "UnbreakableWall") {
+							is::IEntity *tmp_data = new is::UnbreakableWall(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "SpeedUp") {
+							is::IEntity *tmp_data = new is::SpeedUp(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "WallPass") {
+							is::IEntity *tmp_data = new is::WallPass(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "BombUp") {
+							is::IEntity *tmp_data = new is::BombUp(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "FireUp") {
+							is::IEntity *tmp_data = new is::FireUp(_entities, _eventManager, _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+						} else if (tmpVector[0] == "Bomb") {
+
+							is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, reinterpret_cast<std::shared_ptr<is::IEntity> &>(player2), _base);
+							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							setEntity(tmpVector, wall, _base);
+
+							std::cout << "Ma bombe est en :" << _base.getNode(wall.get())->getPosition().X << "][" << _base.getNode(wall.get())->getPosition().Z;
+
+							//	is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, player_tmp2, tmp, 5);
+							//	std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+							//setEntity(tmpVector, bomb, tmp);
+						}
+
+					}
+				}
+				myfile.close();
+				_displayGUI = false;
+			}
+
+
+			/////////////////////////////////////////////////
+		});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct nts::hover_s &) {initSettingsScene();});
+	} else
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct nts::hover_s &) {initSettingsScene();});
+
+
+
+	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct nts::hover_s &) {
 		_base.resetListObj();
 		getSceneManager()->clear();
 		updateView();
 		addPlayerAndIA();
 		_displayGUI = false;
 	});
-	addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(900, 160, 1113, 226), [this](const struct nts::hover_s &) {initSettingsScene();});
 }
 
 void nts::GUI::initSettingsScene()
@@ -94,9 +213,9 @@ void nts::GUI::initSettingsScene()
 	_gui->clear();
 	_currentScene = "settings";
 
-	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(30, 30));
-	_gui->addImage(getDriver()->getTexture("media/number_player.png"), irr::core::position2d<irr::s32>(30, 180));
-	_gui->addImage(getDriver()->getTexture("media/number_ia.png"), irr::core::position2d<irr::s32>(30, 300));
+	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(230, 80));
+	_gui->addImage(getDriver()->getTexture("media/number_player.png"), irr::core::position2d<irr::s32>(230, 230));
+	_gui->addImage(getDriver()->getTexture("media/number_ia.png"), irr::core::position2d<irr::s32>(230, 350));
 
 	auto f = [this](const struct nts::hover_s &obj) {
 		for (auto &&it : _hoverManage[_currentScene]) {
@@ -111,15 +230,15 @@ void nts::GUI::initSettingsScene()
 		}
 	};
 
-	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1090, 10, 1190, 110), [this](const struct nts::hover_s &) {initBaseScene();});
-	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(500, 150, 600, 250), [this](const struct nts::hover_s &) {_nb_player = 1;initSettingsScene();});
-	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(610, 150, 700, 250), [this](const struct nts::hover_s &) {_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");initSettingsScene();});
+	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1290, 60, 1390, 160), [this](const struct nts::hover_s &) {initBaseScene();});
+	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct nts::hover_s &) {_nb_player = 1;initSettingsScene();});
+	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct nts::hover_s &) {_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");initSettingsScene();});
 
-	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(500, 270, 600, 370), f);
-	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(610, 270, 710, 370), f);
-	addButtonImage("number_ia2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(720, 270, 820, 370), f);
+	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(700, 320, 800, 420), f);
+	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(810, 320, 910, 420), f);
+	addButtonImage("number_ia2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(920, 320, 1020, 420), f);
 	if (_nb_player == 1)
-		addButtonImage("number_ia3", "settings", "media/number3_hover.png", "media/number3.png", irr::core::rect<irr::s32>(830, 270, 930, 370), f);
+		addButtonImage("number_ia3", "settings", "media/number3_hover.png", "media/number3.png", irr::core::rect<irr::s32>(1030, 320, 1130, 420), f);
 
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number" + std::to_string(_nb_player)].hover));
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].used = false;
