@@ -240,16 +240,19 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 {
-	/*unlock();
-	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(getX(),
-		getY(), getZ());
-	lock();
-	for (const auto &it : tmp) {
-		std::cout << "type : " << it->getType() << std::endl;
+	unlock();
+	std::vector<std::shared_ptr<IEntity>> tmp_down = getEntitiesAt(getX() + 0.2,
+		getY(), getZ() + 0.2);
+	std::vector<std::shared_ptr<IEntity>> tmp_up = getEntitiesAt(getX() - 0.2,
+		getY(), getZ() - 0.2);
+	for (const auto &it : tmp_down) {
 		if (entity.get() == it.get()) {
-			return true;
+			for (const auto &tmp_entity : tmp_up) {
+				if (tmp_entity.get() == entity.get())
+					return true;
+			}
 		}
 	}
-	_entities.unlock();*/
-	return true;
+	_entities.unlock();
+	return false;
 }
