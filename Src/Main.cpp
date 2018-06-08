@@ -13,6 +13,10 @@
 #include <cstdlib>
 #include <irrlicht.h>
 #include <csignal>
+#include <Entity/PowerUp/SpeedUp/SpeedUp.hpp>
+#include <Entity/PowerUp/WallPass/WallPass.hpp>
+#include <Entity/PowerUp/BombUp/BombUp.hpp>
+#include <Entity/PowerUp/FireUp/FireUp.hpp>
 #include "MapGenerator.hpp"
 #include "Bomb.hpp"
 #include "ThreadPool.hpp"
@@ -30,6 +34,22 @@ void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
 	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
+
+
+	// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
+	if (tmpVector[4] == "IsPickable")
+		player_tmp2.get()->setPickable(static_cast<bool>(stoi(tmpVector[5])));
+	if (tmpVector[6] == "IsWalkable")
+		player_tmp2.get()->setWalkable(static_cast<bool>(stoi(tmpVector[7])));
+	if (tmpVector[8] == "Iscollidable")
+		player_tmp2.get()->setCollidable(static_cast<bool>(stoi(tmpVector[9])));
+	if (tmpVector[10] == "IsWallPassable")
+		player_tmp2.get()->setWallPassable(static_cast<bool>(stoi(tmpVector[11])));
+	if (tmpVector.size() == 14) {
+		auto isWall = dynamic_cast<is::Wall *>(player_tmp2.get());
+		if (isWall != nullptr)
+			isWall->setPowerUp(tmpVector[13][0]);
+	}
 }
 
 int main(int ac, char **)
@@ -90,7 +110,7 @@ int main(int ac, char **)
 					std::cout << "J split ma commande: " << temp << std::endl;
 				}
 				streamLine.clear();
-				if (tmpVector.size() == 12) {
+				if (tmpVector.size() == 12 || tmpVector.size() == 14) {
 					if (tmpVector[0] == "Character") {
 						std::cout << "J'ai trouvé un character" << std::endl;
 
@@ -101,7 +121,6 @@ int main(int ac, char **)
 						tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
 						std::cout << "Mon joueur est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
 
-						// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
 
 
 					} else if (tmpVector[0] == "Wall") {
@@ -110,6 +129,22 @@ int main(int ac, char **)
 						setEntity(tmpVector, wall, tmp);
 					} else if (tmpVector[0] == "UnbreakableWall") {
 						is::IEntity *tmp_data = new is::UnbreakableWall(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "SpeedUp") {
+						is::IEntity *tmp_data = new is::SpeedUp(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "WallPass") {
+						is::IEntity *tmp_data = new is::WallPass(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "BombUp") {
+						is::IEntity *tmp_data = new is::BombUp(lockList, pool, tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
+					} else if (tmpVector[0] == "FireUp") {
+						is::IEntity *tmp_data = new is::FireUp(lockList, pool, tmp);
 						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 						setEntity(tmpVector, wall, tmp);
 					} else if (tmpVector[0] == "Bomb") {

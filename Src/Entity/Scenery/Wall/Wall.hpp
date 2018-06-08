@@ -22,7 +22,7 @@ namespace is {
 		~Wall() override;
 
 		// Getter
-
+		char getPowerUp() const;
 		// Setter
 
 		// Other

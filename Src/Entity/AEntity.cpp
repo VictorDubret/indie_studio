@@ -196,3 +196,23 @@ void is::AEntity::unlock()
 {
 	_mutex.unlock();
 }
+
+void is::AEntity::setCollidable(bool state)
+{
+	_collidable = state;
+}
+
+void is::AEntity::setPickable(bool state)
+{
+	_pickable = state;
+}
+
+void is::AEntity::setWallPassable(bool state)
+{
+	_wallPassable = state;
+}
+
+void is::AEntity::setWalkable(bool state)
+{
+	_walkable = state;
+}

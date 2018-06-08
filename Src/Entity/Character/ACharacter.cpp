@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <zconf.h>
+#include <Entity/Scenery/Wall/Wall.hpp>
 #include "ThreadPool.hpp"
 #include "ACharacter.hpp"
 #include "Debug.hpp"
@@ -322,7 +323,11 @@ void is::ACharacter::save()
 
 	//std::cout.rdbuf(_psbuf);
 	for (auto &it : _entities.get()) {
-		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << "\n";
+		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
+		auto isWall = dynamic_cast<is::Wall *>(it.get());
+		if (isWall != nullptr)
+			_filestr << " PowerUp " << isWall->getPowerUp();
+		_filestr << "\n";
 	}
 	//std::cout.rdbuf(_backup);
 }
