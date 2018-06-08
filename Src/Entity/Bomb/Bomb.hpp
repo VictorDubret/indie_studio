@@ -30,6 +30,8 @@ namespace is {
 
 		size_t getLenExplosion() const;
 
+		void isPaused(const bool isPaused);
+
 		private:
 
 		bool isWalkable(std::shared_ptr<is::IEntity> &entity) override;
@@ -40,6 +42,8 @@ namespace is {
 		} Axes_t;
 
 		size_t _lenExplosion = 1;
+
+		bool _isPaused = false;
 
 		bool _stopTimer = false;
 

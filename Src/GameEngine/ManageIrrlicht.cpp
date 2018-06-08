@@ -50,6 +50,8 @@ void nts::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
 		_displayGUI = true;
+	} else if (_eventReceiver.IsKeyDown(irr::KEY_KEY_P)) {
+			setPause();
 	} else if (_displayGUI) {
 		manageEventGui();
 	} else

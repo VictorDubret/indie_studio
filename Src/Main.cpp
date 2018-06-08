@@ -33,7 +33,7 @@ void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<
 {
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
-	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
+//	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
 
 
 	// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
@@ -97,6 +97,8 @@ int main(int ac, char **)
 
 	if (ac == 3) {
 
+		is::ACharacter *player2;
+
 		std::stringstream streamLine;
 		std::string line;
 		std::string temp;
@@ -116,7 +118,7 @@ int main(int ac, char **)
 					if (tmpVector[0] == "Character") {
 						std::cout << "J'ai trouvé un character" << std::endl;
 
-						is::IEntity *player2 = new is::ACharacter(lockList, pool, tmp);
+						player2 = new is::ACharacter(lockList, pool, tmp);
 						std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
 
 						irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
@@ -151,7 +153,11 @@ int main(int ac, char **)
 						setEntity(tmpVector, wall, tmp);
 					} else if (tmpVector[0] == "Bomb") {
 
+						is::IEntity *tmp_data = new is::Bomb(lockList, pool, reinterpret_cast<std::shared_ptr<is::IEntity> &>(player2), tmp);
+						std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+						setEntity(tmpVector, wall, tmp);
 
+						std::cout << "Ma bombe est en :" << tmp.getNode(wall.get())->getPosition().X << "][" << tmp.getNode(wall.get())->getPosition().Z;
 
 					//	is::IEntity *tmp_data = new is::Bomb(lockList, pool, player_tmp2, tmp, 5);
 					//	std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});

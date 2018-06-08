@@ -19,7 +19,7 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	size_t time
 ) : AEntity(entities, eventManager, irrlicht), _player(Player)
 {
-	//std::cout << "Bomb constructor" << std::endl;
+	std::cout << "Bomb constructor" << std::endl;
 	_type = "Bomb";
 	auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 	if (tmp == nullptr) {
@@ -28,7 +28,7 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	}
 	_lenExplosion = tmp->getBombLength();
 	_collidable = true;
-	//std::cout << _lenExplosion << std::endl;
+	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
 }
@@ -40,6 +40,11 @@ is::Bomb::~Bomb()
 		lock();
 	}
 	_locked = true;
+}
+
+void is::Bomb::isPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
 }
 
 void is::Bomb::explode()
@@ -89,10 +94,29 @@ void is::Bomb::timer(size_t time)
 
 		t.startTimer(time);
 
-		while (!t.isOver() && !_stopTimer);
-		//std::cout << "I'll explode in " << time << " seconds"
-		//	<< std::endl;
-		//fprintf(stderr, "Bouum de %p\n", this);
+		bool paused = false;
+		bool wait = false;
+		bool test = false;
+		while (!wait) {
+			while (_isPaused) {
+				paused = true;
+					wait = true;
+					test = true;
+			}
+			if (!_isPaused && !test) {
+				if ((t.isOver() || _stopTimer)) {
+					wait = true;
+					break;
+				}
+			}
+		}
+		if (paused) {
+			t.startTimer(time);
+		}
+
+		while ((!t.isOver() && !_stopTimer));
+		std::cout << "I'll explode in " << time << " seconds" << std::endl;
+		fprintf(stderr, "Bouum de %p\n", this);
 		if (_stopTimer) {
 			return;
 		}
@@ -124,8 +148,8 @@ void is::Bomb::doExplosions(float x, float z)
 {
 	std::vector<std::shared_ptr<IEntity>> range;
 
-	//std::cerr << RED << "-----------------------------------" << RESET
-//		<< std::endl;
+	std::cerr << RED << "-----------------------------------" << RESET
+		<< std::endl;
 	check_arround(_lenExplosion, 0, [x](int actualPos) {
 		return x - actualPos;
 	}, XAXES, x, z);
@@ -158,7 +182,7 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 				return false;
 			it->lock();
 			if (it->getType() == "Wall") {
-				//std::cerr << "Wall" << std::endl;
+				std::cerr << "Wall" << std::endl;
 
 				it->explode();
 				createExplosion(f, which_axes, actualPos,
@@ -167,12 +191,12 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 				stop = true;
 				return false;
 			} else if (it->getType() == "UnbreakableWall") {
-				//std::cerr << "UnbreakableWall" << std::endl;
-				//std::cerr << " X :" << it->getX() << " Z :"
-				//	<< it->getZ() << std::endl;
-				//std::cerr << YEL << " X_BOMB :" << x_bomb
-				//	<< " Z_BOMB :" << z_bomb << RESET
-				//	<< std::endl;
+				std::cerr << "UnbreakableWall" << std::endl;
+				std::cerr << " X :" << it->getX() << " Z :"
+					<< it->getZ() << std::endl;
+				std::cerr << YEL << " X_BOMB :" << x_bomb
+					<< " Z_BOMB :" << z_bomb << RESET
+					<< std::endl;
 				it->unlock();
 				stop = true;
 				return false;
@@ -180,12 +204,12 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			if (it.get() != this)
 				it->explode();
 			it->unlock();
-			//std::cerr << "Normalement c ok" << std::endl;
+			std::cerr << "Normalement c ok" << std::endl;
 			return true;
 		});
-	//std::cerr << " X_BOMB :" << x_bomb << " Z_BOMB :" << z_bomb
-	//	<< std::endl;
-	//std::cerr << "Je suis sortit du foreach !!" << std::endl;
+	std::cerr << " X_BOMB :" << x_bomb << " Z_BOMB :" << z_bomb
+		<< std::endl;
+	std::cerr << "Je suis sortit du foreach !!" << std::endl;
 	if (stop)
 		return false;
 	createExplosion(f, which_axes, actualPos, x_bomb, z_bomb);
@@ -200,7 +224,7 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 {
 	float x = (which_axes == XAXES) ? f(actualPos) : x_bomb;
 	float z = (which_axes == ZAXES) ? f(actualPos) : z_bomb;
-	//std::cerr << "####### " << x << " " << z << std::endl;
+	std::cerr << "####### " << x << " " << z << std::endl;
 
 	_eventManager.lock();
 	_eventManager->enqueue([this, x, z]() {
