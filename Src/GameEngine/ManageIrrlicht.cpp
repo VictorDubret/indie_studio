@@ -21,6 +21,17 @@ nts::ManageIrrlicht::ManageIrrlicht(
 				std::chrono::milliseconds(50));
 		}
 	});
+	_thread = new my::Thread([&]() {
+		while (!_stopThread && _device) {
+			if (!_displayGUI && !_splitScreen) {
+				lock();
+				setCameraPos();
+				unlock();
+			}
+		}
+	});
+
+	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
 void nts::ManageIrrlicht::loopDisplay()
@@ -36,7 +47,6 @@ void nts::ManageIrrlicht::loopDisplay()
 			lock();
 			_sceneManager->drawAll();
 			unlock();
-			setCameraPos();
 		}
 		//fin test
 		displayFPS();

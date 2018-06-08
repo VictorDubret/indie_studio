@@ -83,10 +83,10 @@ void nts::Game::manageEventPlayers()
 		bool doSomething = false;
 		if (!dynamic_cast<is::AEntity *>(it.entity))
 			continue;
-
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
-		if (tmp)
+		if (tmp) {
 			tmp->AIsTurn();
+		}
 		else {
 			for (int i = 0; it.key[i].f != nullptr ; ++i) {
 				if (_eventReceiver.IsKeyDown(it.key[i].key)) {

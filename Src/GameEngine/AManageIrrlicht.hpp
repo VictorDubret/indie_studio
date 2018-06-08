@@ -60,6 +60,8 @@ namespace nts {
 		int _nb_ia = 0;
 		std::pair<std::size_t, std::size_t> _mapSize = {11,13};
 
+		irrklang::ISound *_sound = nullptr;
+
 		private:
 		float _tmp = 0;
 	};

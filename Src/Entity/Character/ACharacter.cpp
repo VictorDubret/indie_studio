@@ -126,7 +126,7 @@ bool is::ACharacter::checkCollision(std::vector<std::shared_ptr<is::IEntity>> &l
 {
 	bool ret = false;
 
-	for (auto it : list) {
+	for (auto &it : list) {
 		if (it.get() != this && it->isCollidable()) {
 					it->collide(this);
 		}
@@ -146,10 +146,15 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			return;
 		}
 		it->unlock();
+	} // TODO Sahel
+	while (abs(getX() - nextX) > 0.01 || abs(getY() - nextY) > 0.01 || abs(getZ() - nextZ) > 0.01) {
+		if (abs(getX() - nextX) > 0.01)
+			setX(getX() > nextX ? getX() - 0.01 : getX() + 0.01);
+		if (abs(getY() - nextY) > 0.01)
+			setY(getY() > nextY ? getY() - 0.01 : getY() + 0.01);
+		if (abs(getZ() - nextZ) > 0.01)
+			setZ(getZ() > nextZ ? getZ() - 0.01 : getZ() + 0.01);
 	}
-	setZ(nextZ);
-	setY(nextY);
-	setX(nextX);
 	checkCollision(list);
 }
 
