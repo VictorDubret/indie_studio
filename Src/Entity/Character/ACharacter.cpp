@@ -329,5 +329,5 @@ void is::ACharacter::save()
 			_filestr << " PowerUp " << isWall->getPowerUp();
 		_filestr << "\n";
 	}
-	std::cout.rdbuf(_backup);
+	//std::cout.rdbuf(_backup);
 }
