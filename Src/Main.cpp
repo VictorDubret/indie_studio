@@ -6,6 +6,9 @@
 */
 
 #include <memory>
+#include <sstream>
+#include <fstream>
+#include <string>
 #include <vector>
 #include <cstdlib>
 #include <irrlicht.h>
@@ -21,6 +24,13 @@
 #include "ArtificialIntelligence.hpp"
 #include "Wall.hpp"
 #include "UnbreakableWall.hpp"
+
+void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &tmp)
+{
+	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
+	tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
+	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
+}
 
 int main(int ac, char **)
 {
@@ -63,7 +73,7 @@ int main(int ac, char **)
 	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
 	//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
-	/*if (ac == 3) {
+	if (ac == 3) {
 
 		std::stringstream streamLine;
 		std::string line;
@@ -88,10 +98,10 @@ int main(int ac, char **)
 						std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
 
 						irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
-						tmp.getNode(player_tmp2)->setPosition(irr::core::vector3df(tmpPos));
-						std::cout << "Mon joueur est en :" << tmp.getNode(player_tmp2)->getPosition().X << "][" << tmp.getNode(player_tmp2)->getPosition().Z;
+						tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
+						std::cout << "Mon joueur est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
 
-						 IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
+						// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
 
 
 					} else if (tmpVector[0] == "Wall") {
@@ -106,8 +116,8 @@ int main(int ac, char **)
 
 
 
-						is::IEntity *tmp_data = new is::Bomb(lockList, pool, player_tmp2, tmp, 5);
-						std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+					//	is::IEntity *tmp_data = new is::Bomb(lockList, pool, player_tmp2, tmp, 5);
+					//	std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 						//setEntity(tmpVector, bomb, tmp);
 					}
 
@@ -116,7 +126,7 @@ int main(int ac, char **)
 			myfile.close();
 
 		}
-	}*/
+	}
 
 
 
