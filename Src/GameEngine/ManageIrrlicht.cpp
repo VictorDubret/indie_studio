@@ -12,10 +12,8 @@ nts::ManageIrrlicht::ManageIrrlicht(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
 	irr::core::vector2di mapSize, bool splitScreen
-) : AManageIrrlicht(entities, eventManager), Game(entities, eventManager, mapSize, splitScreen), GUI(entities, eventManager)
+) : AManageIrrlicht(entities, eventManager, *this), Game(entities, eventManager, *this, mapSize, splitScreen), GUI(entities, eventManager, *this)
 {
-	_base = this;
-
 	_thread = new my::Thread([&]() {
 		while (!_stopThread && _device) {
 			manageEvent();

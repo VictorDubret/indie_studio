@@ -90,3 +90,8 @@ void is::Wall::texture()
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/stones.jpg");
 }
+
+char is::Wall::getPowerUp() const
+{
+	return _powerUp;
+}

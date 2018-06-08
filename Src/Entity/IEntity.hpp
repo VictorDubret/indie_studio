@@ -37,6 +37,10 @@ namespace is {
 		virtual void setY(float) = 0;
 		virtual void setZ(float) = 0;
 		virtual void setPosition(irr::core::vector3df) = 0;
+		virtual void setCollidable(bool state) = 0;
+		virtual void setPickable(bool state) = 0;
+		virtual void setWallPassable(bool state) = 0;
+		virtual void setWalkable(bool state) = 0;
 
 		virtual void collide(IEntity * collider) = 0;
 		virtual void explode() = 0;
