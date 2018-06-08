@@ -30,7 +30,6 @@ namespace nts {
 
 		void unlock() override;
 		void lock() override;
-
 		void manageEvent() override;
 		protected:
 

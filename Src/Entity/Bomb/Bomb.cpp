@@ -42,6 +42,11 @@ is::Bomb::~Bomb()
 	_locked = true;
 }
 
+void is::Bomb::setPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
+}
+
 void is::Bomb::explode()
 {
 	if (_stopTimer) {
@@ -89,9 +94,28 @@ void is::Bomb::timer(size_t time)
 
 		t.startTimer(time);
 
-		while (!t.isOver() && !_stopTimer);
-		std::cout << "I'll explode in " << time << " seconds"
-			<< std::endl;
+		bool paused = false;
+		bool wait = false;
+		bool test = false;
+		while (!wait) {
+			while (_isPaused) {
+				paused = true;
+					wait = true;
+					test = true;
+			}
+			if (!_isPaused && !test) {
+				if ((t.isOver() || _stopTimer)) {
+					wait = true;
+					break;
+				}
+			}
+		}
+		if (paused) {
+			t.startTimer(time);
+		}
+
+		while ((!t.isOver() && !_stopTimer));
+		std::cout << "I'll explode in " << time << " seconds" << std::endl;
 		fprintf(stderr, "Bouum de %p\n", this);
 		if (_stopTimer) {
 			return;
@@ -103,11 +127,16 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
-	lock();
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d",
+		0.75);
+	_irrlicht.getNode(_sptr.get())->setPosition(
+		irr::core::vector3df(1.1f, 0.1f, 1.1f));
+	nts::ManageObject::setScale(_irrlicht, _sptr,
+		irr::core::vector3df(1, 1, 1));
+	nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/003shot.jpg");
-	unlock();
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/bomb.png");
 }
 
 size_t is::Bomb::getLenExplosion() const
@@ -223,9 +252,4 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 	}
 	_entities.unlock();*/
 	return true;
-}
-
-void is::Bomb::setPaused(const bool isPaused)
-{
-	_isPaused = isPaused;
 }

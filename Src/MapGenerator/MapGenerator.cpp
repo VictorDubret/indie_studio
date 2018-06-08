@@ -16,8 +16,8 @@
 mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
 			       nts::ManageIrrlicht &irrlicht,
 			       std::pair<std::size_t, std::size_t> &size) :
-	_height(size.first), _width(size.second), _dropRate(65), _bombUpRate(50),
-	_fireUpRate(29), _speedUpRate(19), _wallPassRate(2)
+	_height(size.first), _width(size.second), _crateRate(20), _dropRate(65),
+	_bombUpRate(50), _fireUpRate(29), _speedUpRate(19), _wallPassRate(2)
 {
 	if (_height % 2 == 0) {
 		size.first++;
@@ -33,9 +33,9 @@ mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventMa
 
 mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
 	nts::ManageIrrlicht &irrlicht,
-	std::pair<std::size_t, std::size_t> &size, int dropRate, int bombUpRate,
+	std::pair<std::size_t, std::size_t> &size, int crateRate, int dropRate, int bombUpRate,
 	int fireUpRate, int speedUpRate, int wallPassRate) :
-	_height(size.first), _width(size.second), _dropRate(100 - dropRate), _bombUpRate(bombUpRate),
+	_height(size.first), _width(size.second), _crateRate(100 - crateRate), _dropRate(100 - dropRate), _bombUpRate(bombUpRate),
 	_fireUpRate(fireUpRate), _speedUpRate(speedUpRate), _wallPassRate(wallPassRate)
 {
 	if (_height % 2 == 0) {
@@ -125,7 +125,7 @@ void		mg::MapGenerator::setCrates()
 {
 	for (std::size_t i = 0 ; i < _height ; ++i) {
 		for (std::size_t j = 0 ; j < _width ; ++j) {
-			if (std::rand() % 5  != 0 && _map[i * _width + j] == ' ' &&
+			if (std::rand() % 100  > _crateRate && _map[i * _width + j] == ' ' &&
 			    ((i > 2 && i + 3 < _height) || (j > 2 && j + 3 < _width)))
 				_map[i * _width + j] = definePowerup();
 		}

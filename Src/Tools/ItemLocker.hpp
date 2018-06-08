@@ -43,6 +43,10 @@ namespace my {
 			_mutex.unlock();
 		}
 
+		bool trylock() {
+			return _mutex.try_lock();
+		}
+
 	protected:
 		ItemClass &_item;
 		std::mutex _mutex;

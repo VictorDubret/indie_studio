@@ -30,7 +30,11 @@ namespace is {
 		void collide(IEntity *) override;
 
 		void texture() override;
-	protected:
+		void setIsPaused(const bool isPaused);
+
+		private:
+		bool _isPaused = false;
+
 	};
 };
 

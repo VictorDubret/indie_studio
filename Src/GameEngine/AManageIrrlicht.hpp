@@ -19,7 +19,7 @@ namespace nts {
 
 	class AManageIrrlicht : public IManageIrrlicht {
 		public:
-		AManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager);
+		AManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
 		virtual ~AManageIrrlicht() = default;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
@@ -44,7 +44,7 @@ namespace nts {
 		void manageEvent() override;
 
 		protected:
-		nts::ManageIrrlicht *_base;
+		nts::ManageIrrlicht &_base;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
@@ -58,7 +58,7 @@ namespace nts {
 		// Game settings
 		int _nb_player = 1;
 		int _nb_ia = 0;
-		std::pair<std::size_t, std::size_t> _mapSizeSettings = {21, 21};
+		std::pair<std::size_t, std::size_t> _mapSize = {11,13};
 
 		private:
 		float _tmp = 0;

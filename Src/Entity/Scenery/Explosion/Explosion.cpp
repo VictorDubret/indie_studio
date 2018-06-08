@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2018
 ** cpp_indie_studio
@@ -25,7 +26,9 @@ is::Explosion::Explosion(
 	texture();
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		do {
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		} while(_isPaused);
 		this->~Explosion();
 	});
 	_eventManager.unlock();
@@ -42,9 +45,15 @@ is::Explosion::~Explosion()
 
 void is::Explosion::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/explosion.b3d",
+		0.999);
+	nts::ManageObject::setScale(_irrlicht, _sptr,
+		irr::core::vector3df(1.0, 1.0, 1.0));
+	nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irr::core::vector3df(0, 0, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/water.jpg");
+	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.jpg");
 }
 
 void is::Explosion::explode()
@@ -58,4 +67,9 @@ void is::Explosion::collide(is::IEntity *entity)
 			return ;
 		entity->explode();
 	}
+}
+
+void is::Explosion::setIsPaused(const bool isPaused)
+{
+	_isPaused = isPaused;
 }

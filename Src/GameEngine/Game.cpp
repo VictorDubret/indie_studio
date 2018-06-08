@@ -5,27 +5,17 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <Entity/Bomb/Bomb.hpp>
 #include "Game.hpp"
 #include "ArtificialIntelligence.hpp"
 
 nts::Game::Game(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager,
+	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,
 	irr::core::vector2di mapSize, bool splitScreen
-) : AManageIrrlicht(entities, eventManager), _mapSize(mapSize), _splitScreen(splitScreen)
+) : AManageIrrlicht(entities, eventManager, irrlicht), _splitScreen(splitScreen)
 {
-	irr::core::vector2df tmpDist;
-	tmpDist.X = -(_mapSize.X / 2);
-	tmpDist.Y = 0;
-	_distBetweenPlayer.push_back(tmpDist);
-	tmpDist.X = _mapSize.X / 2;
-	_distBetweenPlayer.push_back(tmpDist);
-
-	/* Setting Global Camera */
-	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
-		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
-		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
-
+	updateView();
 	/* Setting Split Screen Camera */
 	if (_splitScreen) {
 		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
@@ -33,10 +23,7 @@ nts::Game::Game(
 	}
 
 	/* Loading Sound */
-	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
-
-
-
+//	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
 nts::Game::~Game()
@@ -49,6 +36,18 @@ nts::Game::~Game()
 
 void nts::Game::updateView()
 {
+	irr::core::vector2df tmpDist;
+	tmpDist.X = -(_mapSize.first / 2);
+	tmpDist.Y = 0;
+	_distBetweenPlayer.push_back(tmpDist);
+	tmpDist.X = _mapSize.first / 2;
+	_distBetweenPlayer.push_back(tmpDist);
+
+	/* Setting Global Camera */
+	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
+		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
+		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
+
 }
 
 void nts::Game::displaySplitScreen()
@@ -72,7 +71,6 @@ void nts::Game::displaySplitScreen()
 	int i = 0;
 	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
-		std::cout << "C'est le joueur :" << i  << std::endl;
 		_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
 		_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
 		i++;
@@ -84,7 +82,7 @@ void nts::Game::manageEventPlayers()
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
 		if (!dynamic_cast<is::AEntity *>(it.entity))
-			return;
+			continue;
 
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
 		if (tmp)
@@ -98,11 +96,7 @@ void nts::Game::manageEventPlayers()
 					doSomething = true;
 				}
 			}
-			if (_eventReceiver.IsKeyDown(it.doSomething.key)) {
-				_eventManager.lock();
-				_eventManager->enqueue(it.doSomething.f);
-				_eventManager.unlock();
-			} else if (!doSomething) {
+			if (!doSomething) {
 				_eventManager.lock();
 				_eventManager->enqueue(it.nothing.f);
 				_eventManager.unlock();
@@ -137,22 +131,22 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 		if (_listPlayer.empty())
 			player = {(tmp),
 				{irr::KEY_ESCAPE, [tmp]() {tmp->doNothing();}},
-				{irr::KEY_RETURN, [tmp]() {tmp->dropBomb();}},
 				{{irr::KEY_LEFT, [tmp]() {tmp->moveLeft();}},
 				{irr::KEY_RIGHT, [tmp]() {tmp->moveRight();}},
 				{irr::KEY_UP, [tmp]() {tmp->moveUp();}},
 				{irr::KEY_DOWN, [tmp]() {tmp->moveDown();}},
-				{irr::KEY_KEY_P, [tmp](){tmp->save();}},
+				{irr::KEY_KEY_R, [tmp](){tmp->save();}},
+				{irr::KEY_RETURN, [tmp]() {tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		else
 			player = {(tmp),
 				{irr::KEY_ESCAPE, [tmp]() {tmp->doNothing();}},
-				{irr::KEY_SPACE, [tmp]() {tmp->dropBomb();}},
 				{{irr::KEY_KEY_Q, [tmp]() {tmp->moveLeft();}},
 				{irr::KEY_KEY_D, [tmp]() {tmp->moveRight();}},
 				{irr::KEY_KEY_Z, [tmp]() {tmp->moveUp();}},
 				{irr::KEY_KEY_S, [tmp]() {tmp->moveDown();}},
-				{irr::KEY_KEY_P, [tmp](){tmp->save();}},
+				{irr::KEY_KEY_R, [tmp](){tmp->save();}},
+				{irr::KEY_SPACE, [tmp]() {tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		player.alive = true;
 		_listPlayer.push_back(player);
@@ -183,12 +177,13 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 
 void nts::Game::setMapSize(const irr::core::vector2di &mapSize)
 {
-	_mapSize = mapSize;
+	_mapSize.first = (std::size_t)mapSize.X;
+	_mapSize.second = (std::size_t)mapSize.Y;
 }
 
 irr::core::vector2di nts::Game::getMapSize() const
 {
-	return _mapSize;
+	return irr::core::vector2di(irr::s32(_mapSize.first), irr::s32(_mapSize.second));
 }
 
 void nts::Game::setCameraPos()
@@ -264,6 +259,12 @@ void nts::Game::setCameraPos()
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
 }
 
+void nts::Game::resetListObj()
+{
+	_listPlayer.clear();
+	_listObj.clear();
+}
+
 void nts::Game::displayFPS()
 {
 	int lastFPS = -1;
@@ -288,3 +289,30 @@ void nts::Game::unlock()
 	_mutex.unlock();
 }
 
+void nts::Game::setPause()
+{
+	while (_eventReceiver.IsKeyDown(irr::KEY_KEY_P));
+	_pause = true;
+	if (_pause) {
+		for (auto &it : _listObj) {
+			if (it.first->getType() == "Bomb") {
+				auto tmp = static_cast<is::Bomb *>(it.first);
+				tmp->setPaused(true);
+			}
+		}
+		while (true) {
+			if (_eventReceiver.IsKeyDown(irr::KEY_KEY_P)) {
+				_pause = false;
+				break;
+			}
+		}
+	}
+	while (_eventReceiver.IsKeyDown(irr::KEY_KEY_P));
+	for (auto &it : _listObj) {
+		if (it.first->getType() == "Bomb") {
+			auto tmp = static_cast<is::Bomb *>(it.first);
+			tmp->setPaused(false);
+		}
+	}
+
+}

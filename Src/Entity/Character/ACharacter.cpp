@@ -7,6 +7,8 @@
 
 #include <algorithm>
 #include <fstream>
+#include <zconf.h>
+#include <Entity/Scenery/Wall/Wall.hpp>
 #include "ThreadPool.hpp"
 #include "ACharacter.hpp"
 #include "Debug.hpp"
@@ -27,17 +29,17 @@ is::ACharacter::ACharacter(
 
 void is::ACharacter::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2",
-		0.75);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
+		0.6);
 	_irrlicht.getNode(_sptr.get())->setPosition(
 		irr::core::vector3df(1.1f, 0.1f, 1.1f));
 	nts::ManageObject::setScale(_irrlicht, _sptr,
-		irr::core::vector3df(0.05, 0.05, 0.05));
+		irr::core::vector3df(0.9, 0.9, 0.9));
 	nts::ManageObject::setRotation(_irrlicht, _sptr,
 		irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/sydney.bmp");
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/character.png");
 }
 
 is::ACharacter::~ACharacter()
@@ -301,19 +303,25 @@ void is::ACharacter::doNothing()
 
 void is::ACharacter::save()
 {
+	sleep(1);
 	std::cout << "Bonjour je vais sauvegarder" << std::endl;
 	std::streambuf *_psbuf;
 	std::streambuf *_backup;
-	std::ofstream _filestr;
-
 	remove("save.indie");
-	_filestr.open("save.indie", std::ios_base::app);
-	_backup = std::cout.rdbuf();
-	_psbuf = _filestr.rdbuf();
 
-	std::cout.rdbuf(_psbuf);
+	std::ofstream _filestr("save.indie");
+
+	//_filestr.open("save.indie", std::ios_base::app);
+	//_backup = std::cout.rdbuf();
+	//_psbuf = _filestr.rdbuf();
+
+	//std::cout.rdbuf(_psbuf);
 	for (auto &it : _entities.get()) {
-		std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
+		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
+		auto isWall = dynamic_cast<is::Wall *>(it.get());
+		if (isWall != nullptr)
+			_filestr << " PowerUp " << isWall->getPowerUp();
+		_filestr << "\n";
 	}
-	std::cout.rdbuf(_backup);
+	//std::cout.rdbuf(_backup);
 }
