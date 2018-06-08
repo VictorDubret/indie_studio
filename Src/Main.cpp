@@ -52,7 +52,7 @@ int main(int ac, char **)
 	/* initialisation */
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
 
-	if (ac == 1) {
+	if (ac == 1 || ac == 2) {
 		is::ACharacter *toto = new is::ACharacter(lockList, pool, tmp);
 		toto->setZ(1);
 		toto->setX(1);

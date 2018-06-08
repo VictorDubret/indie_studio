@@ -69,7 +69,6 @@ void nts::Game::displaySplitScreen()
 	int i = 0;
 	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
-		std::cout << "C'est le joueur :" << i  << std::endl;
 		_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
 		_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
 		i++;
