@@ -26,6 +26,21 @@ is::SpeedUp::~SpeedUp()
 	_locked = true;
 }
 
+void is::SpeedUp::texture()
+{
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/speedup.b3d",
+		0.75);
+	_irrlicht.getNode(_sptr.get())->setPosition(
+		irr::core::vector3df(1.1f, 0.1f, 1.1f));
+	nts::ManageObject::setScale(_irrlicht, _sptr,
+		irr::core::vector3df(1, 1, 1));
+	nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irr::core::vector3df(30, 0, 0));
+	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/map_ob000_item_AL.png");
+}
+
 void is::SpeedUp::action(is::ACharacter *character)
 {
 	character->setSpeed(character->getSpeed() + 1);

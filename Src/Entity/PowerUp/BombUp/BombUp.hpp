@@ -26,6 +26,7 @@ namespace is {
 
 		// Other
 		void action(is::ACharacter *character) override;
+		void texture() override;
 
 	protected:
 

@@ -29,17 +29,17 @@ is::ACharacter::ACharacter(
 
 void is::ACharacter::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/sydney.md2",
-		0.75);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
+		0.6);
 	_irrlicht.getNode(_sptr.get())->setPosition(
 		irr::core::vector3df(1.1f, 0.1f, 1.1f));
 	nts::ManageObject::setScale(_irrlicht, _sptr,
-		irr::core::vector3df(0.05, 0.05, 0.05));
+		irr::core::vector3df(0.9, 0.9, 0.9));
 	nts::ManageObject::setRotation(_irrlicht, _sptr,
 		irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/sydney.bmp");
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/character.png");
 }
 
 is::ACharacter::~ACharacter()
