@@ -39,7 +39,6 @@ namespace is {
 			NONE
 		};
 
-		//bool 	stillCrates();
 		bool 	inDanger();
 		void	getMapDimensions();
 		void 	setWalls();
