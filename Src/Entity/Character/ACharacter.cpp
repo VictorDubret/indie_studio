@@ -303,19 +303,10 @@ void is::ACharacter::doNothing()
 
 void is::ACharacter::save()
 {
-	sleep(1);
-	std::cout << "Bonjour je vais sauvegarder" << std::endl;
-	std::streambuf *_psbuf;
-	std::streambuf *_backup;
-	remove("save.indie");
+	remove(".save.indie");
 
-	std::ofstream _filestr("save.indie");
+	std::ofstream _filestr(".save.indie");
 
-	//_filestr.open("save.indie", std::ios_base::app);
-	//_backup = std::cout.rdbuf();
-	//_psbuf = _filestr.rdbuf();
-
-	//std::cout.rdbuf(_psbuf);
 	for (auto &it : _entities.get()) {
 		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
 		auto isWall = dynamic_cast<is::Wall *>(it.get());
@@ -323,5 +314,4 @@ void is::ACharacter::save()
 			_filestr << " PowerUp " << isWall->getPowerUp();
 		_filestr << "\n";
 	}
-	//std::cout.rdbuf(_backup);
 }
