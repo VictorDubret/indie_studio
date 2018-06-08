@@ -42,9 +42,15 @@ is::Explosion::~Explosion()
 
 void is::Explosion::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
+	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/explosion.b3d",
+		0.999);
+	nts::ManageObject::setScale(_irrlicht, _sptr,
+		irr::core::vector3df(1.0, 1.0, 1.0));
+	nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irr::core::vector3df(0, 0, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/water.jpg");
+	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.jpg");
 }
 
 void is::Explosion::explode()
