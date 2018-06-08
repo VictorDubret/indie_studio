@@ -61,6 +61,8 @@ int main(int ac, char **)
 	}
 	/* Chargement textures */
 	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
+	tmp.getDriver()->getTexture(irr::io::path("media/bomb.png"));
+	tmp.getDriver()->getTexture(irr::io::path("media/map_ob000_item_AL.png"));
 	//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
 	/*if (ac == 3) {
