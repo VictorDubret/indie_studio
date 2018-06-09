@@ -28,6 +28,7 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	}
 	_lenExplosion = tmp->getBombLength();
 	_collidable = true;
+	_wallPassable = false;
 	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
@@ -169,7 +170,7 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 		return false;
 	float x = (which_axes != XAXES) ? x_bomb : f(actualPos);
 	float z = (which_axes != ZAXES) ? z_bomb : f(actualPos);
-	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(x, 0, z);
+	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(x, z);
 	std::for_each(tmp.begin(), tmp.end(),
 		[&](std::shared_ptr<IEntity> &it) {
 			auto tmp_it = dynamic_cast<AEntity *>(it.get());
@@ -207,8 +208,6 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 {
 	float x = (which_axes == XAXES) ? f(actualPos) : x_bomb;
 	float z = (which_axes == ZAXES) ? f(actualPos) : z_bomb;
-	std::cerr << "####### " << x << " " << z << std::endl;
-
 	_eventManager.lock();
 	_eventManager->enqueue([this, x, z]() {
 		_entities.lock();
@@ -225,9 +224,9 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 {
 	unlock();
 	std::vector<std::shared_ptr<IEntity>> tmp_down = getEntitiesAt(
-		getX() + 0.15, getY(), getZ() + 0.15);
+		getX() + 0.15, getZ() + 0.15);
 	std::vector<std::shared_ptr<IEntity>> tmp_up = getEntitiesAt(
-		getX() - 0.15, getY(), getZ() - 0.15);
+		getX() - 0.15, getZ() - 0.15);
 	for (const auto &it : tmp_down) {
 		if (entity.get() == it.get()) {
 			for (const auto &tmp_entity : tmp_up) {
