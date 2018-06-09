@@ -195,7 +195,7 @@ void nts::Game::setCameraPos()
 	irr::f32 tmpY = 0;
 
 	for (auto &it : _listPlayer) {
-		if (!it.alive)
+		if (!it.alive || !getNode(it.entity))
 			continue;
 		tmpX = getNode(it.entity)->getPosition().X;
 		tmpY = getNode(it.entity)->getPosition().Z;

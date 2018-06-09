@@ -35,7 +35,7 @@ namespace is {
 		size_t const &getBomb() const;
 		size_t const &getBombMax() const;
 		size_t const &getBombLength() const;
-		size_t const &getSpeed() const;
+		float const &getSpeed() const;
 
 
 		// Setter
@@ -43,7 +43,7 @@ namespace is {
 		void setBomb(size_t bomb);
 		void setBombMax(size_t bombMax);
 		void setBombLength(size_t length);
-		void setSpeed(size_t speed);
+		void setSpeed(float speed);
 
 		// Other
 		is::ACharacter &operator++();
@@ -80,7 +80,7 @@ namespace is {
 		size_t _bombMax = 1;
 
 		size_t _bombLength = 1;
-		size_t _speed = 1;
+		float _speed = 1;
 
 		void move(float, float, float);
 	private:

@@ -72,7 +72,7 @@ size_t const &is::ACharacter::getBombLength() const
 	return _bombLength;
 }
 
-size_t const &is::ACharacter::getSpeed() const
+float const &is::ACharacter::getSpeed() const
 {
 	return _speed;
 }
@@ -106,12 +106,17 @@ void is::ACharacter::setBombLength(size_t length)
 	unlock();
 }
 
-void is::ACharacter::setSpeed(size_t speed)
+void is::ACharacter::setSpeed(float speed)
 {
 	if (_speed > 4)
 		return;
 	lock();
-	_speed = speed;
+	if (_speedCoef * speed < 0.24)
+		_speed = speed;
+	else
+		_speed = 0.24 / (float) _speedCoef;
+
+	std::cerr << _speed << std::endl;
 	unlock();
 }
 
