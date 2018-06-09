@@ -158,14 +158,21 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	std::cout << "je dlete mon entité" << std::endl;
+	int i = 0;
 	if (entity->getType() == "Character") {
 		for (auto &it : _listPlayer) {
 			if (it.entity == entity.get()) {
 				std::cout << "je met alive a false" << std::endl;
 				it.alive = false;
 			}
+			if (it.alive)
+				i++;
 		}
 		std::cout << "l'entité que je delete est un joueur" << std::endl;
+		if (i == 0) {
+			_endGame = false;
+			_draw = true;
+		}
 	}
 	lock();
 	nts::irrObj_t tmp_obj = _listObj[entity.get()];

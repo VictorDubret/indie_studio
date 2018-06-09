@@ -75,7 +75,7 @@ void nts::ManageIrrlicht::endScene()
 void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
-		std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
+		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
 		if (_displayGUI) {
 			_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900));
 			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
@@ -89,16 +89,24 @@ void nts::ManageIrrlicht::loopDisplay()
 			_driver->endScene();
 
 		} else if (!_endGame && !_draw) {
+			std::cout << "je suis en jeu" << std::endl;
+
 			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 			lock();
 			_sceneManager->drawAll();
 			unlock();
 			_driver->endScene();
 
-		} else if (_endGame) {
+		} else if (_endGame && !_draw) {
+			std::cout << "jai gagne" << std::endl;
 			endScene();
 		} else if (_draw) {
-			drawScene();
+			std::cout << "jai draw" << std::endl;
+			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+			lock();
+			_sceneManager->drawAll();
+			unlock();
+			_driver->endScene();
 		}
 		displayFPS();
 		std::this_thread::yield();
@@ -154,6 +162,7 @@ void nts::ManageIrrlicht::displayGui(bool display)
 
 void nts::ManageIrrlicht::drawScene()
 {
+	return;
 	std::cout << "c'est un draw dans drawScene()" << std::endl;
 	_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 	lock();
