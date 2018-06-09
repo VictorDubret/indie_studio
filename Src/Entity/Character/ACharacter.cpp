@@ -23,7 +23,7 @@ is::ACharacter::ACharacter(
 ) : AEntity(entities, eventManager, irrlicht)
 {
 	_type = "Character";
-	_walkable = false;
+	_walkable = true;
 	texture();
 }
 
