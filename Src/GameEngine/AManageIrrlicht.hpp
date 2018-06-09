@@ -58,7 +58,13 @@ namespace nts {
 		// Game settings
 		int _nb_player = 1;
 		int _nb_ia = 0;
-		std::pair<std::size_t, std::size_t> _mapSize = {11,13};
+		std::pair<std::size_t, std::size_t> _mapSize = {11, 13};
+		int _crates = 80;
+		int _drop = 35;
+		int _bombUp = 50;
+		int _fireUp = 29;
+		int _speedUp = 19;
+		int _wallPass = 2;
 
 		irrklang::ISound *_sound = nullptr;
 

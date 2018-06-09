@@ -108,6 +108,8 @@ void is::ACharacter::setBombLength(size_t length)
 
 void is::ACharacter::setSpeed(size_t speed)
 {
+	if (_speed > 4)
+		return;
 	lock();
 	_speed = speed;
 	unlock();

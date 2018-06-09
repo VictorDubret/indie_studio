@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdio.h>
 #include <Entity/Scenery/Wall/Wall.hpp>
 #include <Entity/PowerUp/FireUp/FireUp.hpp>
 #include <Entity/PowerUp/BombUp/BombUp.hpp>
@@ -85,10 +86,7 @@ void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::s
 {
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	_base.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
-	//	std::cout << "Mon entite est en :" << tmp.getNode(player_tmp2.get())->getPosition().X << "][" << tmp.getNode(player_tmp2.get())->getPosition().Z;
 
-
-	// IsPickable [0] IsWalkable [0] Iscollidable [1] isWallPassable [0]
 	if (tmpVector[4] == "IsPickable")
 		player_tmp2.get()->setPickable(static_cast<bool>(stoi(tmpVector[5])));
 	if (tmpVector[6] == "IsWalkable")
@@ -115,7 +113,9 @@ void nts::GUI::initBaseScene()
 	std::ifstream infile(".save.indie");
 	if (infile.good()) {
 		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct nts::hover_s &) {
-			/////////////////////////////////////////////////
+			_base.resetListObj();
+			getSceneManager()->clear();
+			updateView();
 
 			is::ACharacter *player2;
 
@@ -190,8 +190,6 @@ void nts::GUI::initBaseScene()
 				_displayGUI = false;
 			}
 
-
-			/////////////////////////////////////////////////
 		});
 		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct nts::hover_s &) {initSettingsScene();});
 	} else
@@ -208,6 +206,41 @@ void nts::GUI::initBaseScene()
 		_displayGUI = false;
 		_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 	});
+}
+
+int nts::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
+{
+	if (!obj)
+		throw std::exception();
+
+	const wchar_t *txt = obj->getText();
+	std::wstring ws(txt);
+	std::string str(ws.begin(), ws.end());
+
+	int tmp = 0;
+	try {
+		 tmp = std::stoi(str.c_str());
+	} catch (const std::invalid_argument &e) {
+		tmp = 0;
+	}
+
+	if (tmp < min)
+		tmp = min;
+	else if (tmp > max)
+		tmp = max;
+	return tmp;
+}
+
+void nts::GUI::updateRateSettings()
+{
+	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 13, 100);
+	_mapSize.second = (std::size_t)getValueInput(_mapYEditBox, 13, 100);
+	_crates = getValueInput(_crateEditBox, 0, 100);
+	_drop = getValueInput(_dropEditBox, 0, 100);
+	_bombUp = getValueInput(_bombEditBox, 0, 100);
+	_fireUp = getValueInput(_fireEditBox, 0, 100);
+	_speedUp = getValueInput(_speedEditBox, 0, 100);
+	_wallPass = getValueInput(_wallpassEditBox, 0, 100);
 }
 
 void nts::GUI::initSettingsScene()
@@ -232,9 +265,22 @@ void nts::GUI::initSettingsScene()
 		}
 	};
 
-	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1290, 60, 1390, 160), [this](const struct nts::hover_s &) {initBaseScene();});
-	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct nts::hover_s &) {_nb_player = 1;initSettingsScene();});
-	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct nts::hover_s &) {_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");initSettingsScene();});
+	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1290, 60, 1390, 160), [this](const struct nts::hover_s &) {
+		updateRateSettings();
+		initBaseScene();
+	});
+	addButtonImage("sounds_mute", "settings", "media/sound_off.png", "media/sound_on.png", irr::core::rect<irr::s32>(1150, 80, 1250, 180), [this](const struct nts::hover_s &) {
+		_soundMute = !_soundMute;
+		std::cout << "base: " << _engine->getSoundVolume() << std::endl;
+		_engine->setSoundVolume(_soundMute);
+		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture((_soundMute) ? "media/sound_on.png" : "media/sound_off.png"));
+	});
+	_hoverManage["settings"]["sounds_mute"].used = false;
+	if (!_soundMute)
+		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture("media/sound_off.png"));
+
+	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct nts::hover_s &) {if (_nb_player == 1)return; _nb_player = 1;updateRateSettings();initSettingsScene();});
+	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct nts::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");updateRateSettings();initSettingsScene();});
 
 	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(700, 320, 800, 420), f);
 	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(810, 320, 910, 420), f);
@@ -248,6 +294,28 @@ void nts::GUI::initSettingsScene()
 	_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].hover));
 	_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].used = false;
 
+	_gui->addImage(getDriver()->getTexture("media/map_size.png"), irr::core::position2d<irr::s32>(230, 470));
+	_mapXEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.first).c_str()).c_str(), irr::core::rect<irr::s32>(410, 470, 460, 500), true, 0, MAPSIZE_X);
+	_mapYEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.second).c_str()).c_str(), irr::core::rect<irr::s32>(470, 470, 520, 500), true, 0, MAPSIZE_Y);
+
+	_gui->addImage(getDriver()->getTexture("media/box_rate.png"), irr::core::position2d<irr::s32>(230, 530));
+	_crateEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_crates).c_str()).c_str(), irr::core::rect<irr::s32>(410, 530, 460, 560), true, 0, CRATE_RATE);
+
+	_gui->addImage(getDriver()->getTexture("media/drop_rate.png"), irr::core::position2d<irr::s32>(230, 590));
+	_dropEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_drop).c_str()).c_str(), irr::core::rect<irr::s32>(410, 590, 460, 620), true, 0, DROP_RATE);
+
+	_gui->addImage(getDriver()->getTexture("media/bombup_rate.png"), irr::core::position2d<irr::s32>(620, 470));
+	_bombEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_bombUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 470, 940, 500), true, 0, BOMBEUP_RATE);
+
+	_gui->addImage(getDriver()->getTexture("media/fireup_rate.png"), irr::core::position2d<irr::s32>(620, 530));
+	_fireEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_fireUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 530, 940, 560), true, 0, FIREUP_RATE);
+
+	_gui->addImage(getDriver()->getTexture("media/speedup_rate.png"), irr::core::position2d<irr::s32>(620, 590));
+	_speedEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_speedUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 590, 940, 620), true, 0, SPEEDUP_RATE);
+
+	_gui->addImage(getDriver()->getTexture("media/wallpass_rate.png"), irr::core::position2d<irr::s32>(620, 650));
+	_wallpassEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_wallPass).c_str()).c_str(), irr::core::rect<irr::s32>(890, 650, 940, 680), true, 0, WALLPASS_RATE);
+
 }
 
 void nts::GUI::addPlayer(float x, float z)
@@ -256,7 +324,7 @@ void nts::GUI::addPlayer(float x, float z)
 	player->setZ(x);
 	player->setX(z);
 	player->setBombMax(5);
-	player->setBomb(5);
+	player->setBomb(1);
 }
 
 void nts::GUI::addIA(float x, float z)
@@ -265,12 +333,12 @@ void nts::GUI::addIA(float x, float z)
 	player->setZ(x);
 	player->setX(z);
 	player->setBombMax(5);
-	player->setBomb(5);
+	player->setBomb(1);
 }
 
 void nts::GUI::addPlayerAndIA()
 {
-	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize);
+	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize, _crates, _drop, _bombUp, _fireUp, _speedUp, _wallPass);
 
 	addPlayer(1, 1);
 	if (_nb_player == 2)

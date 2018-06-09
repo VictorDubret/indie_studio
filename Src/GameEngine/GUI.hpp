@@ -12,10 +12,14 @@
 
 namespace nts {
 	enum {
-		HOVER_PLAYNOW,
-		HOVER_SETTINGS,
-		CLICK_SETTINGS,
-		CLICK_PLAYNOW
+		MAPSIZE_X,
+		MAPSIZE_Y,
+		CRATE_RATE,
+		DROP_RATE,
+		BOMBEUP_RATE,
+		FIREUP_RATE,
+		SPEEDUP_RATE,
+		WALLPASS_RATE
 	};
 
 	enum {
@@ -54,12 +58,26 @@ namespace nts {
 		private:
 		void initBaseScene();
 		void initSettingsScene();
+		void updateRateSettings();
+		int getValueInput(irr::gui::IGUIEditBox *obj, int min, int max);
 
 		irr::io::path _currentScene = "";
 
 		irr::gui::IGUIEnvironment *_gui = nullptr;
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
 
+		// rate et map size settings
+		irr::gui::IGUIEditBox *_mapXEditBox = nullptr;
+		irr::gui::IGUIEditBox *_mapYEditBox = nullptr;
+		irr::gui::IGUIEditBox *_crateEditBox = nullptr;
+		irr::gui::IGUIEditBox *_dropEditBox = nullptr;
+
+		irr::gui::IGUIEditBox *_bombEditBox = nullptr;
+		irr::gui::IGUIEditBox *_fireEditBox = nullptr;
+		irr::gui::IGUIEditBox *_speedEditBox = nullptr;
+		irr::gui::IGUIEditBox *_wallpassEditBox = nullptr;
+
+		bool _soundMute = true;
 	};
 }
 

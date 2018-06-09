@@ -18,3 +18,4 @@ cmake_install.cmake
 *.cbp
 Makefile
 .gui_*
+.save.indie
