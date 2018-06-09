@@ -19,7 +19,8 @@ is::Explosion::Explosion(
 {
 	_type = "Explosion";
 
-	_irrlicht.getSoundDevice()->play2D("media/explode.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
+	if (!_irrlicht.getDisplayGUI())
+		_irrlicht.getSoundDevice()->play2D("media/explode.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 	_collidable = true;
 	_pickable = false;
 	_walkable = true;

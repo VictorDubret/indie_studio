@@ -13,17 +13,10 @@ nts::Game::Game(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,
 	irr::core::vector2di mapSize, bool splitScreen
-) : AManageIrrlicht(entities, eventManager, irrlicht), _splitScreen(splitScreen)
+) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
+	_splitScreen = splitScreen;
 	updateView();
-	/* Setting Split Screen Camera */
-	if (_splitScreen) {
-		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
-		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
-	}
-
-	/* Loading Sound */
-//	_engine->play2D("media/AMemoryAway.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
 nts::Game::~Game()
@@ -48,6 +41,11 @@ void nts::Game::updateView()
 		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
 		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
 
+	/* Setting Split Screen Camera */
+	if (_splitScreen) {
+		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
+		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
+	}
 }
 
 void nts::Game::displaySplitScreen()
@@ -71,8 +69,10 @@ void nts::Game::displaySplitScreen()
 	int i = 0;
 	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
-		_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
-		_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
+		if (it.alive) {
+			_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
+			_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
+		}
 		i++;
 	}
 }

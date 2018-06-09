@@ -26,6 +26,7 @@ namespace nts {
 		irr::IrrlichtDevice *getDevice() const override;
 		irr::video::IVideoDriver *getDriver() const override;
 		irrklang::ISoundEngine *getSoundDevice() const override;
+		bool getDisplayGUI() const override;
 
 		void updateView() override;
 		void loopDisplay() override;
@@ -54,6 +55,8 @@ namespace nts {
 		irrklang::ISoundEngine *_engine = nullptr;
 		nts::EventManager _eventReceiver;
 		bool _displayGUI = true;
+		bool _splitScreen = true;
+
 
 		// Game settings
 		int _nb_player = 1;

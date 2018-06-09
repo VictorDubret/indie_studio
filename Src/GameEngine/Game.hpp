@@ -81,7 +81,6 @@ namespace nts {
 		my::Thread *_thread = nullptr;
 		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
-		bool _splitScreen = false;
 		bool _pause = false;
 	};
 

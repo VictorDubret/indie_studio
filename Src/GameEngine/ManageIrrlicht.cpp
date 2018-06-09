@@ -30,7 +30,6 @@ nts::ManageIrrlicht::ManageIrrlicht(
 			}
 		}
 	});
-
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
@@ -38,6 +37,7 @@ void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
 		if (_displayGUI) {
+			_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900));
 			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
 			drawGUI();
 		} else if (_splitScreen) {
@@ -58,16 +58,19 @@ void nts::ManageIrrlicht::loopDisplay()
 
 void nts::ManageIrrlicht::manageEvent()
 {
-	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
+	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && !_displayGUI) {
 //		if (!_displayGUI)
-			_displayGUI = true;
-/*
-		else {
-			lock();
-			_device->drop();
-			unlock();
-		}
-*/
+		_engine->stopAllSounds();
+		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
+		_displayGUI = true;
+
+		/*
+				else {
+					lock();
+					_device->drop();
+					unlock();
+				}
+		*/
 	} else if (_eventReceiver.IsKeyDown(irr::KEY_KEY_P)) {
 			setPause();
 	} else if (_displayGUI) {

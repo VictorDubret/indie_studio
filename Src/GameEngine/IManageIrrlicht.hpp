@@ -40,6 +40,7 @@ namespace nts {
 		virtual irr::video::IVideoDriver *getDriver() const = 0;
 		virtual irrklang::ISoundEngine *getSoundDevice() const = 0;
 		virtual irr::core::vector2di getMapSize() const = 0;
+		virtual bool getDisplayGUI() const = 0;
 
 		// Setter
 		virtual void setMapSize(const irr::core::vector2di &mapSize) = 0;
