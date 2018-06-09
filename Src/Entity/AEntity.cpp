@@ -27,11 +27,8 @@ is::AEntity::~AEntity()
 		lock();
 	}
 	_locked = true;
-	std::cout << "Je vais delete entity : " << _type << std::endl;
 	_irrlicht.deleteEntity(_sptr);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
-//	if (tmp == _entities->end())
-//		std::cout << YEL << "NIKE BIEN TA MERE SALLE BATARD" << RESET << std::endl;
 	_entities->erase(tmp);
 	unlock();
 	_entities.unlock();
@@ -125,12 +122,12 @@ bool is::AEntity::isWallPassable() const
 
 void is::AEntity::collide(IEntity *collider)
 {
-	Debug::debug(_type, " collide with ", collider->getType());
+	//Debug::debug(_type, " collide with ", collider->getType());
 }
 
 void is::AEntity::explode()
 {
-	Debug::debug(_type, " explode");
+	//Debug::debug(_type, " explode");
 }
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
@@ -140,8 +137,9 @@ bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float y, float z) const
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float z) const
 {
+	std::cout << BLU << "GetEntitiesAt !!" << RESET << std::endl;
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	_irrlicht.lock();
 	float size = _irrlicht.getNodeSize(_sptr);
@@ -149,6 +147,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	auto sceneManager = _irrlicht.getSceneManager();
 	_irrlicht.unlock();
 	if (!sceneManager) {
+		std::cout << "Je suis la !" << std::endl;
 		return ret;
 	}
 	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
@@ -158,11 +157,6 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
 		entity->lock();
-		if (std::abs(entity->getX() - x) > 2 ||
-			std::abs(entity->getZ() - z) > 2) {
-			entity->unlock();
-			return false;
-		}
 		_irrlicht.lock();
 		auto tmp = _irrlicht.getNode(entity.get());
 		entity->unlock();
@@ -174,6 +168,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	};
 	auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
+		std::cout << YEL << "Je passe ici ! " << RESET << std::endl;
 		ret.push_back(*(it.base()));
 		it++;
 		if (it != _entities->end()) {
