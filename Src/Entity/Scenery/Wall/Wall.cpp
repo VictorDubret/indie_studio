@@ -38,7 +38,7 @@ is::Wall::~Wall()
 	_locked = true;
 }
 
-void is::Wall::placePowerUp()
+void is::Wall::placePowerUp(irr::core::vector3df pos)
 {
 	is::APowerUp *powerUp = nullptr;
 	_entities.lock();
@@ -66,8 +66,9 @@ void is::Wall::placePowerUp()
 
 void is::Wall::explode()
 {
-	_eventManager->enqueue([this]{
-		placePowerUp();
+	irr::core::vector3df pos = getPosition();
+	_eventManager->enqueue([this, pos]{
+		placePowerUp(pos);
 		_entities.lock();
 		if (!dynamic_cast<is::Wall *>(_sptr.get())) {
 			_entities.unlock();

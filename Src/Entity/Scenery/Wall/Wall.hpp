@@ -30,7 +30,7 @@ namespace is {
 		void setPowerUp(char powerUp);
 		void texture() override;
 	private:
-		void placePowerUp();
+		void placePowerUp(irr::core::vector3df );
 		char _powerUp = 0;
 	};
 };

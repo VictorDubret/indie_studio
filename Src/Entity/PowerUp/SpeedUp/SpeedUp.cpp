@@ -43,6 +43,7 @@ void is::SpeedUp::texture()
 
 void is::SpeedUp::action(is::ACharacter *character)
 {
+	_irrlicht.getSoundDevice()->play2D("media/sound/PowerUp/speedup.wav", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 	character->setSpeed(character->getSpeed() + 1);
 	Debug::debug("Character have now ", character->getSpeed(), " speed");
 }

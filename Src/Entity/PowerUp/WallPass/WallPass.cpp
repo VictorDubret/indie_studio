@@ -45,6 +45,7 @@ void is::WallPass::texture()
 
 void is::WallPass::action(is::ACharacter *character)
 {
+	_irrlicht.getSoundDevice()->play2D("media/sound/PowerUp/wallpass.wav", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 	character->setWallPass(true);
 	Debug::debug("Character have now WallPass ON");
 }

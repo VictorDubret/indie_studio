@@ -225,9 +225,9 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 {
 	unlock();
 	std::vector<std::shared_ptr<IEntity>> tmp_down = getEntitiesAt(
-		getX() + 0.2, getY(), getZ() + 0.2);
+		getX() + 0.15, getY(), getZ() + 0.15);
 	std::vector<std::shared_ptr<IEntity>> tmp_up = getEntitiesAt(
-		getX() - 0.2, getY(), getZ() - 0.2);
+		getX() - 0.15, getY(), getZ() - 0.15);
 	for (const auto &it : tmp_down) {
 		if (entity.get() == it.get()) {
 			for (const auto &tmp_entity : tmp_up) {

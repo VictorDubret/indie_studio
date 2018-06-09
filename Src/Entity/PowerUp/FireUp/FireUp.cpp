@@ -41,6 +41,7 @@ void is::FireUp::texture()
 
 void is::FireUp::action(is::ACharacter *character)
 {
+	_irrlicht.getSoundDevice()->play2D("media/sound/PowerUp/fireup.wav", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 	character->setBombLength(character->getBombLength() + 1);
 	Debug::debug("Character have now ", character->getBombLength(), " range");
 }

@@ -44,6 +44,7 @@ void is::BombUp::texture()
 
 void is::BombUp::action(is::ACharacter *character)
 {
+	_irrlicht.getSoundDevice()->play2D("media/sound/PowerUp/bombup.wav", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 	character->setBombMax(character->getBombMax() + 1);
 	character->operator++();
 	Debug::debug("Character have now ", character->getBombMax(), " bombMax");
