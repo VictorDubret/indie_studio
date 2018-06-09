@@ -30,7 +30,6 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 
 void nts::GUI::drawGUI()
 {
-	if (_device->run())
 		_gui->drawAll();
 }
 

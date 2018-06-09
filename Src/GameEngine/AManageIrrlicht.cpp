@@ -92,3 +92,8 @@ void nts::AManageIrrlicht::setCameraPos()
 void nts::AManageIrrlicht::manageEvent()
 {
 }
+
+bool nts::AManageIrrlicht::getDisplayGUI() const
+{
+	return _displayGUI;
+}

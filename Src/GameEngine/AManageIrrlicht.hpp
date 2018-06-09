@@ -26,6 +26,7 @@ namespace nts {
 		irr::IrrlichtDevice *getDevice() const override;
 		irr::video::IVideoDriver *getDriver() const override;
 		irrklang::ISoundEngine *getSoundDevice() const override;
+		bool getDisplayGUI() const override;
 
 		void updateView() override;
 		void loopDisplay() override;

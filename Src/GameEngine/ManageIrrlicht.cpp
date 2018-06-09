@@ -30,7 +30,6 @@ nts::ManageIrrlicht::ManageIrrlicht(
 			}
 		}
 	});
-
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
@@ -58,9 +57,11 @@ void nts::ManageIrrlicht::loopDisplay()
 
 void nts::ManageIrrlicht::manageEvent()
 {
-	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE)) {
+	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && !_displayGUI) {
 //		if (!_displayGUI)
-			_displayGUI = true;
+		_engine->stopAllSounds();
+		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
+		_displayGUI = true;
 /*
 		else {
 			lock();
