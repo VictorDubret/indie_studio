@@ -194,11 +194,11 @@ void nts::GUI::initBaseScene()
 	} else
 		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct nts::hover_s &) {initSettingsScene();});
 
-
-
 	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct nts::hover_s &) {
 		_base.resetListObj();
 		getSceneManager()->clear();
+		if (_nb_player != 2)
+			_splitScreen = false;
 		updateView();
 		addPlayerAndIA();
 		_sound->stop();
@@ -270,13 +270,21 @@ void nts::GUI::initSettingsScene()
 	});
 	addButtonImage("sounds_mute", "settings", "media/sound_off.png", "media/sound_on.png", irr::core::rect<irr::s32>(1150, 80, 1250, 180), [this](const struct nts::hover_s &) {
 		_soundMute = !_soundMute;
-		std::cout << "base: " << _engine->getSoundVolume() << std::endl;
 		_engine->setSoundVolume(_soundMute);
 		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture((_soundMute) ? "media/sound_on.png" : "media/sound_off.png"));
 	});
 	_hoverManage["settings"]["sounds_mute"].used = false;
 	if (!_soundMute)
 		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture("media/sound_off.png"));
+
+	addButtonImage("split_screen", "settings", "media/split_screen_hover.png", "media/split_screen.png", irr::core::rect<irr::s32>(1000, 65, 1100, 165), [this](const struct nts::hover_s &) {
+		_splitScreen = !_splitScreen;
+		_hoverManage["settings"]["split_screen"].base->setImage(_driver->getTexture((_splitScreen) ? "media/split_screen_hover.png" : "media/split_screen.png"));
+	});
+	_hoverManage["settings"]["split_screen"].used = false;
+	if (_splitScreen)
+		_hoverManage["settings"]["split_screen"].base->setImage(_driver->getTexture("media/split_screen_hover.png"));
+
 
 	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct nts::hover_s &) {if (_nb_player == 1)return; _nb_player = 1;updateRateSettings();initSettingsScene();});
 	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct nts::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");updateRateSettings();initSettingsScene();});
@@ -322,7 +330,7 @@ void nts::GUI::addPlayer(float x, float z, std::size_t id)
 	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base, id);
 	player->setZ(x);
 	player->setX(z);
-	player->setBombMax(5);
+	player->setBombMax(1);
 	player->setBomb(1);
 }
 
@@ -331,17 +339,18 @@ void nts::GUI::addIA(float x, float z, std::size_t id)
 	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base, id);
 	player->setZ(x);
 	player->setX(z);
-	player->setBombMax(5);
+	player->setBombMax(1);
 	player->setBomb(1);
 }
 
 void nts::GUI::addPlayerAndIA()
 {
-	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize, _crates, _drop, _bombUp, _fireUp, _speedUp, _wallPass);
-
 	addPlayer(1, 1, 1);
 	if (_nb_player == 2)
 		addPlayer(_base.getMapSize().X, _base.getMapSize().Y, 2);
+
+	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize, _crates, _drop, _bombUp, _fireUp, _speedUp, _wallPass);
+
 	if (_nb_ia >= 1)
 		addIA(_base.getMapSize().X, 1, 3);
 	if (_nb_ia >= 2)

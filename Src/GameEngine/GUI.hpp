@@ -55,6 +55,7 @@ namespace nts {
 		void addPlayer(float x, float z, std::size_t id);
 		void addIA(float x, float z, std::size_t id);
 
+		irr::gui::IGUIEnvironment *_gui = nullptr;
 		private:
 		void initBaseScene();
 		void initSettingsScene();
@@ -63,7 +64,6 @@ namespace nts {
 
 		irr::io::path _currentScene = "";
 
-		irr::gui::IGUIEnvironment *_gui = nullptr;
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
 
 		// rate et map size settings

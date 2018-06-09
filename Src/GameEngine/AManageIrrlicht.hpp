@@ -55,6 +55,8 @@ namespace nts {
 		irrklang::ISoundEngine *_engine = nullptr;
 		nts::EventManager _eventReceiver;
 		bool _displayGUI = true;
+		bool _splitScreen = true;
+
 
 		// Game settings
 		int _nb_player = 1;
