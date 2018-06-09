@@ -104,7 +104,9 @@ void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::s
 
 void nts::GUI::initBaseScene()
 {
+	_base.lock();
 	_gui->clear();
+	_base.unlock();
 	_currentScene = "base";
 
 	_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(230, 100));
@@ -114,7 +116,9 @@ void nts::GUI::initBaseScene()
 	if (infile.good()) {
 		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct nts::hover_s &) {
 			_base.resetListObj();
+			_base.lock();
 			getSceneManager()->clear();
+			_base.unlock();
 			updateView();
 
 			is::ACharacter *player2;
@@ -199,7 +203,9 @@ void nts::GUI::initBaseScene()
 
 	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct nts::hover_s &) {
 		_base.resetListObj();
+		_base.lock();
 		getSceneManager()->clear();
+		_base.unlock();
 		updateView();
 		addPlayerAndIA();
 		_sound->stop();
@@ -245,7 +251,9 @@ void nts::GUI::updateRateSettings()
 
 void nts::GUI::initSettingsScene()
 {
+	_base.lock();
 	_gui->clear();
+	_base.unlock();
 	_currentScene = "settings";
 
 	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(230, 80));

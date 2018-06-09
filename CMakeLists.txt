@@ -3,7 +3,7 @@ project(bomberman)
 
 set(CMAKE_CXX_STANDARD 11)
 
-file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp Src Src Src)
+file(GLOB_RECURSE FILE Src/*.cpp Src/*.hpp externalLibs)
 
 include_directories(Src Src/Entity Src/Entity/Character
 	    Src
