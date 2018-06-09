@@ -49,7 +49,6 @@ is::ACharacter::~ACharacter()
 		lock();
 	}
 	_locked = true;
-	std::cout << "NIKE TA MERE CONNARD" << std::endl;
 }
 
 bool const &is::ACharacter::getWallPass() const
@@ -143,12 +142,11 @@ bool is::ACharacter::checkCollision(std::vector<std::shared_ptr<is::IEntity>> &l
 
 void is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
-	auto list = getEntitiesAt(nextX, nextY, nextZ);
+	auto list = getEntitiesAt(nextX, nextZ);
 
 	for (auto &it: list) {
 		it->lock();
 		if (it.get() != this && it->isCollidable() && !it->isWalkable(_sptr) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
-			std::cout << "COLLIDE with : " << it->getType() << std::endl;
 			it->unlock();
 			return;
 		}
@@ -263,7 +261,7 @@ void is::ACharacter::dropBomb()
 		return;
 	}
 	float size = _irrlicht.getNodeSize(_sptr);
-	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)getY(), (int)(getZ() + size / 2.0));
+	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)(getZ() + size / 2.0));
 
 	for (auto &it: _entitiesAt) {
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());

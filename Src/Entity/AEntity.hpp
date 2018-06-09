@@ -54,7 +54,7 @@ namespace is {
 		void setWalkable(bool state) override;
 
 		void collide(is::IEntity *collider) override;
-		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float y, float z) const;
+		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float z) const;
 		void explode() override;
 
 		void lock() override;
