@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2018
-** cpp_plazza
+** cpp_indie_studio
 ** File description:
-** Created by anais.breant@epitech.eu,
+** Created by Sahel Lucas--Saoudi
 */
 
 #include "Thread.hpp"

@@ -258,7 +258,7 @@ int nts::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
 
 void nts::GUI::updateRateSettings()
 {
-	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 13, 100);
+	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 11, 100);
 	_mapSize.second = (std::size_t)getValueInput(_mapYEditBox, 13, 100);
 	_crates = getValueInput(_crateEditBox, 0, 100);
 	_drop = getValueInput(_dropEditBox, 0, 100);
