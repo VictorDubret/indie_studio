@@ -72,31 +72,14 @@ int main(int ac, char **)
 	/* initialisation */
 	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
 
-	if (ac == 1 || ac == 2) {
-		is::ACharacter *toto = new is::ACharacter(lockList, pool, tmp);
-		toto->setZ(1);
-		toto->setX(1);
-		toto->setBombMax(5);
-		toto->setBomb(5);
-
-
-		is::ACharacter *toto2 = new is::ACharacter(lockList, pool, tmp);
-		toto2->setZ(11);
-		toto2->setX(13);
-		toto2->setBombMax(5);
-		toto2->setBomb(5);
-
-		mg::MapGenerator generator(lockList, pool, tmp, mapSize);
-
-	}
 	/* Chargement textures */
-	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
+/*	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
 	tmp.getDriver()->getTexture(irr::io::path("media/1_character.png"));
 	tmp.getDriver()->getTexture(irr::io::path("media/2_character.png"));
 	tmp.getDriver()->getTexture(irr::io::path("media/3_character.png"));
 	tmp.getDriver()->getTexture(irr::io::path("media/4_character.png"));
 	tmp.getDriver()->getTexture(irr::io::path("media/bomb.png"));
-	tmp.getDriver()->getTexture(irr::io::path("media/map_ob000_item_AL.png"));
+	tmp.getDriver()->getTexture(irr::io::path("media/map_ob000_item_AL.png"));*/
 	//	is::ACharacter *tata = new is::ACharacter (lockList, pool, tmp);
 
 	if (ac == 3) {

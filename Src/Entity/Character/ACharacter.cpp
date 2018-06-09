@@ -32,7 +32,7 @@ void is::ACharacter::texture()
 	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
 		0.6);
 	_irrlicht.getNode(_sptr.get())->setPosition(
-		irr::core::vector3df(1.1f, 0.1f, 1.1f));
+		irr::core::vector3df(1.1f, -0.5f, 1.1f));
 	nts::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(0.9, 0.9, 0.9));
 	nts::ManageObject::setRotation(_irrlicht, _sptr,
@@ -313,15 +313,31 @@ void is::ACharacter::doNothing()
 
 void is::ACharacter::save()
 {
+
+	lock();
 	remove(".save.indie");
 
 	std::ofstream _filestr(".save.indie");
 
+	sleep(1);
+	std::cout << "Sauvegarde" << std::endl;
 	for (auto &it : _entities.get()) {
 		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
 		auto isWall = dynamic_cast<is::Wall *>(it.get());
 		if (isWall != nullptr)
 			_filestr << " PowerUp " << isWall->getPowerUp();
+		auto isCharacter = dynamic_cast<is::ACharacter *>(it.get());
+		if (isCharacter != nullptr)
+			_filestr << " bombMax " << isCharacter->getBombMax() << " speed " << isCharacter->getSpeed() << " bombLength " << isCharacter->getBombLength() << " wallPass " << isCharacter->getWallPass();
 		_filestr << "\n";
+		//std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
+		//std::cout << std::endl;
+		//usleep(100000);
 	}
+	unlock();
+}
+
+void is::ACharacter::setHP(int life)
+{
+	_pv = static_cast<uint>(life);
 }

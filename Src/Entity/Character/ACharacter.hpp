@@ -44,6 +44,7 @@ namespace is {
 		void setBombMax(size_t bombMax);
 		void setBombLength(size_t length);
 		void setSpeed(float speed);
+		void setHP(int life);
 
 		// Other
 		is::ACharacter &operator++();

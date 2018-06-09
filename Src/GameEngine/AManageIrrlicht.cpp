@@ -22,6 +22,17 @@ nts::AManageIrrlicht::AManageIrrlicht(
 	_sceneManager = _device->getSceneManager();
 	if (!_driver || !_sceneManager)
 		throw std::exception();
+
+	_driver->getTexture(irr::io::path("media/fire.jpg"));
+	_driver->getTexture(irr::io::path("media/1_character.png"));
+	_driver->getTexture(irr::io::path("media/2_character.png"));
+	_driver->getTexture(irr::io::path("media/3_character.png"));
+	_driver->getTexture(irr::io::path("media/4_character.png"));
+	_driver->getTexture(irr::io::path("media/bomb.png"));
+	_driver->getTexture(irr::io::path("media/map_ob000_item_AL.png"));
+	_driver->getTexture(irr::io::path("media/caisse.png"));
+	_driver->getTexture(irr::io::path("media/wall.png"));
+
 }
 
 void nts::AManageIrrlicht::resetListObj()

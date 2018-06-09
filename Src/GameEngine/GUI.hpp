@@ -46,9 +46,13 @@ namespace nts {
 
 		void manageEventGui();
 		void drawGUI();
+		void initWinner();
+		void initDraw();
 		void addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger = "");
 		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f);
 		void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &tmp);
+		void initBaseScene();
+		irr::io::path &getCurrentScene();
 
 		protected:
 		void addPlayerAndIA();
@@ -56,13 +60,13 @@ namespace nts {
 		void addIA(float x, float z, std::size_t id);
 
 		irr::gui::IGUIEnvironment *_gui = nullptr;
+		irr::io::path _currentScene = "";
+
 		private:
-		void initBaseScene();
 		void initSettingsScene();
 		void updateRateSettings();
 		int getValueInput(irr::gui::IGUIEditBox *obj, int min, int max);
 
-		irr::io::path _currentScene = "";
 
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
 

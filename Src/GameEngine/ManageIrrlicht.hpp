@@ -28,12 +28,15 @@ namespace nts {
 		void loopDisplay() override;
 		void displayGui(bool display);
 
+
 		void unlock() override;
 		void lock() override;
 		void manageEvent() override;
 		protected:
 
 		private:
+		void endScene();
+		void drawScene();
 		};
 }
 

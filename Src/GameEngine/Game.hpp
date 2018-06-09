@@ -77,11 +77,13 @@ namespace nts {
 		std::vector<nts::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
-
 		my::Thread *_thread = nullptr;
 		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
 		bool _pause = false;
+		bool _endGame = false;
+		bool _draw = false;
+		bool _alreadyEnd = false;
 	};
 
 }

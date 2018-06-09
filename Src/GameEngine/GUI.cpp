@@ -6,6 +6,7 @@
 */
 
 #include <iostream>
+#include <unistd.h>
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
@@ -100,6 +101,16 @@ void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::s
 		if (isWall != nullptr)
 			isWall->setPowerUp(tmpVector[13][0]);
 	}
+	if (tmpVector.size() == 20) {
+		auto isCharacter = dynamic_cast<is::ACharacter *>(player_tmp2.get());
+		if (isCharacter != nullptr) {
+			isCharacter->setBombMax(static_cast<size_t>(stoi(tmpVector[13])));
+			isCharacter->setBomb(static_cast<size_t>(stoi(tmpVector[13])));
+			isCharacter->setSpeed(stof(tmpVector[15]));
+			isCharacter->setBombLength(static_cast<size_t>(stoi(tmpVector[17])));
+			isCharacter->setWallPass(static_cast<bool>(stoi(tmpVector[19])));
+		}
+	}
 }
 
 void nts::GUI::initBaseScene()
@@ -112,9 +123,16 @@ void nts::GUI::initBaseScene()
 
 	std::ifstream infile(".save.indie");
 	if (infile.good()) {
+		_base.resetListObj();
+		getSceneManager()->clear();
+		updateView();
+
 		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct nts::hover_s &) {
 			_base.resetListObj();
+			_base.lock();
 			getSceneManager()->clear();
+			_base.unlock();
+
 			updateView();
 
 			is::ACharacter *player2;
@@ -122,29 +140,30 @@ void nts::GUI::initBaseScene()
 			std::stringstream streamLine;
 			std::string line;
 			std::string temp;
-			std::ifstream myfile("save.indie");
+			std::ifstream myfile(".save.indie");
+			int i = 0;
+			int j = 0;
 			if (myfile.is_open()) {
 				while (getline(myfile, line)) {
-					std::cout << line << std::endl;
+					//std::cout << line << std::endl;
 
 					streamLine << line;
 					std::vector<std::string> tmpVector;
 					while (streamLine >> temp) {
 						tmpVector.push_back(temp);
-						std::cout << "J split ma commande: " << temp << std::endl;
+						//std::cout << "J split ma commande: " << temp << std::endl;
 					}
 					streamLine.clear();
-					if (tmpVector.size() == 12 || tmpVector.size() == 14) {
+					//std::cout << "Ligne " << i << " [" << line << "]" << std::endl;
+					i++;
+					if (tmpVector.size() == 12 || tmpVector.size() == 14 || tmpVector.size() == 20) {
 						if (tmpVector[0] == "Character") {
 							std::cout << "J'ai trouvé un character" << std::endl;
 
 							player2 = new is::ACharacter(_entities, _eventManager, _base);
 							std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
-
-							irr::core::vector3df tmpPos(std::stoi(tmpVector[1]), std::stoi(tmpVector[2]), std::stoi(tmpVector[3]));
-							getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
-							std::cout << "Mon joueur est en :" << _base.getNode(player_tmp2.get())->getPosition().X << "][" << _base.getNode(player_tmp2.get())->getPosition().Z;
-
+							setEntity(tmpVector, player_tmp2, _base);
+							j++;
 
 
 						} else if (tmpVector[0] == "Wall") {
@@ -188,8 +207,10 @@ void nts::GUI::initBaseScene()
 				}
 				myfile.close();
 				_displayGUI = false;
+				_currentScene = "game";
+				//remove(".save.indie");
 			}
-
+			std::cout << "jai toruvé" << j << "joueurs" << std::endl;
 		});
 		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct nts::hover_s &) {initSettingsScene();});
 	} else
@@ -197,16 +218,18 @@ void nts::GUI::initBaseScene()
 
 	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct nts::hover_s &) {
 		_base.resetListObj();
-		_base.lock();
-		getSceneManager()->clear();
 		if (_nb_player != 2)
 			_splitScreen = false;
+		_base.lock();
+		getSceneManager()->clear();
 		_base.unlock();
 		updateView();
 		addPlayerAndIA();
 		_sound->stop();
 		_displayGUI = false;
+		// setCameraPos();
 		_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
+		_currentScene = "game";
 	});
 }
 
@@ -364,4 +387,25 @@ void nts::GUI::addPlayerAndIA()
 		addIA(_base.getMapSize().X, _base.getMapSize().Y, 2);
 
 
+}
+
+void nts::GUI::initWinner()
+{
+	_gui->clear();
+	//_currentScene = "winner";
+	_gui->addImage(getDriver()->getTexture("media/winner.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
+}
+
+irr::io::path &nts::GUI::getCurrentScene()
+{
+	return _currentScene;
+}
+
+void nts::GUI::initDraw()
+{
+	_base.lock();
+	_gui->clear();
+	_base.unlock();
+	_currentScene = "draw";
+	_gui->addImage(getDriver()->getTexture("media/draw.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
 }

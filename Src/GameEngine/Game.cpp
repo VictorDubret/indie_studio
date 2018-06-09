@@ -157,12 +157,15 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 
 bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
+	std::cout << "je dlete mon entité" << std::endl;
 	if (entity->getType() == "Character") {
 		for (auto &it : _listPlayer) {
 			if (it.entity == entity.get()) {
+				std::cout << "je met alive a false" << std::endl;
 				it.alive = false;
 			}
 		}
+		std::cout << "l'entité que je delete est un joueur" << std::endl;
 	}
 	lock();
 	nts::irrObj_t tmp_obj = _listObj[entity.get()];
@@ -188,15 +191,19 @@ irr::core::vector2di nts::Game::getMapSize() const
 
 void nts::Game::setCameraPos()
 {
-	if (_listPlayer.empty())
+	if (_listPlayer.empty() || _endGame || _draw)
 		return;
 	int i = 0;
 	irr::f32 tmpX = 0;
 	irr::f32 tmpY = 0;
 
+	int totalPLayer = 0;
+	int alivePLayer = 0;
 	for (auto &it : _listPlayer) {
+		totalPLayer++;
 		if (!it.alive || !getNode(it.entity))
 			continue;
+		alivePLayer++;
 		tmpX = getNode(it.entity)->getPosition().X;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {
@@ -218,6 +225,7 @@ void nts::Game::setCameraPos()
 		}
 		i++;
 	}
+	_distBetweenPlayer[FAREST].Y += 2;
 	irr::f32 saveHeight = _camera[GLOBAL]->getPosition().Y;
 	float tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X)));
 	/*std::cout << "tmpHeight X "<< _distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X << std::endl;
@@ -257,6 +265,21 @@ void nts::Game::setCameraPos()
 
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
+
+	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
+
+ 	if ((totalPLayer - alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
+		_endGame = true;
+		_alreadyEnd = true;
+		for (auto &it : _listPlayer) {
+			if (it.alive)
+				it.entity->setHP(10);
+		}
+	} else if (alivePLayer == 0 && !_alreadyEnd) {
+		std::cout << "Je set draw a true" << std::endl;
+		_draw = true;
+		_endGame = false;
+	}
 }
 
 void nts::Game::resetListObj()
