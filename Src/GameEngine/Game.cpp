@@ -70,6 +70,8 @@ void nts::Game::displaySplitScreen()
 	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
 		if (it.alive) {
+			if (getNode(it.entity) == nullptr)
+				continue;
 			_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
 			_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
 		}
@@ -282,10 +284,6 @@ void nts::Game::setCameraPos()
 			if (it.alive)
 				it.entity->setHP(10);
 		}
-	} else if (alivePLayer == 0 && !_alreadyEnd) {
-		std::cout << "Je set draw a true" << std::endl;
-		_draw = true;
-		_endGame = false;
 	}
 }
 

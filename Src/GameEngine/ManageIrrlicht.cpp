@@ -77,19 +77,18 @@ void nts::ManageIrrlicht::loopDisplay()
 	while (_device && _device->run()) {
 		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
 		if (_displayGUI) {
+			lock();
 			_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900));
 			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
-			lock();
 			drawGUI();
-			unlock();
 			_driver->endScene();
+			unlock();
 
 		} else if (_splitScreen) {
 			displaySplitScreen();
 			_driver->endScene();
 
 		} else if (!_endGame && !_draw) {
-			std::cout << "je suis en jeu" << std::endl;
 
 			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 			lock();
@@ -98,10 +97,8 @@ void nts::ManageIrrlicht::loopDisplay()
 			_driver->endScene();
 
 		} else if (_endGame && !_draw) {
-			std::cout << "jai gagne" << std::endl;
 			endScene();
 		} else if (_draw) {
-			std::cout << "jai draw" << std::endl;
 			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 			lock();
 			_sceneManager->drawAll();
