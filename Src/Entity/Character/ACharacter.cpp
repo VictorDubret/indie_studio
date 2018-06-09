@@ -19,8 +19,8 @@
 is::ACharacter::ACharacter(
 	my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
-	nts::ManageIrrlicht &irrlicht
-) : AEntity(entities, eventManager, irrlicht)
+	nts::ManageIrrlicht &irrlicht, std::size_t id
+) : AEntity(entities, eventManager, irrlicht), _id(id)
 {
 	_type = "Character";
 	_walkable = true;
@@ -39,7 +39,7 @@ void is::ACharacter::texture()
 		irr::core::vector3df(0, 90, 0));
 	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
 	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/character.png");
+	nts::ManageObject::setTexture(_irrlicht, _sptr, (std::string("media/") + std::to_string(_id) + std::string("_character.png")).c_str());
 }
 
 is::ACharacter::~ACharacter()

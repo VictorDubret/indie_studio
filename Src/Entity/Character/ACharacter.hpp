@@ -25,7 +25,7 @@ namespace is {
 
 		// Constructor
 		ACharacter(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
+			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht, std::size_t id = 1);
 
 		// Destructor
 		~ACharacter() override;
@@ -69,6 +69,7 @@ namespace is {
 		 * Internal Config
 		 */
 		float _speedCoef = 0.15;
+		std::size_t _id;
 
 		uint _pv = 1;
 

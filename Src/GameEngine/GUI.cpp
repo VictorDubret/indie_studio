@@ -318,18 +318,18 @@ void nts::GUI::initSettingsScene()
 
 }
 
-void nts::GUI::addPlayer(float x, float z)
+void nts::GUI::addPlayer(float x, float z, std::size_t id)
 {
-	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base);
+	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base, id);
 	player->setZ(x);
 	player->setX(z);
 	player->setBombMax(5);
 	player->setBomb(1);
 }
 
-void nts::GUI::addIA(float x, float z)
+void nts::GUI::addIA(float x, float z, std::size_t id)
 {
-	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base);
+	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base, id);
 	player->setZ(x);
 	player->setX(z);
 	player->setBombMax(5);
@@ -340,15 +340,15 @@ void nts::GUI::addPlayerAndIA()
 {
 	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize, _crates, _drop, _bombUp, _fireUp, _speedUp, _wallPass);
 
-	addPlayer(1, 1);
+	addPlayer(1, 1, 1);
 	if (_nb_player == 2)
-		addPlayer(_base.getMapSize().X, _base.getMapSize().Y);
+		addPlayer(_base.getMapSize().X, _base.getMapSize().Y, 2);
 	if (_nb_ia >= 1)
-		addIA(_base.getMapSize().X, 1);
+		addIA(_base.getMapSize().X, 1, 3);
 	if (_nb_ia >= 2)
-		addIA(1, _base.getMapSize().Y);
+		addIA(1, _base.getMapSize().Y, 4);
 	if (_nb_ia >= 3)
-		addIA(_base.getMapSize().X, _base.getMapSize().Y);
+		addIA(_base.getMapSize().X, _base.getMapSize().Y, 2);
 
 
 }

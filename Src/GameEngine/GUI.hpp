@@ -52,8 +52,8 @@ namespace nts {
 
 		protected:
 		void addPlayerAndIA();
-		void addPlayer(float x, float z);
-		void addIA(float x, float z);
+		void addPlayer(float x, float z, std::size_t id);
+		void addIA(float x, float z, std::size_t id);
 
 		private:
 		void initBaseScene();
