@@ -5,6 +5,7 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <unistd.h>
 #include <Entity/Bomb/Bomb.hpp>
 #include "Game.hpp"
 #include "ArtificialIntelligence.hpp"
@@ -57,6 +58,7 @@ void irrl::Game::displayGlobalScene()
 	if (!_endGame || _draw) {
 		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 		lock();
+		setCameraPos();
 		_sceneManager->drawAll();
 		unlock();
 		_driver->endScene();
@@ -278,6 +280,7 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		tmp_obj.obj->setVisible(false);
 		_listObj.erase(tmp_find);
 	}
+	checkLastAlive();
 	unlock();
 	return false;
 }
@@ -327,41 +330,15 @@ void irrl::Game::setCameraPos()
 		i++;
 	}
 	_distBetweenPlayer[FAREST].Y += 2;
-	irr::f32 saveHeight = _camera[GLOBAL]->getPosition().Y;
-	float tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X)));
 
-	// TODO oom camera enleve
-	static bool locked = true;
-
-	if (locked) {
-		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 &&
-			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1) || 1) {
-			tmpHeight = saveHeight;
-			locked = true;
-		} else {
-			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)))) {
-				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
-				locked = false;
-			}
-		}
-	} else {
-		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 ||
-			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1)) {
-			tmpHeight = saveHeight;
-			locked = true;
-		} else {
-			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y))))
-				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
-		}
-	}
-	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
+	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), _camera[GLOBAL]->getPosition().Y, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
-	checkLastAlive();
+
+	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
 }
 
 void irrl::Game::resetListObj()
 {
-	_eventManager->notify();
 	_listPlayer.clear();
 	_listObj.clear();
 	_entities.get().clear();
@@ -416,8 +393,8 @@ void irrl::Game::setPause()
 			tmp->setPaused(false);
 		}
 	}
-}
 
+}
 void irrl::Game::checkLastAlive()
 {
 	int totalPLayer = 0;
@@ -434,6 +411,43 @@ void irrl::Game::checkLastAlive()
 		for (auto &it : _listPlayer) {
 			if (it.alive)
 				it.entity->setHP(10);
+		}
+	}
+}
+
+void irrl::Game::setFloor()
+{
+	/* Création floor */
+
+	std::cout << getSceneManager()->getRegisteredSceneNodeFactoryCount() << std::endl;
+	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
+	irr::core::dimension2d<irr::u32> tileCount(1, 1); // taille de la map
+
+	auto material = new irr::video::SMaterial();
+	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
+	material->Wireframe = false;
+	material->Lighting = false;
+	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
+	irr::scene::IMesh *cube = getSceneManager()->getGeometryCreator()->createPlaneMesh(tileSize, tileCount, material, textureRepeatCount);
+
+	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+	irr::video::ITexture *texture = getDriver()->getTexture(irr::io::path("media/floor.png"));
+
+	unsigned int i = 1;
+	unsigned int j = 1;
+
+	while (j < getMapSize().Y + 1) {
+		std::cout << "i " << i << " mapsize.x " << getMapSize().X << " j " << j << " mapsize.y " << getMapSize().Y << std::endl;
+		irr::scene::IMeshSceneNode *cubeNode = getSceneManager()->addMeshSceneNode(cube);
+		cubeNode->setMaterialTexture(0, texture);
+		cubeNode->setPosition(irr::core::vector3df(j, -0.5f, i));
+		//cubeNode->setScale(irr::core::vector3df(1, 1, 1));
+		cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+		cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+		i++;
+		if (i > getMapSize().X && j != getMapSize().Y + 1) {
+			i = 1;
+			j++;
 		}
 	}
 }

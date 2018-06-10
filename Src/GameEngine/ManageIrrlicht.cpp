@@ -22,7 +22,7 @@ irrl::ManageIrrlicht::ManageIrrlicht(
 				std::chrono::milliseconds(50));
 		}
 	});
-	_thread = new my::Thread([&]() {
+/*	_thread = new my::Thread([&]() {
 		while (!_stopThread && _device) {
 			if (!_displayGUI && !_splitScreen) {
 				lock();
@@ -31,7 +31,7 @@ irrl::ManageIrrlicht::ManageIrrlicht(
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
-	});
+	});*/
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 

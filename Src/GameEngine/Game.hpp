@@ -64,7 +64,8 @@ namespace irrl {
 		void lock() override;
 		void unlock() override;
 		void setPause();
-
+		void setFloor();
+		void checkLastAlive();
 
 		protected:
 		std::mutex _mutex;
@@ -78,7 +79,6 @@ namespace irrl {
 		void displayBothPlayers();
 		void endScene();
 
-		void checkLastAlive();
 
 		std::unordered_map<is::IEntity *, irrl::irrObj_t> _listObj;
 		std::vector<irrl::player_t> _listPlayer;

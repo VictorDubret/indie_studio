@@ -224,12 +224,14 @@ void irrl::GUI::initBaseScene()
 		getSceneManager()->clear();
 		_base.unlock();
 		addPlayerAndIA();
+		_base.setFloor();
 		updateView();
 		_sound->stop();
 		_displayGUI = false;
 		// setCameraPos();
 		_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
 		_currentScene = "game";
+		_base.checkLastAlive();
 	});
 }
 
