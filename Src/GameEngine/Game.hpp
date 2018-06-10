@@ -90,7 +90,7 @@ namespace irrl {
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
 		bool _endGame = false;
 		bool _draw = false;
-		bool _alreadyEnd = false;
+		bool _winPLayer = true;
 	};
 
 }

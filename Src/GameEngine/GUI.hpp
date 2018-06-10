@@ -66,7 +66,8 @@ namespace irrl {
 		void initSettingsScene();
 		void updateRateSettings();
 		int getValueInput(irr::gui::IGUIEditBox *obj, int min, int max);
-
+		void loadSave();
+		void loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector);
 
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
 
