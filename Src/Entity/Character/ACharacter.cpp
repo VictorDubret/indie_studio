@@ -140,15 +140,23 @@ bool is::ACharacter::checkCollision(std::vector<std::shared_ptr<is::IEntity>> &l
 	return ret;
 }
 
-void is::ACharacter::move(float nextX, float nextY, float nextZ)
+bool is::ACharacter::move(float nextX, float nextY, float nextZ)
 {
+	if (_xmax == -1 || _zmax == -1)
+		for (auto &it: _entities.get()) {
+			if (_xmax < it->getX())
+				_xmax = (int) it->getX();
+			if (_zmax < it->getZ())
+				_zmax = (int) it->getZ();
+		}
+
 	auto list = getEntitiesAt(nextX, nextZ);
 
 	for (auto &it: list) {
 		it->lock();
 		if (it.get() != this && it->isCollidable() && !it->isWalkable(_sptr) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			it->unlock();
-			return;
+			return false;
 		}
 		it->unlock();
 	} // TODO Sahel
@@ -161,6 +169,7 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 			setZ(getZ() > nextZ ? getZ() - 0.01 : getZ() + 0.01);
 	}
 	checkCollision(list);
+	return true;
 }
 
 void is::ACharacter::moveUp()
@@ -178,10 +187,18 @@ void is::ACharacter::moveUp()
 		return;
 	}
 	lock();
-	float next = getZ() + _speed * _speedCoef;
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+	float next = z + _speed * _speedCoef;
 	unlock();
 
-	move(getX(), getY(), next);
+	if (!move(x, y, next)) {
+		if (x < _xmax / 2)
+			move(x + 0.1f, y, z);
+		else
+			move(x - 0.1f, y, z);
+	}
 	_entities.unlock();
 }
 
@@ -200,9 +217,18 @@ void is::ACharacter::moveDown()
 		return;
 	}
 	lock();
-	float next = getZ() - _speed * _speedCoef;
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+	float next = z - _speed * _speedCoef;
 	unlock();
-	move(getX(), getY(), next);
+
+	if (!move(x, y, next)) {
+		if (x < _xmax / 2)
+			move(x + 0.1f, y, z);
+		else
+			move(x - 0.1f, y, z);
+	}
 	_entities.unlock();
 }
 
@@ -221,10 +247,18 @@ void is::ACharacter::moveLeft()
 		return;
 	}
 	lock();
-	float next = getX() - _speed * _speedCoef;
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+	float next = x - _speed * _speedCoef;
 	unlock();
 
-	move(next, getY(), getZ());
+	if (!move(next, y, z)) {
+		if (z < _zmax / 2)
+			move(x, y, z + 0.1f);
+		else
+			move(x, y, z - 0.1f);
+	}
 	_entities.unlock();
 }
 
@@ -243,9 +277,18 @@ void is::ACharacter::moveRight()
 		return;
 	}
 	lock();
-	float next = getX() + _speed * _speedCoef;
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+	float next = x + _speed * _speedCoef;
 	unlock();
-	move(next, getY(), getZ());
+
+	if (!move(next, y, z)) {
+		if (z < _zmax / 2)
+			move(x, y, z + 0.1f);
+		else
+			move(x, y, z - 0.1f);
+	}
 	_entities.unlock();
 }
 

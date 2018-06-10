@@ -83,7 +83,9 @@ namespace is {
 		size_t _bombLength = 1;
 		float _speed = 1;
 
-		void move(float, float, float);
+		bool move(float, float, float);
+		int _xmax = -1;
+		int _zmax = -1;
 	private:
 	};
 }

@@ -5,7 +5,6 @@
 ** Created by martin.januario@epitech.eu,
 */
 
-#include <unistd.h>
 #include <Entity/Bomb/Bomb.hpp>
 #include "Game.hpp"
 #include "ArtificialIntelligence.hpp"
@@ -339,9 +338,9 @@ void irrl::Game::setCameraPos()
 
 void irrl::Game::resetListObj()
 {
+	_entities->clear();
 	_listPlayer.clear();
 	_listObj.clear();
-	_entities.get().clear();
 }
 
 void irrl::Game::displayFPS()
