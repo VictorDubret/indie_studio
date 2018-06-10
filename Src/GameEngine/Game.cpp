@@ -31,6 +31,7 @@ void irrl::Game::updateView()
 {
 	_endGame = false;
 	_draw = false;
+	_winPLayer = true;
 	irr::core::vector2df tmpDist;
 	tmpDist.X = -(_mapSize.first / 2);
 	tmpDist.Y = 0;
@@ -112,14 +113,19 @@ void irrl::Game::endScene()
 				if (!getNode(it.entity))
 					continue;
 				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
-				_camera[GLOBAL]->setTarget(winnerPos);
+
+				if (_winPLayer) {
+					_camera[GLOBAL]->setPosition(irr::core::vector3df(winnerPos.X, _camera[GLOBAL]->getPosition().Y, winnerPos.Z - 1));
+					_camera[GLOBAL]->setTarget(winnerPos);
+					_winPLayer = false;
+				} else {
+					const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
+					_camera[GLOBAL]->setPosition(tmp);
+				}
 				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 				lock();
 				_sceneManager->drawAll();
 				unlock();
-				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
-
-				_camera[GLOBAL]->setPosition(tmp);
 				//std::cout << "Ma camera est en " << _camera[GLOBAL]->getPosition().Y << " et mon target est en " << _camera[GLOBAL]->getTarget().Y << std::endl;
 				_driver->endScene();
 			}
@@ -384,7 +390,6 @@ void irrl::Game::setPause()
 
 void irrl::Game::endPause()
 {
-	std::cout << "END PAUSE" << std::endl;
 	_entities.lock();
 	for (auto &it : _listObj) {
 		auto tmp = dynamic_cast<is::AEntity *>(it.first);
@@ -409,7 +414,6 @@ void irrl::Game::checkLastAlive()
 	}
 	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;
-		_alreadyEnd = true;
 		for (auto &it : _listPlayer) {
 			if (it.alive)
 				it.entity->setHP(10);

@@ -109,7 +109,7 @@ void irrl::ManageIrrlicht::manageEvent()
 		if (_currentScene == "winner") {
 			_endGame = false;
 			_draw = false;
-			_alreadyEnd = false;
+			_winPLayer = true;
 			endPause();
 			initBaseScene();
 		} else if (_currentScene != "pause") {
