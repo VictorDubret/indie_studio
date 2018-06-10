@@ -132,7 +132,12 @@ void irrl::GUI::initPause()
 		for (auto &it : _entities.get()) {
 			std::cout << "J'ai pas compris: " << _currentScene.c_str() << std::endl;
 			std::cout << "TEST: " << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
-			_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
+			auto isIA = dynamic_cast<is::ArtificialIntelligence *>(it.get());
+			if (isIA == nullptr)
+				_filestr << it->getType();
+			else
+				_filestr << "IA";
+			_filestr << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
 			auto isWall = dynamic_cast<is::Wall *>(it.get());
 			if (isWall != nullptr)
 				_filestr << " PowerUp " << isWall->getPowerUp();
@@ -200,14 +205,15 @@ void irrl::GUI::initBaseScene()
 					i++;
 					if (tmpVector.size() == 12 || tmpVector.size() == 14 || tmpVector.size() == 20) {
 						if (tmpVector[0] == "Character") {
-							std::cout << "J'ai trouvé un character" << std::endl;
-
-							player2 = new is::ACharacter(_entities, _eventManager, _base);
+							j++;
+							player2 = new is::ACharacter(_entities, _eventManager, _base, (std::size_t)j);
 							std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
 							setEntity(tmpVector, player_tmp2, _base);
+						} else if (tmpVector[0] == "IA") {
 							j++;
-
-
+							player2 = new is::ArtificialIntelligence(_entities, _eventManager, _base, (std::size_t)j);
+							std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
+							setEntity(tmpVector, player_tmp2, _base);
 						} else if (tmpVector[0] == "Wall") {
 							is::IEntity *tmp_data = new is::Wall(_entities, _eventManager, _base);
 							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});

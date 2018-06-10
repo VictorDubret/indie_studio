@@ -78,6 +78,8 @@ void irrl::ManageIrrlicht::loopDisplay()
 	while (_device && _device->run()) {
 		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
 		if (_displayGUI) {
+			if (_currentScene != "pause")
+				endPause();
 			lock();
 			_driver->setViewPort(
 				irr::core::rect<irr::s32>(0, 0, 1600, 900));
@@ -108,6 +110,7 @@ void irrl::ManageIrrlicht::manageEvent()
 			_endGame = false;
 			_draw = false;
 			_alreadyEnd = false;
+			endPause();
 			initBaseScene();
 		} else if (_currentScene != "pause") {
 			setPause();

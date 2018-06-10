@@ -183,8 +183,11 @@ void irrl::Game::manageEventPlayers()
 		if (!dynamic_cast<is::AEntity *>(it.entity))
 			continue;
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
-		if (tmp)
-			tmp->AIsTurn();
+		if (tmp) {
+			_eventManager.lock();
+			_eventManager->enqueue([tmp]{tmp->AIsTurn();});
+			_eventManager.unlock();
+		}
 		else {
 			for (int i = 0; it.key[i].f != nullptr ; ++i) {
 				if (_eventReceiver.IsKeyDown(it.key[i].key)) {

@@ -60,8 +60,10 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		dir = lookForAZone(SAFE);
 		headTowards(dir);
 		_entities.lock();
-		if (!dynamic_cast<ACharacter *>(_sptr.get()))
+		if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+			_entities.unlock();
 			return;
+		}
 		_position.first = getX();
 		_position.second = getZ();
 		_entities.unlock();
@@ -126,10 +128,14 @@ void	is::ArtificialIntelligence::getMapDimensions()
 void	is::ArtificialIntelligence::setWalls()
 {
 	for (const auto &it : _entities.get()) {
+		if (dynamic_cast<is::AEntity *>(it.get()) == nullptr)
+			continue;
+		it->lock();
 		if (it->getType() == "UnbreakableWall") {
 			_map[(int)it->getX() + (int)it->getZ() * _width].first = WALL;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
+		it->unlock();
 	}
 }
 
@@ -225,10 +231,10 @@ int 	is::ArtificialIntelligence::getDist(int pos, std::vector<int> map, int dist
 is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::breadthFirst(int pos, std::vector<int> &map)
 {
 	map[pos] = -3;
-	int	left = getDist(pos - 1, map, 5);
-	int	right = getDist(pos + 1, map, 5);
-	int	up = getDist(static_cast<int>(pos - _width), map, 5);
-	int	down = getDist(static_cast<int>(pos + _width), map, 5);
+	int	left = getDist(pos - 1, map, 8);
+	int	right = getDist(pos + 1, map, 8);
+	int	up = getDist(static_cast<int>(pos - _width), map, 8);
+	int	down = getDist(static_cast<int>(pos + _width), map, 8);
 	std::cout << "left: " << left << std::endl;
 	std::cout << "right: " << right << std::endl;
 	std::cout << "up: " << up << std::endl;
@@ -309,25 +315,37 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 		if ((int)(_position.second + 0.15) != (int)(_position.second + _irrlicht.getNodeSize(_sptr) + 0.20)) {
 			std::cout << "recalibrage vers le bas" << std::endl;
 			_goal.second = (int)(_position.second + 1.15);
-			moveDown();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveDown();});
+			_eventManager.unlock();
 		} else if (dir == LEFT) {
 			_goal.first = (int)(_position.first - 0.85);
-			moveLeft();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveLeft();});
+			_eventManager.unlock();
 		} else {
 			_goal.first = (int)(_position.first + 1.15);
-			moveRight();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveRight();});
+			_eventManager.unlock();
 		}
 	} else {
 		if ((int)(_position.first + 0.15) != (int)(_position.first + _irrlicht.getNodeSize(_sptr) + 0.20)) {
 			std::cout << "recalibrage vers la gauche" << std::endl;
 			_goal.first = (int)(_position.first - 0.85);
-			moveLeft();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveLeft();});
+			_eventManager.unlock();
 		} else if (dir == DOWN) {
 			_goal.second = (int)(_position.second + 1.15);;
-			moveDown();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveDown();});
+			_eventManager.unlock();
 		} else {
 			_goal.second = (int)(_position.second - 0.85);;
-			moveUp();
+			_eventManager.lock();
+			_eventManager->enqueue([&]{moveUp();});
+			_eventManager.unlock();
 		}
 	}
 }
