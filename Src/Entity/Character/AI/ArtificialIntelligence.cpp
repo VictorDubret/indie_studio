@@ -38,27 +38,8 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		return;
 	_entities.lock();
 	updateMap();
-	for (int i = 0 ; i < _width * _height ; i++) {
-		if (_map[i].first == SAFE)
-			std::cout << "  ";
-		if (_map[i].first == WALL)
-			std::cout << "##";
-		if (_map[i].first == CRATE)
-			std::cout << "00";
-		if (_map[i].first == BOMB)
-			std::cout << "BB";
-		if (_map[i].first == POWERUP)
-			std::cout << "!!";
-		if (_map[i].first == EXPLOSION)
-			std::cout << "EE";
-		if (_map[i].first == DANGER)
-			std::cout << "XX";
-		if (i % _width == _width - 1)
-			std::cout << std::endl;
-	}
 	_entities.unlock();
 	if (inDanger() == true) {
-		std::cout << "inDanger() = true" << std::endl;
 		dir = lookForAZone(SAFE);
 		headTowards(dir);
 		_entities.lock();
@@ -73,7 +54,6 @@ void 	is::ArtificialIntelligence::AIsTurn()
 	}
 	dir = lookForAZone(POWERUP);
 	if (dir != NONE) {
-		std::cout << "lookForAZone(POWERUP)" << std::endl;
 		headTowards(dir);
 		_entities.lock();
 		if (!dynamic_cast<ACharacter *>(_sptr.get())) {
@@ -87,15 +67,12 @@ void 	is::ArtificialIntelligence::AIsTurn()
 	}
 	if (safeBombDrop() == true) {
 		if (onCrate() == false && _bomb == _bombMax) {
-			std::cout << "onCrate() = false" << std::endl;
 			dropBomb();
 		} else {
-			std::cout << "onCrate() = true" << std::endl;
 			dir = lookForAZone(SAFE);
 			headTowards(dir);
 		}
 	} else {
-		std::cout << "else -> crate" << std::endl;
 		dir = lookForAZone(CRATE);
 		headTowards(dir);
 	}
@@ -241,10 +218,6 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::breadthFirst(
 	int	right = getDist(pos + 1, map, 8);
 	int	up = getDist(static_cast<int>(pos - _width), map, 8);
 	int	down = getDist(static_cast<int>(pos + _width), map, 8);
-	std::cout << "left: " << left << std::endl;
-	std::cout << "right: " << right << std::endl;
-	std::cout << "up: " << up << std::endl;
-	std::cout << "down: " << down << std::endl;
 
 	if (left >= 100 && right >= 100 && up >= 100 && down >= 100)
 		return (NONE);
@@ -319,7 +292,6 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 {
 	if (dir == LEFT || dir == RIGHT) {
 		if ((int)(_position.second + 0.15) != (int)(_position.second + _irrlicht.getNodeSize(_sptr) + 0.20)) {
-			std::cout << "recalibrage vers le bas" << std::endl;
 			_goal.second = (int)(_position.second + 1.15);
 			_eventManager.lock();
 			_eventManager->enqueue([&]{moveDown();});
@@ -337,7 +309,6 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 		}
 	} else {
 		if ((int)(_position.first + 0.15) != (int)(_position.first + _irrlicht.getNodeSize(_sptr) + 0.20)) {
-			std::cout << "recalibrage vers la gauche" << std::endl;
 			_goal.first = (int)(_position.first - 0.85);
 			_eventManager.lock();
 			_eventManager->enqueue([&]{moveLeft();});
@@ -358,7 +329,6 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 
 void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direction dir)
 {
-	std::cout << "X: " << _position.first << " Z: " << _position.second << std::endl;
 	if (dir == LEFT || dir == RIGHT) {
 		if (dir == LEFT) {
 			_goal.first = (int)(_position.first - 0.85);
