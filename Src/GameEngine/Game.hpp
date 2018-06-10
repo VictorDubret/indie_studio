@@ -64,7 +64,7 @@ namespace irrl {
 		void lock() override;
 		void unlock() override;
 		void setPause();
-
+		void setFloor();
 
 		protected:
 		std::mutex _mutex;

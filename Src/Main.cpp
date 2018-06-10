@@ -71,7 +71,6 @@ int main(int ac, char **)
 
 	/* initialisation */
 	irrl::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
-
 	/* Chargement textures */
 /*	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));
 	tmp.getDriver()->getTexture(irr::io::path("media/1_character.png"));

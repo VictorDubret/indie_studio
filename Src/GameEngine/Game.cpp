@@ -5,6 +5,7 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <unistd.h>
 #include <Entity/Bomb/Bomb.hpp>
 #include "Game.hpp"
 #include "ArtificialIntelligence.hpp"
@@ -442,6 +443,42 @@ void irrl::Game::checkLastAlive()
 		for (auto &it : _listPlayer) {
 			if (it.alive)
 				it.entity->setHP(10);
+		}
+	}
+}
+
+void irrl::Game::setFloor()
+{
+	/* Création floor */
+	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
+	irr::core::dimension2d<irr::u32> tileCount(1, 1); // taille de la map
+
+	auto material = new irr::video::SMaterial();
+	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
+	material->Wireframe = false;
+	material->Lighting = false;
+	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
+	irr::scene::IMesh *cube = getSceneManager()->getGeometryCreator()->createPlaneMesh(tileSize, tileCount, material, textureRepeatCount);
+
+	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+	irr::video::ITexture *texture = getDriver()->getTexture(irr::io::path("media/floor.png"));
+
+	unsigned int i = 1;
+	unsigned int j = 1;
+	std::cout << "je vais creer mon sol" << std::endl;
+
+	while (j < getMapSize().Y + 1) {
+		std::cout << "i " << i << " mapsize.x " << getMapSize().X << " j " << j << " mapsize.y " << getMapSize().Y << std::endl;
+		irr::scene::IMeshSceneNode *cubeNode = getSceneManager()->addMeshSceneNode(cube);
+		cubeNode->setMaterialTexture(0, texture);
+		cubeNode->setPosition(irr::core::vector3df(j, -0.5f, i));
+		//cubeNode->setScale(irr::core::vector3df(1, 1, 1));
+		cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+		cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+		i++;
+		if (i > getMapSize().X && j != getMapSize().Y + 1) {
+			i = 1;
+			j++;
 		}
 	}
 }

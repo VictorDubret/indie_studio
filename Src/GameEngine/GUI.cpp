@@ -224,6 +224,7 @@ void irrl::GUI::initBaseScene()
 		getSceneManager()->clear();
 		_base.unlock();
 		addPlayerAndIA();
+		_base.setFloor();
 		updateView();
 		_sound->stop();
 		_displayGUI = false;
