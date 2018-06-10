@@ -93,7 +93,7 @@ add_dependencies(bomberman installIrrKlang)
 
 include_directories(externalLibs/include)
 
-target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3)
+target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3 -w)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs
