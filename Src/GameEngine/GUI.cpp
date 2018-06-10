@@ -223,8 +223,8 @@ void nts::GUI::initBaseScene()
 		_base.lock();
 		getSceneManager()->clear();
 		_base.unlock();
-		updateView();
 		addPlayerAndIA();
+		updateView();
 		_sound->stop();
 		_displayGUI = false;
 		// setCameraPos();

@@ -29,6 +29,8 @@ nts::Game::~Game()
 
 void nts::Game::updateView()
 {
+	_endGame = false;
+	_draw = false;
 	irr::core::vector2df tmpDist;
 	tmpDist.X = -(_mapSize.first / 2);
 	tmpDist.Y = 0;
@@ -40,6 +42,7 @@ void nts::Game::updateView()
 	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
 		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
 		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
+	setCameraPos();
 
 	/* Setting Split Screen Camera */
 	if (_splitScreen) {
@@ -291,19 +294,15 @@ irr::core::vector2di nts::Game::getMapSize() const
 
 void nts::Game::setCameraPos()
 {
-	if (_listPlayer.empty() || _endGame || _draw)
+	if (_listPlayer.empty() || _endGame || _draw) {
 		return;
+	}
 	int i = 0;
 	irr::f32 tmpX = 0;
 	irr::f32 tmpY = 0;
-
-	int totalPLayer = 0;
-	int alivePLayer = 0;
 	for (auto &it : _listPlayer) {
-		totalPLayer++;
 		if (!it.alive || !getNode(it.entity))
 			continue;
-		alivePLayer++;
 		tmpX = getNode(it.entity)->getPosition().X;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {
@@ -328,16 +327,13 @@ void nts::Game::setCameraPos()
 	_distBetweenPlayer[FAREST].Y += 2;
 	irr::f32 saveHeight = _camera[GLOBAL]->getPosition().Y;
 	float tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X)));
-	/*std::cout << "tmpHeight X "<< _distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X << std::endl;
-	std::cout << "tmpHeight Y "<< _distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y << std::endl;
-	std::cout << "Je vais check si ma distance X : " << (_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) << "] est inférieur à [" << getMapSize().X / 2 + 1 << std::endl;
-	std::cout << "Je vais check si ma distance Y : " << (_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y) << "] est inférieur à [" << getMapSize().Y / 2 + 1 << std::endl;*/
 
-	static bool locked = false;
+	// TODO oom camera enleve
+	static bool locked = true;
 
 	if (locked) {
 		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 &&
-			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1)) {
+			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1) || 1) {
 			tmpHeight = saveHeight;
 			locked = true;
 		} else {
@@ -356,13 +352,6 @@ void nts::Game::setCameraPos()
 				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
 		}
 	}
-	/*	std::cout << "A la fin, ma hauteur vaut :" << tmpHeight << std::endl;
-		if (locked)
-			std::cout << "Et mon verrou est LOCKED" << std::endl;
-		else
-			std::cout << "Et mon verrou est UNLOCKED" << std::endl;
-		std::cout << std::endl;*/
-
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
 
