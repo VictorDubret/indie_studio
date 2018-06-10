@@ -254,6 +254,7 @@ void irrl::GUI::initBaseScene()
 					}
 				}
 				myfile.close();
+				_base.setFloor();
 				_displayGUI = false;
 				_currentScene = "game";
 				//remove(".save.indie");
@@ -268,6 +269,8 @@ void irrl::GUI::initBaseScene()
 		_base.resetListObj();
 		if (_nb_player != 2)
 			_splitScreen = false;
+		if (_nb_player + _nb_ia == 1)
+			_nb_ia = 1;
 		_base.lock();
 		getSceneManager()->clear();
 		_base.unlock();
