@@ -271,6 +271,7 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		}
 	}
 	lock();
+	std::cout << "After lock" << std::endl;
 	irrl::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
@@ -303,6 +304,8 @@ void irrl::Game::setCameraPos()
 		if (!it.alive || !getNode(it.entity))
 			continue;
 		tmpX = getNode(it.entity)->getPosition().X;
+		if (!it.alive || !getNode(it.entity))
+			continue;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {
 			_distBetweenPlayer[NEAREST].X = tmpX;
@@ -363,6 +366,12 @@ void irrl::Game::resetListObj()
 {
 	_listPlayer.clear();
 	_listObj.clear();
+	_entities.get().clear();
+	/*unlock();
+	for (auto entity : _entities.get()) {
+		std::cout << "toto" << std::endl;
+		delete entity.get();
+	}*/
 }
 
 void irrl::Game::displayFPS()

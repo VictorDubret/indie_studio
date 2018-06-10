@@ -157,9 +157,6 @@ int main(int ac, char **)
 
 		}
 	}
-
-
-
 	tmp.loopDisplay();
 	pool->finishAll();
 	return 0;
