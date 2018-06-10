@@ -21,7 +21,7 @@ namespace irrl {
 	typedef struct {
 		is::ACharacter *entity;
 		event_t nothing;
-		event_t key[7];
+		event_t key[6];
 
 		bool alive;
 	} player_t;

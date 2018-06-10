@@ -236,7 +236,6 @@ bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 				{irr::KEY_RIGHT, [tmp]() {tmp->moveRight();}},
 				{irr::KEY_UP, [tmp]() {tmp->moveUp();}},
 				{irr::KEY_DOWN, [tmp]() {tmp->moveDown();}},
-				{irr::KEY_KEY_R, [tmp](){tmp->save();}},
 				{irr::KEY_RETURN, [tmp]() {tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		else
@@ -246,7 +245,6 @@ bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 				{irr::KEY_KEY_D, [tmp]() {tmp->moveRight();}},
 				{irr::KEY_KEY_Z, [tmp]() {tmp->moveUp();}},
 				{irr::KEY_KEY_S, [tmp]() {tmp->moveDown();}},
-				{irr::KEY_KEY_R, [tmp](){tmp->save();}},
 				{irr::KEY_SPACE, [tmp]() {tmp->dropBomb();}},
 				{irr::KEY_ESCAPE, nullptr}}};
 		player.alive = true;
@@ -393,6 +391,7 @@ void irrl::Game::endPause()
 		if (tmp && it.first->getType() == "Bomb") {
 			auto tmp = static_cast<is::Bomb *>(it.first);
 			tmp->setPaused(false);
+			it.first->unlock();
 		}
 	}
 	_entities.unlock();
