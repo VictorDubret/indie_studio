@@ -13,13 +13,13 @@
 # include "ACharacter.hpp"
 # include "EventManager.hpp"
 
-namespace nts {
+namespace irrl {
 
 	class ManageIrrlicht;
 
 	class AManageIrrlicht : public IManageIrrlicht {
 		public:
-		AManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
+		AManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht);
 		virtual ~AManageIrrlicht() = default;
 
 		irr::scene::ISceneManager *getSceneManager() const override;
@@ -45,7 +45,7 @@ namespace nts {
 		void manageEvent() override;
 
 		protected:
-		nts::ManageIrrlicht &_base;
+		irrl::ManageIrrlicht &_base;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
 		my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &_entities;
 
@@ -53,7 +53,7 @@ namespace nts {
 		irr::video::IVideoDriver *_driver = nullptr;
 		irr::scene::ISceneManager *_sceneManager = nullptr;
 		irrklang::ISoundEngine *_engine = nullptr;
-		nts::EventManager _eventReceiver;
+		irrl::EventManager _eventReceiver;
 		bool _displayGUI = true;
 		bool _splitScreen = true;
 

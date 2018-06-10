@@ -16,7 +16,7 @@
 # include "IEntity.hpp"
 # include "Debug.hpp"
 
-namespace nts {
+namespace irrl {
 
 	class IManageIrrlicht {
 		public:

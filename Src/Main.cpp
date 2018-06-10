@@ -29,7 +29,7 @@
 #include "Wall.hpp"
 #include "UnbreakableWall.hpp"
 
-void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &tmp)
+void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp)
 {
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	tmp.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
@@ -54,14 +54,14 @@ void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<
 
 int main(int ac, char **)
 {
-	/* 1 argument == Jeu Normal, 2 arguments == SplitScreen, 3 arguments == Load sauvegarde */
+	/* 1 argument == Jeu Normal, 2 argumeirrl == SplitScreen, 3 argumeirrl == Load sauvegarde */
 	my::ThreadPool thpool(100);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 
 	my::ItemLocker<my::ThreadPool> pool(thpool);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);
 
-	//nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(50, 50));
+	//irrl::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(50, 50));
 
 	std::pair<std::size_t, std::size_t> mapSize(11,13);
 	bool splitScreen = false;
@@ -70,7 +70,7 @@ int main(int ac, char **)
 	}
 
 	/* initialisation */
-	nts::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
+	irrl::ManageIrrlicht tmp(lockList, pool, irr::core::vector2di(mapSize.first, mapSize.second), splitScreen);
 
 	/* Chargement textures */
 /*	tmp.getDriver()->getTexture(irr::io::path("media/fire.jpg"));

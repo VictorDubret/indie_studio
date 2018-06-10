@@ -13,7 +13,7 @@
 
 is::Explosion::Explosion(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+	my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht
 ):
 	AEntity(entities, eventManager, irrlicht)
 {
@@ -47,15 +47,15 @@ is::Explosion::~Explosion()
 
 void is::Explosion::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/explosion.b3d",
+	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/explosion.b3d",
 		0.999);
-	nts::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(1.0, 1.0, 1.0));
-	nts::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _sptr,
 		irr::core::vector3df(0, 0, 0));
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.jpg");
+	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	irrl::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.jpg");
 }
 
 void is::Explosion::explode()

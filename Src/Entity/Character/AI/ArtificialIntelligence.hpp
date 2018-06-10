@@ -15,7 +15,7 @@ namespace is {
 	class ArtificialIntelligence: public ACharacter {
 	public:
 		ArtificialIntelligence(Entity_t &entities, ThreadPool_t &eventManage,
-			 nts::ManageIrrlicht &irrlicht, std::size_t id = 1);
+			 irrl::ManageIrrlicht &irrlicht, std::size_t id = 1);
 		~ArtificialIntelligence() override = default;
 
 		void 	AIsTurn();

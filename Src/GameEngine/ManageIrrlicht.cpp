@@ -9,7 +9,7 @@
 #include <zconf.h>
 #include "ManageIrrlicht.hpp"
 
-nts::ManageIrrlicht::ManageIrrlicht(
+irrl::ManageIrrlicht::ManageIrrlicht(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
 	irr::core::vector2di mapSize, bool splitScreen
@@ -34,7 +34,7 @@ nts::ManageIrrlicht::ManageIrrlicht(
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
-void nts::ManageIrrlicht::endScene()
+void irrl::ManageIrrlicht::endScene()
 {
 	for (const auto &it : _listPlayer) {
 		if (it.alive) {
@@ -72,7 +72,7 @@ void nts::ManageIrrlicht::endScene()
 }
 
 
-void nts::ManageIrrlicht::loopDisplay()
+void irrl::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
 		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
@@ -110,7 +110,7 @@ void nts::ManageIrrlicht::loopDisplay()
 	}
 }
 
-void nts::ManageIrrlicht::manageEvent()
+void irrl::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && getCurrentScene() != "base" && !_displayGUI) {
 //		if (!_displayGUI)
@@ -142,22 +142,22 @@ void nts::ManageIrrlicht::manageEvent()
 		manageEventPlayers();
 }
 
-void nts::ManageIrrlicht::lock()
+void irrl::ManageIrrlicht::lock()
 {
 	_mutex.lock();
 }
 
-void nts::ManageIrrlicht::unlock()
+void irrl::ManageIrrlicht::unlock()
 {
 	_mutex.unlock();
 }
 
-void nts::ManageIrrlicht::displayGui(bool display)
+void irrl::ManageIrrlicht::displayGui(bool display)
 {
 	_displayGUI = display;
 }
 
-void nts::ManageIrrlicht::drawScene()
+void irrl::ManageIrrlicht::drawScene()
 {
 	return;
 	std::cout << "c'est un draw dans drawScene()" << std::endl;

@@ -16,7 +16,7 @@
 
 is::Wall::Wall(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+	my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht
 ):
 	AEntity(entities, eventManager, irrlicht)
 {
@@ -87,9 +87,9 @@ void is::Wall::setPowerUp(char powerUp)
 
 void is::Wall::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/caisse.png");
+	irrl::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
+	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/caisse.png");
 }
 
 char is::Wall::getPowerUp() const

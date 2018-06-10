@@ -11,7 +11,7 @@
 # include <unordered_map>
 # include "AManageIrrlicht.hpp"
 
-namespace nts {
+namespace irrl {
 
 	typedef struct {
 		irr::EKEY_CODE key;
@@ -44,7 +44,7 @@ namespace nts {
 
 	class Game : public virtual AManageIrrlicht {
 		public:
-		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,  irr::core::vector2di mapSize, bool splitScreen);
+		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht,  irr::core::vector2di mapSize, bool splitScreen);
 		~Game() override;
 
 		void updateView() override;
@@ -73,8 +73,8 @@ namespace nts {
 		void displayFPS();
 		void displaySplitScreen();
 
-		std::unordered_map<is::IEntity *, nts::irrObj_t> _listObj;
-		std::vector<nts::player_t> _listPlayer;
+		std::unordered_map<is::IEntity *, irrl::irrObj_t> _listObj;
+		std::vector<irrl::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
 		my::Thread *_thread = nullptr;

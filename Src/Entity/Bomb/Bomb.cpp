@@ -15,7 +15,7 @@
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
-	std::shared_ptr<IEntity> &Player, nts::ManageIrrlicht &irrlicht,
+	std::shared_ptr<IEntity> &Player, irrl::ManageIrrlicht &irrlicht,
 	size_t time
 ) : AEntity(entities, eventManager, irrlicht), _player(Player)
 {
@@ -126,15 +126,15 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d", 0.75);
+	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d", 0.75);
 	_irrlicht.getNode(_sptr.get())->setPosition(
 		irr::core::vector3df(1.1f, 0.1f, 1.1f));
-	nts::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(1, 1, 1));
-	nts::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _sptr,
 		irr::core::vector3df(0, 90, 0));
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/bomb.png");
+	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/bomb.png");
 }
 
 size_t is::Bomb::getLenExplosion() const

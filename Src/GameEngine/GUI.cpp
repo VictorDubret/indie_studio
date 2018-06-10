@@ -21,7 +21,7 @@
 #include "ArtificialIntelligence.hpp"
 #include "GUI.hpp"
 
-nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht) : AManageIrrlicht(entities, eventManager, irrlicht)
+irrl::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
 	_gui = getDevice()->getGUIEnvironment();
 
@@ -29,16 +29,16 @@ nts::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entitie
 	initBaseScene();
 }
 
-void nts::GUI::drawGUI()
+void irrl::GUI::drawGUI()
 {
 	if (_device->run())
 		_gui->drawAll();
 }
 
-void nts::GUI::manageEventGui()
+void irrl::GUI::manageEventGui()
 {
 	for (auto &&it : _hoverManage[_currentScene]) {
-		nts::EventManager::SMouseState tmp = _eventReceiver.GetMouseState();
+		irrl::EventManager::SMouseState tmp = _eventReceiver.GetMouseState();
 		if (it.second.sq.UpperLeftCorner.X < tmp.Position.X && it.second.sq.LowerRightCorner.X > tmp.Position.X &&
 			it.second.sq.UpperLeftCorner.Y < tmp.Position.Y && it.second.sq.LowerRightCorner.Y > tmp.Position.Y) {
 			if (tmp.LeftButtonDown && it.second.status) {
@@ -55,7 +55,7 @@ void nts::GUI::manageEventGui()
 	}
 }
 
-void nts::GUI::addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger)
+void irrl::GUI::addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger)
 {
 	irr::gui::IGUIFont *font = _gui->getFont("media/fontlucida.png");
 	irr::gui::IGUIButton *bouton = _gui->addButton(textRect, 0, -1, text);
@@ -65,7 +65,7 @@ void nts::GUI::addButton(const wchar_t *text, const irr::core::rect<irr::s32> &t
 		bouton->setPressedImage(getDriver()->getTexture(trigger));
 }
 
-void nts::GUI::addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f)
+void irrl::GUI::addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct irrl::hover_s &)> &f)
 {
 	getDriver()->getTexture(no_hover);
 	getDriver()->getTexture(hover);
@@ -83,7 +83,7 @@ void nts::GUI::addButtonImage(const std::string &name, const irr::io::path &scen
 	_hoverManage[scene][name].used = true;
 }
 
-void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &base)
+void irrl::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &base)
 {
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	_base.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
@@ -113,7 +113,7 @@ void nts::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::s
 	}
 }
 
-void nts::GUI::initBaseScene()
+void irrl::GUI::initBaseScene()
 {
 	_gui->clear();
 	_currentScene = "base";
@@ -127,7 +127,7 @@ void nts::GUI::initBaseScene()
 		getSceneManager()->clear();
 		updateView();
 
-		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct nts::hover_s &) {
+		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct irrl::hover_s &) {
 			_base.resetListObj();
 			_base.lock();
 			getSceneManager()->clear();
@@ -212,11 +212,11 @@ void nts::GUI::initBaseScene()
 			}
 			std::cout << "jai toruvé" << j << "joueurs" << std::endl;
 		});
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct nts::hover_s &) {initSettingsScene();});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {initSettingsScene();});
 	} else
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct nts::hover_s &) {initSettingsScene();});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {initSettingsScene();});
 
-	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct nts::hover_s &) {
+	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct irrl::hover_s &) {
 		_base.resetListObj();
 		if (_nb_player != 2)
 			_splitScreen = false;
@@ -233,7 +233,7 @@ void nts::GUI::initBaseScene()
 	});
 }
 
-int nts::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
+int irrl::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
 {
 	if (!obj)
 		throw std::exception();
@@ -256,7 +256,7 @@ int nts::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
 	return tmp;
 }
 
-void nts::GUI::updateRateSettings()
+void irrl::GUI::updateRateSettings()
 {
 	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 13, 100);
 	_mapSize.second = (std::size_t)getValueInput(_mapYEditBox, 13, 100);
@@ -268,7 +268,7 @@ void nts::GUI::updateRateSettings()
 	_wallPass = getValueInput(_wallpassEditBox, 0, 100);
 }
 
-void nts::GUI::initSettingsScene()
+void irrl::GUI::initSettingsScene()
 {
 	_base.lock();
 	_gui->clear();
@@ -279,7 +279,7 @@ void nts::GUI::initSettingsScene()
 	_gui->addImage(getDriver()->getTexture("media/number_player.png"), irr::core::position2d<irr::s32>(230, 230));
 	_gui->addImage(getDriver()->getTexture("media/number_ia.png"), irr::core::position2d<irr::s32>(230, 350));
 
-	auto f = [this](const struct nts::hover_s &obj) {
+	auto f = [this](const struct irrl::hover_s &obj) {
 		for (auto &&it : _hoverManage[_currentScene]) {
 			if (it.second.name == obj.name) {
 				_nb_ia = std::stoi(it.second.name.substr(9));
@@ -292,11 +292,11 @@ void nts::GUI::initSettingsScene()
 		}
 	};
 
-	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1290, 60, 1390, 160), [this](const struct nts::hover_s &) {
+	addButtonImage("launchHome", "settings", "media/home_button_hover.png", "media/home_button.png", irr::core::rect<irr::s32>(1290, 60, 1390, 160), [this](const struct irrl::hover_s &) {
 		updateRateSettings();
 		initBaseScene();
 	});
-	addButtonImage("sounds_mute", "settings", "media/sound_off.png", "media/sound_on.png", irr::core::rect<irr::s32>(1150, 80, 1250, 180), [this](const struct nts::hover_s &) {
+	addButtonImage("sounds_mute", "settings", "media/sound_off.png", "media/sound_on.png", irr::core::rect<irr::s32>(1150, 80, 1250, 180), [this](const struct irrl::hover_s &) {
 		_soundMute = !_soundMute;
 		_engine->setSoundVolume(_soundMute);
 		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture((_soundMute) ? "media/sound_on.png" : "media/sound_off.png"));
@@ -305,7 +305,7 @@ void nts::GUI::initSettingsScene()
 	if (!_soundMute)
 		_hoverManage["settings"]["sounds_mute"].base->setImage(_driver->getTexture("media/sound_off.png"));
 
-	addButtonImage("split_screen", "settings", "media/split_screen_hover.png", "media/split_screen.png", irr::core::rect<irr::s32>(1000, 65, 1100, 165), [this](const struct nts::hover_s &) {
+	addButtonImage("split_screen", "settings", "media/split_screen_hover.png", "media/split_screen.png", irr::core::rect<irr::s32>(1000, 65, 1100, 165), [this](const struct irrl::hover_s &) {
 		_splitScreen = !_splitScreen;
 		_hoverManage["settings"]["split_screen"].base->setImage(_driver->getTexture((_splitScreen) ? "media/split_screen_hover.png" : "media/split_screen.png"));
 	});
@@ -314,8 +314,8 @@ void nts::GUI::initSettingsScene()
 		_hoverManage["settings"]["split_screen"].base->setImage(_driver->getTexture("media/split_screen_hover.png"));
 
 
-	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct nts::hover_s &) {if (_nb_player == 1)return; _nb_player = 1;updateRateSettings();initSettingsScene();});
-	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct nts::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");updateRateSettings();initSettingsScene();});
+	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct irrl::hover_s &) {if (_nb_player == 1)return; _nb_player = 1;updateRateSettings();initSettingsScene();});
+	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct irrl::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");updateRateSettings();initSettingsScene();});
 
 	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(700, 320, 800, 420), f);
 	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(810, 320, 910, 420), f);
@@ -353,7 +353,7 @@ void nts::GUI::initSettingsScene()
 
 }
 
-void nts::GUI::addPlayer(float x, float z, std::size_t id)
+void irrl::GUI::addPlayer(float x, float z, std::size_t id)
 {
 	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base, id);
 	player->setZ(x);
@@ -362,7 +362,7 @@ void nts::GUI::addPlayer(float x, float z, std::size_t id)
 	player->setBomb(1);
 }
 
-void nts::GUI::addIA(float x, float z, std::size_t id)
+void irrl::GUI::addIA(float x, float z, std::size_t id)
 {
 	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base, id);
 	player->setZ(x);
@@ -371,7 +371,7 @@ void nts::GUI::addIA(float x, float z, std::size_t id)
 	player->setBomb(1);
 }
 
-void nts::GUI::addPlayerAndIA()
+void irrl::GUI::addPlayerAndIA()
 {
 	addPlayer(1, 1, 1);
 	if (_nb_player == 2)
@@ -389,19 +389,19 @@ void nts::GUI::addPlayerAndIA()
 
 }
 
-void nts::GUI::initWinner()
+void irrl::GUI::initWinner()
 {
 	_gui->clear();
 	//_currentScene = "winner";
 	_gui->addImage(getDriver()->getTexture("media/winner.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
 }
 
-irr::io::path &nts::GUI::getCurrentScene()
+irr::io::path &irrl::GUI::getCurrentScene()
 {
 	return _currentScene;
 }
 
-void nts::GUI::initDraw()
+void irrl::GUI::initDraw()
 {
 	_base.lock();
 	_gui->clear();

@@ -16,7 +16,7 @@ namespace is {
 	public:
 		//Constructor
 		Explosion(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
+			my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht);
 
 		// Destructor
 		~Explosion() override;

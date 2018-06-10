@@ -14,7 +14,7 @@
 is::APowerUp::APowerUp(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
-	nts::ManageIrrlicht &irrlicht
+	irrl::ManageIrrlicht &irrlicht
 ):
 	AEntity(entities, eventManager, irrlicht)
 {
@@ -79,7 +79,7 @@ void is::APowerUp::explode()
 
 void is::APowerUp::texture()
 {
-	nts::ManageObject::createCube(_irrlicht, _sptr, 1);
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, "media/help.png");
+	irrl::ManageObject::createCube(_irrlicht, _sptr, 1);
+	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/help.png");
 }

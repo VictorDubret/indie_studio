@@ -9,9 +9,9 @@
 #include "Game.hpp"
 #include "ArtificialIntelligence.hpp"
 
-nts::Game::Game(
+irrl::Game::Game(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht,
+	my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht,
 	irr::core::vector2di mapSize, bool splitScreen
 ) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
@@ -19,7 +19,7 @@ nts::Game::Game(
 	updateView();
 }
 
-nts::Game::~Game()
+irrl::Game::~Game()
 {
 	_stopThread = true;
 	delete _device;
@@ -27,7 +27,7 @@ nts::Game::~Game()
 	delete _thread;
 }
 
-void nts::Game::updateView()
+void irrl::Game::updateView()
 {
 	irr::core::vector2df tmpDist;
 	tmpDist.X = -(_mapSize.first / 2);
@@ -48,7 +48,7 @@ void nts::Game::updateView()
 	}
 }
 
-void nts::Game::displaySplitScreen()
+void irrl::Game::displaySplitScreen()
 {
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900));
 	_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
@@ -79,7 +79,7 @@ void nts::Game::displaySplitScreen()
 	}
 }
 
-void nts::Game::manageEventPlayers()
+void irrl::Game::manageEventPlayers()
 {
 	for (auto &it : _listPlayer) {
 		bool doSomething = false;
@@ -87,7 +87,9 @@ void nts::Game::manageEventPlayers()
 			continue;
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
 		if (tmp) {
-			tmp->AIsTurn();
+			_eventManager.lock();
+			_eventManager->enqueue([tmp](){tmp->AIsTurn();});
+			_eventManager.unlock();
 		}
 		else {
 			for (int i = 0; it.key[i].f != nullptr ; ++i) {
@@ -108,21 +110,21 @@ void nts::Game::manageEventPlayers()
 	}
 }
 
-irr::scene::ISceneNode *nts::Game::getNode(
+irr::scene::ISceneNode *irrl::Game::getNode(
 	is::IEntity *entity
 )
 {
 	return _listObj[entity].obj;
 }
 
-float &nts::Game::getNodeSize(
+float &irrl::Game::getNodeSize(
 	const std::shared_ptr<is::IEntity> &entity
 )
 {
 	return _listObj[entity.get()].size;
 }
 
-bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
+bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 	irr::scene::ISceneNode *obj, float size
 )
 {
@@ -157,7 +159,7 @@ bool nts::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 	return false;
 }
 
-bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
+bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
 	std::cout << "je dlete mon entité" << std::endl;
 	int i = 0;
@@ -177,7 +179,7 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		}
 	}
 	lock();
-	nts::irrObj_t tmp_obj = _listObj[entity.get()];
+	irrl::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
 		tmp_obj.obj->setVisible(false);
@@ -187,18 +189,18 @@ bool nts::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 	return false;
 }
 
-void nts::Game::setMapSize(const irr::core::vector2di &mapSize)
+void irrl::Game::setMapSize(const irr::core::vector2di &mapSize)
 {
 	_mapSize.first = (std::size_t)mapSize.X;
 	_mapSize.second = (std::size_t)mapSize.Y;
 }
 
-irr::core::vector2di nts::Game::getMapSize() const
+irr::core::vector2di irrl::Game::getMapSize() const
 {
 	return irr::core::vector2di(irr::s32(_mapSize.first), irr::s32(_mapSize.second));
 }
 
-void nts::Game::setCameraPos()
+void irrl::Game::setCameraPos()
 {
 	if (_listPlayer.empty() || _endGame || _draw)
 		return;
@@ -287,13 +289,13 @@ void nts::Game::setCameraPos()
 	}
 }
 
-void nts::Game::resetListObj()
+void irrl::Game::resetListObj()
 {
 	_listPlayer.clear();
 	_listObj.clear();
 }
 
-void nts::Game::displayFPS()
+void irrl::Game::displayFPS()
 {
 	int lastFPS = -1;
 	wchar_t tmp[1024];
@@ -307,17 +309,17 @@ void nts::Game::displayFPS()
 	}
 }
 
-void nts::Game::lock()
+void irrl::Game::lock()
 {
 	_mutex.lock();
 }
 
-void nts::Game::unlock()
+void irrl::Game::unlock()
 {
 	_mutex.unlock();
 }
 
-void nts::Game::setPause()
+void irrl::Game::setPause()
 {
 	while (_eventReceiver.IsKeyDown(irr::KEY_KEY_P));
 	_pause = true;

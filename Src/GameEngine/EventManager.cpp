@@ -8,14 +8,14 @@
 #include <iostream>
 #include "EventManager.hpp"
 
-nts::EventManager::EventManager()
+irrl::EventManager::EventManager()
 {
 	MouseState.LeftButtonDown = false;
 	for (irr::u32 i = 0; i < irr::KEY_KEY_CODES_COUNT; ++i)
 		KeyIsDown[i] = false;
 }
 
-std::vector<irr::EKEY_CODE> nts::EventManager::getAllKeyDown()
+std::vector<irr::EKEY_CODE> irrl::EventManager::getAllKeyDown()
 {
 	std::vector<irr::EKEY_CODE> list;
 
@@ -26,7 +26,7 @@ std::vector<irr::EKEY_CODE> nts::EventManager::getAllKeyDown()
 	return list;
 }
 
-bool nts::EventManager::OnEvent(const irr::SEvent &event)
+bool irrl::EventManager::OnEvent(const irr::SEvent &event)
 {
 	if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 		KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
@@ -52,12 +52,12 @@ bool nts::EventManager::OnEvent(const irr::SEvent &event)
 	return false;
 }
 
-bool nts::EventManager::IsKeyDown(irr::EKEY_CODE keyCode) const
+bool irrl::EventManager::IsKeyDown(irr::EKEY_CODE keyCode) const
 {
 	return KeyIsDown[keyCode];
 }
 
-const nts::EventManager::SMouseState &nts::EventManager::GetMouseState(void) const
+const irrl::EventManager::SMouseState &irrl::EventManager::GetMouseState(void) const
 {
 	return MouseState;
 }

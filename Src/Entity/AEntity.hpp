@@ -26,7 +26,7 @@ namespace is {
 		// Constructor
 		AEntity(Entity_t &entities,
 			ThreadPool_t &eventManager,
-			nts::ManageIrrlicht &irrlicht);
+			irrl::ManageIrrlicht &irrlicht);
 		// Destructor
 		~AEntity() override;
 
@@ -76,7 +76,7 @@ namespace is {
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 
 		std::shared_ptr<IEntity> _sptr;
-		nts::ManageIrrlicht &_irrlicht;
+		irrl::ManageIrrlicht &_irrlicht;
 	private:
 	};
 }

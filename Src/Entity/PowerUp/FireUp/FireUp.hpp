@@ -15,7 +15,7 @@ namespace is {
 	public:
 		// Constructor
 		FireUp(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
-			my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
+			my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht);
 
 		// Destructor
 		~FireUp() override;

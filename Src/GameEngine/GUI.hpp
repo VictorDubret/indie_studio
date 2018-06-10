@@ -10,7 +10,7 @@
 
 # include "AManageIrrlicht.hpp"
 
-namespace nts {
+namespace irrl {
 	enum {
 		MAPSIZE_X,
 		MAPSIZE_Y,
@@ -35,22 +35,22 @@ namespace nts {
 		irr::io::path hover;
 		irr::core::rect<irr::s32> sq;
 
-		std::function<void(const struct nts::hover_s &)> click;
+		std::function<void(const struct irrl::hover_s &)> click;
 		bool status;
 		bool used = true;
 	} hover_t;
 
 	class GUI : public virtual AManageIrrlicht {
 		public:
-		GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht);
+		GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht);
 
 		void manageEventGui();
 		void drawGUI();
 		void initWinner();
 		void initDraw();
 		void addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger = "");
-		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct nts::hover_s &)> &f);
-		void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, nts::ManageIrrlicht &tmp);
+		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct irrl::hover_s &)> &f);
+		void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp);
 		void initBaseScene();
 		irr::io::path &getCurrentScene();
 

@@ -17,7 +17,7 @@ namespace is {
 		Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 			my::ItemLocker<my::ThreadPool> &eventManager,
 			std::shared_ptr<IEntity> &Player,
-			nts::ManageIrrlicht &irrlicht, size_t time = 2
+			irrl::ManageIrrlicht &irrlicht, size_t time = 2
 		);
 
 		~Bomb() override;

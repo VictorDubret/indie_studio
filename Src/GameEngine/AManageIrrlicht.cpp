@@ -7,9 +7,9 @@
 
 #include "AManageIrrlicht.hpp"
 
-nts::AManageIrrlicht::AManageIrrlicht(
+irrl::AManageIrrlicht::AManageIrrlicht(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
-	my::ItemLocker<my::ThreadPool> &eventManager, nts::ManageIrrlicht &irrlicht
+	my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht
 ) : _base(irrlicht), _eventManager(eventManager), _entities(entities), _eventReceiver()
 {
 	_device = irr::createDevice(irr::video::EDT_OPENGL,
@@ -35,76 +35,76 @@ nts::AManageIrrlicht::AManageIrrlicht(
 
 }
 
-void nts::AManageIrrlicht::resetListObj()
+void irrl::AManageIrrlicht::resetListObj()
 {
 }
 
-irr::scene::ISceneManager *nts::AManageIrrlicht::getSceneManager() const
+irr::scene::ISceneManager *irrl::AManageIrrlicht::getSceneManager() const
 {
 	return _sceneManager;
 }
 
-irr::IrrlichtDevice *nts::AManageIrrlicht::getDevice() const
+irr::IrrlichtDevice *irrl::AManageIrrlicht::getDevice() const
 {
 	return _device;
 }
 
-irr::video::IVideoDriver *nts::AManageIrrlicht::getDriver() const
+irr::video::IVideoDriver *irrl::AManageIrrlicht::getDriver() const
 {
 	return _driver;
 }
 
-irrklang::ISoundEngine *nts::AManageIrrlicht::getSoundDevice() const
+irrklang::ISoundEngine *irrl::AManageIrrlicht::getSoundDevice() const
 {
 	return _engine;
 }
 
-bool nts::AManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float)
+bool irrl::AManageIrrlicht::addEntity(std::shared_ptr<is::IEntity> &, irr::scene::ISceneNode *, float)
 {
 	return true;
 }
 
-bool nts::AManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &)
+bool irrl::AManageIrrlicht::deleteEntity(std::shared_ptr<is::IEntity> &)
 {
 	return true;
 }
 
-irr::scene::ISceneNode *nts::AManageIrrlicht::getNode(is::IEntity *)
+irr::scene::ISceneNode *irrl::AManageIrrlicht::getNode(is::IEntity *)
 {
 	return nullptr;
 }
 
-void nts::AManageIrrlicht::updateView()
+void irrl::AManageIrrlicht::updateView()
 {
 }
 
-void nts::AManageIrrlicht::loopDisplay()
+void irrl::AManageIrrlicht::loopDisplay()
 {
 }
 
-float &nts::AManageIrrlicht::getNodeSize(const std::shared_ptr<is::IEntity> &)
+float &irrl::AManageIrrlicht::getNodeSize(const std::shared_ptr<is::IEntity> &)
 {
 	return _tmp;
 }
 
-irr::core::vector2di nts::AManageIrrlicht::getMapSize() const
+irr::core::vector2di irrl::AManageIrrlicht::getMapSize() const
 {
 	return irr::core::vector2di(0, 0);
 }
 
-void nts::AManageIrrlicht::setMapSize(const irr::core::vector2di &)
+void irrl::AManageIrrlicht::setMapSize(const irr::core::vector2di &)
 {
 }
 
-void nts::AManageIrrlicht::setCameraPos()
+void irrl::AManageIrrlicht::setCameraPos()
 {
 }
 
-void nts::AManageIrrlicht::manageEvent()
+void irrl::AManageIrrlicht::manageEvent()
 {
 }
 
-bool nts::AManageIrrlicht::getDisplayGUI() const
+bool irrl::AManageIrrlicht::getDisplayGUI() const
 {
 	return _displayGUI;
 }

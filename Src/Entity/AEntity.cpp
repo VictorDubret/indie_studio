@@ -13,7 +13,7 @@
 #include "ManageIrrlicht.hpp"
 #include "ManageObject.hpp"
 
-is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, nts::ManageIrrlicht &irrlicht):
+is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, irrl::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
 	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});

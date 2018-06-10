@@ -18,7 +18,7 @@
 <Base>			: None.
 <Editor(s) Used>	: Q3Radiant - Build 202 & Q3Build
 <Known Bugs>		: This isn't really a bug, but an added feature;
-			  you can walk on top of the battlements.
+			  you can walk on top of the battlemeirrl.
 <Construction Time>	: 3 weeks.
 <Compile Machine>	: 866mhz PIII, 512mb RAM
 

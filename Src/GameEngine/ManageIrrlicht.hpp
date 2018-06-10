@@ -20,7 +20,7 @@
 # include "Game.hpp"
 # include "GUI.hpp"
 
-namespace nts {
+namespace irrl {
 	class ManageIrrlicht : public Game, public GUI {
 		public:
 		ManageIrrlicht(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irr::core::vector2di mapSize, bool splitScreen);

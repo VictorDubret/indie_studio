@@ -11,7 +11,7 @@
 #include <irrlicht.h>
 #include <vector>
 
-namespace nts {
+namespace irrl {
 
 	class EventManager : public irr::IEventReceiver {
 		public:

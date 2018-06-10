@@ -19,7 +19,7 @@
 is::ACharacter::ACharacter(
 	my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
-	nts::ManageIrrlicht &irrlicht, std::size_t id
+	irrl::ManageIrrlicht &irrlicht, std::size_t id
 ) : AEntity(entities, eventManager, irrlicht), _id(id)
 {
 	_type = "Character";
@@ -29,17 +29,17 @@ is::ACharacter::ACharacter(
 
 void is::ACharacter::texture()
 {
-	nts::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
+	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
 		0.6);
 	_irrlicht.getNode(_sptr.get())->setPosition(
 		irr::core::vector3df(1.1f, -0.5f, 1.1f));
-	nts::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(0.9, 0.9, 0.9));
-	nts::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _sptr,
 		irr::core::vector3df(0, 90, 0));
-	nts::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	nts::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	nts::ManageObject::setTexture(_irrlicht, _sptr, (std::string("media/") + std::to_string(_id) + std::string("_character.png")).c_str());
+	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
+	irrl::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
+	irrl::ManageObject::setTexture(_irrlicht, _sptr, (std::string("media/") + std::to_string(_id) + std::string("_character.png")).c_str());
 }
 
 is::ACharacter::~ACharacter()
@@ -166,9 +166,9 @@ void is::ACharacter::move(float nextX, float nextY, float nextZ)
 void is::ACharacter::moveUp()
 {
 	if (_lastMove != MoveCharacter::UP) {
-		nts::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
 			irr::scene::EMAT_RUN);
-		nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _sptr,
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
@@ -188,9 +188,9 @@ void is::ACharacter::moveUp()
 void is::ACharacter::moveDown()
 {
 	if (_lastMove != MoveCharacter::DOWN) {
-		nts::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
 			irr::scene::EMAT_RUN);
-		nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _sptr,
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
@@ -209,9 +209,9 @@ void is::ACharacter::moveDown()
 void is::ACharacter::moveLeft()
 {
 	if (_lastMove != MoveCharacter::LEFT) {
-		nts::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
 			irr::scene::EMAT_RUN);
-		nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _sptr,
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
@@ -231,9 +231,9 @@ void is::ACharacter::moveLeft()
 void is::ACharacter::moveRight()
 {
 	if (_lastMove != MoveCharacter::RIGHT) {
-		nts::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
 			irr::scene::EMAT_RUN);
-		nts::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _sptr,
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
@@ -305,7 +305,7 @@ void is::ACharacter::explode()
 void is::ACharacter::doNothing()
 {
 	if (_lastMove != MoveCharacter::NOTHING) {
-		nts::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
 			irr::scene::EMAT_STAND);
 		_lastMove = MoveCharacter::NOTHING;
 	}

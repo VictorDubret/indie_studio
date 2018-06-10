@@ -14,7 +14,7 @@
 #include	"MapGenerator.hpp"
 
 mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
-			       nts::ManageIrrlicht &irrlicht,
+			       irrl::ManageIrrlicht &irrlicht,
 			       std::pair<std::size_t, std::size_t> &size) :
 	_height(size.first), _width(size.second), _crateRate(20), _dropRate(65),
 	_bombUpRate(50), _fireUpRate(29), _speedUpRate(19), _wallPassRate(2)
@@ -32,7 +32,7 @@ mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventMa
 }
 
 mg::MapGenerator::MapGenerator(is::Entity_t &entities, is::ThreadPool_t &eventManager,
-	nts::ManageIrrlicht &irrlicht,
+	irrl::ManageIrrlicht &irrlicht,
 	std::pair<std::size_t, std::size_t> &size, int crateRate, int dropRate, int bombUpRate,
 	int fireUpRate, int speedUpRate, int wallPassRate) :
 	_height(size.first), _width(size.second), _crateRate(100 - crateRate), _dropRate(100 - dropRate), _bombUpRate(bombUpRate),
@@ -144,7 +144,7 @@ void		mg::MapGenerator::addBorders()
 
 void		mg::MapGenerator::transposeMap(is::Entity_t &entities,
 					       is::ThreadPool_t &eventManager,
-					       nts::ManageIrrlicht &irrlicht)
+					       irrl::ManageIrrlicht &irrlicht)
 {
 	for (std::size_t i = 0 ; i < _map.size() ; ++i) {
 		if (_map[i] == '#' || _map[i] == '.') {
@@ -188,7 +188,7 @@ void		mg::MapGenerator::displayMap()
 }
 
 void		mg::MapGenerator::createMap(is::Entity_t &entities, is::ThreadPool_t &eventManager,
-					    nts::ManageIrrlicht &irrlicht)
+					    irrl::ManageIrrlicht &irrlicht)
 {
 	std::srand(std::time(nullptr));
 	setBackground();

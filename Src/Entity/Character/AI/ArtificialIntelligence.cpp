@@ -10,7 +10,7 @@
 #include        "ArtificialIntelligence.hpp"
 
 is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPool_t &eventManager,
-		nts::ManageIrrlicht &irrlicht, std::size_t id) :
+		irrl::ManageIrrlicht &irrlicht, std::size_t id) :
 		ACharacter(entities, eventManager, irrlicht, id), _entities(entities),
 		_height(0), _width(0)
 {

@@ -7,7 +7,7 @@
 
 #include "ManageObject.hpp"
 
-bool nts::ManageObject::createCube(nts::ManageIrrlicht &manage,
+bool irrl::ManageObject::createCube(irrl::ManageIrrlicht &manage,
 	std::shared_ptr<is::IEntity> &obj, irr::f32 size, irr::s32 id,
 	const irr::core::vector3df &position,
 	const irr::core::vector3df &rotation, const irr::core::vector3df &scale)
@@ -19,7 +19,7 @@ bool nts::ManageObject::createCube(nts::ManageIrrlicht &manage,
 	return false;
 }
 
-bool nts::ManageObject::createAnim(nts::ManageIrrlicht &manage,
+bool irrl::ManageObject::createAnim(irrl::ManageIrrlicht &manage,
 	std::shared_ptr<is::IEntity> &obj, const irr::io::path &path,
 	irr::f32 size, irr::s32 id, const irr::core::vector3df &position,
 	const irr::core::vector3df &rotation, const irr::core::vector3df &scale)
@@ -34,17 +34,17 @@ bool nts::ManageObject::createAnim(nts::ManageIrrlicht &manage,
 	return false;
 }
 
-void nts::ManageObject::setPosition(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::core::vector3df &position)
+void irrl::ManageObject::setPosition(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::core::vector3df &position)
 {
 	manage.getNode(obj.get())->setPosition(position);
 }
 
-irr::core::vector3df nts::ManageObject::getPosition(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj)
+irr::core::vector3df irrl::ManageObject::getPosition(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj)
 {
 	return manage.getNode(obj.get())->getPosition();
 }
 
-void nts::ManageObject::setMaterialLight(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, bool opt)
+void irrl::ManageObject::setMaterialLight(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, bool opt)
 {
 	auto tmp = manage.getNode(obj.get());
 	if (!tmp)
@@ -52,7 +52,7 @@ void nts::ManageObject::setMaterialLight(nts::ManageIrrlicht &manage, std::share
 	tmp->setMaterialFlag(irr::video::EMF_LIGHTING, opt);
 }
 
-void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::io::path &path)
+void irrl::ManageObject::setTexture(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::io::path &path)
 {
 	irr::video::ITexture *texture = manage.getDriver()->getTexture(path);
 	auto tmp = manage.getNode(obj.get());
@@ -61,7 +61,7 @@ void nts::ManageObject::setTexture(nts::ManageIrrlicht &manage, std::shared_ptr<
 	tmp->setMaterialTexture(0, texture);
 }
 
-void nts::ManageObject::setAnimation(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::scene::EMD2_ANIMATION_TYPE type)
+void irrl::ManageObject::setAnimation(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, irr::scene::EMD2_ANIMATION_TYPE type)
 {
 	auto tmp = manage.getNode(obj.get());
 	if (!tmp)
@@ -69,7 +69,7 @@ void nts::ManageObject::setAnimation(nts::ManageIrrlicht &manage, std::shared_pt
 	static_cast<irr::scene::IAnimatedMeshSceneNode *>(tmp)->setMD2Animation(type);
 }
 
-void nts::ManageObject::setScale(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &vect)
+void irrl::ManageObject::setScale(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &vect)
 {
 	auto tmp = manage.getNode(obj.get());
 	if (!tmp)
@@ -77,7 +77,7 @@ void nts::ManageObject::setScale(nts::ManageIrrlicht &manage, std::shared_ptr<is
 	tmp->setScale(vect);
 }
 
-void nts::ManageObject::setRotation(nts::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &rotation)
+void irrl::ManageObject::setRotation(irrl::ManageIrrlicht &manage, std::shared_ptr<is::IEntity> &obj, const irr::core::vector3df &rotation)
 {
 	auto tmp = manage.getNode(obj.get());
 	if (!tmp)

@@ -12,7 +12,7 @@
 #include <string>
 #include <irrlicht.h>
 
-namespace nts {
+namespace irrl {
 	class ManageIrrlicht;
 };
 
