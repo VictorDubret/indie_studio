@@ -33,6 +33,7 @@ irrl::AManageIrrlicht::AManageIrrlicht(
 	_driver->getTexture(irr::io::path("media/caisse.png"));
 	_driver->getTexture(irr::io::path("media/wall.png"));
 	_driver->getTexture(irr::io::path("media/floor.png"));
+	_driver->getTexture(irr::io::path("media/bg2.png"));
 }
 
 void irrl::AManageIrrlicht::resetListObj()

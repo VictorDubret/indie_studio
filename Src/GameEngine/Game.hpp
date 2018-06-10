@@ -65,6 +65,7 @@ namespace irrl {
 		void unlock() override;
 		void setPause();
 		void setFloor();
+		void setBG();
 		void endPause();
 		void checkLastAlive();
 

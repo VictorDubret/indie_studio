@@ -414,6 +414,7 @@ void irrl::Game::checkLastAlive()
 
 void irrl::Game::setFloor()
 {
+	setBG();
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0);
 	irr::core::dimension2d<irr::u32> tileCount(1, 1);
 
@@ -442,4 +443,25 @@ void irrl::Game::setFloor()
 			j++;
 		}
 	}
+}
+
+void irrl::Game::setBG()
+{
+	irr::core::dimension2d<irr::f32> tileSize(1, 1);
+	irr::core::dimension2d<irr::u32> tileCount(getMapSize().X * 5, getMapSize().Y * 5);
+
+	auto material = new irr::video::SMaterial();
+	material->MaterialType = irr::video::E_MATERIAL_TYPE::EMT_SOLID;
+	material->Wireframe = false;
+	material->Lighting = false;
+	irr::core::dimension2d<irr::f32> textureRepeatCount(1.0, 1.0);
+	irr::scene::IMesh *cube = getSceneManager()->getGeometryCreator()->createPlaneMesh(tileSize, tileCount, material, textureRepeatCount);
+
+	cube->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+	irr::video::ITexture *texture = getDriver()->getTexture(irr::io::path("media/bg2.png"));
+	irr::scene::IMeshSceneNode *cubeNode = getSceneManager()->addMeshSceneNode(cube);
+	cubeNode->setMaterialTexture(0, texture);
+	cubeNode->setPosition(irr::core::vector3df(0, -0.7f, 0));
+	cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
+	cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
