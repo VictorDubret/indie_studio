@@ -199,11 +199,12 @@ void irrl::Game::manageEventPlayers()
 			}
 			if (!doSomething) {
 				_eventManager.lock();
-				_eventManager->enqueue(it.nothing.f);
+				if (it.nothing.f) {
+					_eventManager->enqueue(it.nothing.f);
+				}
 				_eventManager.unlock();
 			}
 		}
-
 	}
 }
 

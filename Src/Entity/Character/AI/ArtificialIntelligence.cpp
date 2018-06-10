@@ -17,8 +17,10 @@ is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPoo
 	_entities.lock();
 	getMapDimensions();
 	std::pair<Type, IEntity *>tmp = std::pair<Type, IEntity *> (SAFE, nullptr);
-	if (!dynamic_cast<ACharacter *>(_sptr.get()))
+	if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+		_entities.unlock();
 		return;
+	}
 	_position.first = getX();
 	_position.second = getZ();
 	_goal.first = -1;
@@ -74,8 +76,10 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		std::cout << "lookForAZone(POWERUP)" << std::endl;
 		headTowards(dir);
 		_entities.lock();
-		if (!dynamic_cast<ACharacter *>(_sptr.get()))
+		if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+			_entities.unlock();
 			return;
+		}
 		_position.first = getX();
 		_position.second = getZ();
 		_entities.unlock();
@@ -96,8 +100,10 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		headTowards(dir);
 	}
 	_entities.lock();
-	if (!dynamic_cast<ACharacter *>(_sptr.get()))
+	if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+		_entities.unlock();
 		return;
+	}
 	_position.first = getX();
 	_position.second = getZ();
 	_entities.unlock();
