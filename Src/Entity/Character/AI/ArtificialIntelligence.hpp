@@ -61,6 +61,7 @@ namespace is {
 		std::size_t	_height;
 		std::size_t	_width;
 		std::vector<std::pair<Type, IEntity *>>	_map;
+		std::vector<std::pair<int, int>>	_ennemies;
 		std::pair<float, float>	_position;
 		std::pair<int, int>	_goal;
 	};

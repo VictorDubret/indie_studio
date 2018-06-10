@@ -155,6 +155,10 @@ bool 	is::ArtificialIntelligence::setDangerRec(std::size_t pos, std::size_t rang
 			reachCrate = true;
 		else
 			reachCrate = false;
+		for (const auto &it : _ennemies) {
+			if (it.first + it.second * _width == pos + dir)
+				reachCrate = true;
+		}
 		if (map[pos + dir].first != EXPLOSION && map[pos + dir].first != CRATE)
 			map[pos + dir].first = DANGER;
 	}
@@ -357,10 +361,16 @@ void 	is::ArtificialIntelligence::updateMap()
 		_map[i].second = nullptr;
 	}
 	setWalls();
+	_ennemies.clear();
 	for (const auto &it : _entities.get()) {
 		if (!dynamic_cast<AEntity *>(it.get()))
 			continue;
-		if ((int)it->getX() + (int)it->getZ() * _width < _height * _width && _map[(int)it->getX() + (int)it->getZ() * _width].first != WALL && it->getType() != "Character") {
+		if ((int)it->getX() + (int)it->getZ() * _width < _height * _width && _map[(int)it->getX() + (int)it->getZ() * _width].first != WALL) {//} && it->getType() != "Character") {
+			if (it->getType() == "Character") {
+				if (dynamic_cast<is::ArtificialIntelligence *>(it.get()) != this) {
+					_ennemies.emplace_back((int)it->getX(), (int)it->getZ());
+				}
+			}
 			if (it->getType() == "Wall")
 				_map[(int)it->getX() + (int)it->getZ() * _width].first = CRATE;
 			if (it->getType() == "Explosion")

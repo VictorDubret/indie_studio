@@ -1,5 +1,6 @@
 //
-// Created by victor on 27/05/18.
+// EPITECH PROJECT, 2018
+// Indie Studio
 // File description:
 // Bomb.cpp
 //

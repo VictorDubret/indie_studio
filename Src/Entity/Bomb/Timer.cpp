@@ -1,7 +1,8 @@
 //
-// Created by victor on 28/05/18.
+// EPITECH PROJECT, 2018
+// Indie Studio
 // File description:
-// timer.cpp
+// Timer.cpp
 //
 
 #include <ctime>
