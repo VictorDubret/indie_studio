@@ -438,7 +438,8 @@ void nts::Game::checkLastAlive()
 			continue;
 		alivePLayer++;
 	}
-	if ((totalPLayer - alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
+	//std::cout << "Total player :" << totalPLayer << "alive player :" << alivePLayer << std::endl;
+	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;
 		_alreadyEnd = true;
 		for (auto &it : _listPlayer) {
