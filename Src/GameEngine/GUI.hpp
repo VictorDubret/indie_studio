@@ -50,7 +50,7 @@ namespace irrl {
 		void initDraw();
 		void addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger = "");
 		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct irrl::hover_s &)> &f);
-		void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp);
+		bool setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp);
 		void initBaseScene();
 		void initPause();
 		irr::io::path &getCurrentScene();
@@ -66,8 +66,9 @@ namespace irrl {
 		void initSettingsScene();
 		void updateRateSettings();
 		int getValueInput(irr::gui::IGUIEditBox *obj, int min, int max);
-		void loadSave();
-		void loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector);
+		bool loadSave();
+		bool loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector);
+		bool isNumber(const std::string& s);
 
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
 

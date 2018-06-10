@@ -150,7 +150,12 @@ void irrl::GUI::initBaseScene()
 			getSceneManager()->clear();
 			_base.unlock();
 			updateView();
-			loadSave();
+			if (!loadSave()) {
+				_base.resetListObj();
+				getSceneManager()->clear();
+				updateView();
+				remove(".indie.save");
+			}
 		});
 		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {initSettingsScene();});
 	} else
@@ -354,81 +359,107 @@ void irrl::GUI::initDraw()
 	_gui->addImage(getDriver()->getTexture("media/draw.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
 }
 
-void irrl::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &base)
+bool irrl::GUI::isNumber(const std::string& s)
+{
+	std::string::const_iterator it = s.begin();
+	while (it != s.end() && std::isdigit(*it)) ++it;
+	return !s.empty() && it == s.end();
+}
+
+bool irrl::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &base)
 {
 	irr::core::vector3df tmpPos(std::stof(tmpVector[1]), std::stof(tmpVector[2]), std::stof(tmpVector[3]));
 	_base.getNode(player_tmp2.get())->setPosition(irr::core::vector3df(tmpPos));
 
-	if (tmpVector[4] == "IsPickable")
+	if (tmpVector[4] == "IsPickable" && isNumber(tmpVector[5]))
 		player_tmp2.get()->setPickable(static_cast<bool>(stoi(tmpVector[5])));
-	if (tmpVector[6] == "IsWalkable")
+	else return false;
+	if (tmpVector[6] == "IsWalkable" && isNumber(tmpVector[7]))
 		player_tmp2.get()->setWalkable(static_cast<bool>(stoi(tmpVector[7])));
-	if (tmpVector[8] == "Iscollidable")
+	else return false;
+	if (tmpVector[8] == "Iscollidable" && isNumber(tmpVector[9]))
 		player_tmp2.get()->setCollidable(static_cast<bool>(stoi(tmpVector[9])));
-	if (tmpVector[10] == "IsWallPassable")
+	else return false;
+	if (tmpVector[10] == "isWallPassable" && isNumber(tmpVector[11]))
 		player_tmp2.get()->setWallPassable(static_cast<bool>(stoi(tmpVector[11])));
+	else return false;
 	if (tmpVector.size() == 14) {
 		auto isWall = dynamic_cast<is::Wall *>(player_tmp2.get());
 		if (isWall != nullptr)
 			isWall->setPowerUp(tmpVector[13][0]);
+		else return false;
 	}
 	if (tmpVector.size() == 20) {
 		auto isCharacter = dynamic_cast<is::ACharacter *>(player_tmp2.get());
 		if (isCharacter != nullptr) {
+			if (isNumber(tmpVector[13]) && isNumber(tmpVector[17]) && isNumber(tmpVector[19]))
 			isCharacter->setBombMax(static_cast<size_t>(stoi(tmpVector[13])));
 			isCharacter->setBomb(static_cast<size_t>(stoi(tmpVector[13])));
 			isCharacter->setSpeed(stof(tmpVector[15]));
 			isCharacter->setBombLength(static_cast<size_t>(stoi(tmpVector[17])));
 			isCharacter->setWallPass(static_cast<bool>(stoi(tmpVector[19])));
-		}
+
+		} else return false;
 	}
+	return true;
 }
 
-void irrl::GUI::loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector)
+bool irrl::GUI::loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector)
 {
 	if (tmpVector[0] == "Character") {
 		j++;
 		player2 = new is::ACharacter(_entities, _eventManager, _base, (std::size_t)j);
 		std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
-		setEntity(tmpVector, player_tmp2, _base);
+		if (!setEntity(tmpVector, player_tmp2, _base))
+			return false;
 	} else if (tmpVector[0] == "IA") {
 		j++;
 		player2 = new is::ArtificialIntelligence(_entities, _eventManager, _base, (std::size_t)j);
 		std::shared_ptr<is::IEntity> player_tmp2 = std::shared_ptr<is::IEntity>(player2, [](is::IEntity *) {});
-		setEntity(tmpVector, player_tmp2, _base);
+		if (!setEntity(tmpVector, player_tmp2, _base))
+			return false;
 	} else if (tmpVector[0] == "Wall") {
 		is::IEntity *tmp_data = new is::Wall(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "UnbreakableWall") {
 		is::IEntity *tmp_data = new is::UnbreakableWall(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "SpeedUp") {
 		is::IEntity *tmp_data = new is::SpeedUp(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "WallPass") {
 		is::IEntity *tmp_data = new is::WallPass(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "BombUp") {
 		is::IEntity *tmp_data = new is::BombUp(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "FireUp") {
 		is::IEntity *tmp_data = new is::FireUp(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	} else if (tmpVector[0] == "Bomb" && player2 != nullptr) {
 		is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, reinterpret_cast<std::shared_ptr<is::IEntity> &>(player2), _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		setEntity(tmpVector, wall, _base);
-		std::cout << "Ma bombe est en :" << _base.getNode(wall.get())->getPosition().X << "][" << _base.getNode(wall.get())->getPosition().Z;
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
+	} else {
+		return false;
 	}
+	return true;
 }
 
-void irrl::GUI::loadSave()
+bool irrl::GUI::loadSave()
 {
 	std::stringstream streamLine;
 	std::string line;
@@ -447,7 +478,13 @@ void irrl::GUI::loadSave()
 			streamLine.clear();
 			i++;
 			if (tmpVector.size() == 12 || tmpVector.size() == 14 || tmpVector.size() == 20) {
-				loadEntity(player2, j, tmpVector);
+				if (!loadEntity(player2, j, tmpVector)) {
+					myfile.close();
+					return false;
+				}
+			} else {
+				myfile.close();
+				return false;
 			}
 		}
 		myfile.close();
@@ -455,4 +492,5 @@ void irrl::GUI::loadSave()
 		_displayGUI = false;
 		_currentScene = "game";
 	}
+	return true;
 }
