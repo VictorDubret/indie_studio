@@ -356,7 +356,7 @@ void is::ACharacter::doNothing()
 
 void is::ACharacter::save()
 {
-
+	/*
 	lock();
 	remove(".save.indie");
 
@@ -378,6 +378,7 @@ void is::ACharacter::save()
 		//usleep(100000);
 	}
 	unlock();
+	 */
 }
 
 void is::ACharacter::setHP(int life)

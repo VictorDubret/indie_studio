@@ -99,27 +99,23 @@ void irrl::ManageIrrlicht::loopDisplay()
 void irrl::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && getCurrentScene() != "base" && !_displayGUI) {
-//		if (!_displayGUI)
-
+		std::cout << "OLALALALALALALALALALALALA" << std::endl;
 		_base.lock();
 		_engine->stopAllSounds();
 		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
-
-		_endGame = false;
-		_draw = false;
-		_alreadyEnd = false;
-		initBaseScene();
-		/*
-				else {
-					lock();
-					_device->drop();
-					unlock();
-				}
-		*/
-		_displayGUI = true;
-		_base.unlock();
-	} else if (_eventReceiver.IsKeyDown(irr::KEY_KEY_P)) {
+		std::cout << "_currentScene: " << _currentScene.c_str() << std::endl;
+		if (_currentScene == "winner") {
+			_endGame = false;
+			_draw = false;
+			_alreadyEnd = false;
+			initBaseScene();
+		} else if (_currentScene != "pause") {
 			setPause();
+			initPause();
+		}
+		_displayGUI = true;
+
+		_base.unlock();
 	} else if (_displayGUI) {
 		manageEventGui();
 	} else if (!_endGame)

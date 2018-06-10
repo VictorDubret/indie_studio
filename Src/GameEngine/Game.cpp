@@ -70,6 +70,7 @@ void irrl::Game::displayGlobalScene()
 
 void irrl::Game::endSplitScene()
 {
+	_currentScene = "winner";
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900));
 	_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
 
@@ -95,6 +96,7 @@ void irrl::Game::endSplitScene()
 
 void irrl::Game::endScene()
 {
+	_currentScene = "winner";
 	for (const auto &it : _listPlayer) {
 		if (it.alive) {
 			if (_camera[GLOBAL]->getPosition().Y < _camera[GLOBAL]->getTarget().Y + 2) {
@@ -181,9 +183,8 @@ void irrl::Game::manageEventPlayers()
 		if (!dynamic_cast<is::AEntity *>(it.entity))
 			continue;
 		auto tmp = dynamic_cast<is::ArtificialIntelligence *>(it.entity);
-		if (tmp) {
+		if (tmp)
 			tmp->AIsTurn();
-		}
 		else {
 			for (int i = 0; it.key[i].f != nullptr ; ++i) {
 				if (_eventReceiver.IsKeyDown(it.key[i].key)) {
@@ -272,7 +273,6 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		}
 	}
 	lock();
-	std::cout << "After lock" << std::endl;
 	irrl::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
@@ -305,9 +305,9 @@ void irrl::Game::setCameraPos()
 	for (auto &it : _listPlayer) {
 		if (!it.alive || !getNode(it.entity))
 			continue;
-		tmpX = getNode(it.entity)->getPosition().X;
 		if (!it.alive || !getNode(it.entity))
 			continue;
+		tmpX = getNode(it.entity)->getPosition().X;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {
 			_distBetweenPlayer[NEAREST].X = tmpX;
@@ -369,31 +369,32 @@ void irrl::Game::unlock()
 
 void irrl::Game::setPause()
 {
-	while (_eventReceiver.IsKeyDown(irr::KEY_KEY_P));
-	_pause = true;
-	if (_pause) {
-		for (auto &it : _listObj) {
-			if (it.first->getType() == "Bomb") {
-				auto tmp = static_cast<is::Bomb *>(it.first);
-				tmp->setPaused(true);
-			}
-		}
-		while (true) {
-			if (_eventReceiver.IsKeyDown(irr::KEY_KEY_P)) {
-				_pause = false;
-				break;
-			}
+	_entities.lock();
+	std::cout << "START PAUSE " << std::endl;
+	for (auto &it : _listObj) {
+		auto tmp = dynamic_cast<is::AEntity *>(it.first);
+		if (tmp && it.first->getType() == "Bomb") {
+			auto tmp = static_cast<is::Bomb *>(it.first);
+			tmp->setPaused(true);
 		}
 	}
-	while (_eventReceiver.IsKeyDown(irr::KEY_KEY_P));
+	_entities.unlock();
+}
+
+void irrl::Game::endPause()
+{
+	std::cout << "END PAUSE" << std::endl;
+	_entities.lock();
 	for (auto &it : _listObj) {
-		if (it.first->getType() == "Bomb") {
+		auto tmp = dynamic_cast<is::AEntity *>(it.first);
+		if (tmp && it.first->getType() == "Bomb") {
 			auto tmp = static_cast<is::Bomb *>(it.first);
 			tmp->setPaused(false);
 		}
 	}
-
+	_entities.unlock();
 }
+
 void irrl::Game::checkLastAlive()
 {
 	int totalPLayer = 0;

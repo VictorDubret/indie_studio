@@ -65,6 +65,7 @@ namespace irrl {
 		void unlock() override;
 		void setPause();
 		void setFloor();
+		void endPause();
 		void checkLastAlive();
 
 		protected:
@@ -80,14 +81,13 @@ namespace irrl {
 		void endScene();
 
 
-		std::unordered_map<is::IEntity *, irrl::irrObj_t> _listObj;
+		std::map<is::IEntity *, irrl::irrObj_t> _listObj;
 		std::vector<irrl::player_t> _listPlayer;
 		std::vector<irr::core::vector2df> _distBetweenPlayer;
 
 		my::Thread *_thread = nullptr;
 		bool _stopThread = false;
 		irr::scene::ICameraSceneNode *_camera[4]={0,0,0,0};
-		bool _pause = false;
 		bool _endGame = false;
 		bool _draw = false;
 		bool _alreadyEnd = false;

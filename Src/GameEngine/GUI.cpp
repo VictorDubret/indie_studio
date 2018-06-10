@@ -25,6 +25,7 @@ irrl::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entiti
 {
 	_gui = getDevice()->getGUIEnvironment();
 
+	initPause();
 	initSettingsScene();
 	initBaseScene();
 }
@@ -111,6 +112,47 @@ void irrl::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::
 			isCharacter->setWallPass(static_cast<bool>(stoi(tmpVector[19])));
 		}
 	}
+}
+
+void irrl::GUI::initPause()
+{
+	_gui->clear();
+	_currentScene = "pause";
+
+	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(450, 110));
+	addButtonImage("continue", "pause", "media/continue_hover.png", "media/continue.png", irr::core::rect<irr::s32>(650, 240, 1050, 340), [this](const struct irrl::hover_s &) {_displayGUI = false;_base.endPause();_currentScene = "game";});
+	addButtonImage("save", "pause", "media/save_hover.png", "media/save.png", irr::core::rect<irr::s32>(750, 360, 950, 460), [this](const struct irrl::hover_s &) {
+		_entities.lock();
+		remove(".save.indie");
+
+		std::ofstream _filestr(".save.indie");
+
+		sleep(1);
+		std::cout << "Sauvegarde" << std::endl;
+		for (auto &it : _entities.get()) {
+			std::cout << "J'ai pas compris: " << _currentScene.c_str() << std::endl;
+			std::cout << "TEST: " << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
+			_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
+			auto isWall = dynamic_cast<is::Wall *>(it.get());
+			if (isWall != nullptr)
+				_filestr << " PowerUp " << isWall->getPowerUp();
+			auto isCharacter = dynamic_cast<is::ACharacter *>(it.get());
+			if (isCharacter != nullptr)
+				_filestr << " bombMax " << isCharacter->getBombMax() << " speed " << isCharacter->getSpeed() << " bombLength " << isCharacter->getBombLength() << " wallPass " << isCharacter->getWallPass();
+			_filestr << "\n";
+			std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
+			std::cout << std::endl;
+			//usleep(100000);
+		}
+		std::cout << "Hey !" << std::endl;
+		_entities.unlock();
+
+	});
+	addButtonImage("menu", "pause", "media/menu_hover.png", "media/menu.png", irr::core::rect<irr::s32>(740, 490, 940, 590), [this](const struct irrl::hover_s &) {
+		_base.lock();
+		initBaseScene();
+		_base.unlock();
+	});
 }
 
 void irrl::GUI::initBaseScene()
@@ -394,7 +436,7 @@ void irrl::GUI::addPlayerAndIA()
 void irrl::GUI::initWinner()
 {
 	_gui->clear();
-	//_currentScene = "winner";
+	_currentScene = "winner";
 	_gui->addImage(getDriver()->getTexture("media/winner.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
 }
 

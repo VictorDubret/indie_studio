@@ -155,6 +155,8 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	node->setVisible(false);
 
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
+		if (!dynamic_cast<AEntity *>(entity.get()))
+			return false;
 		entity->lock();
 		_irrlicht.lock();
 		auto tmp = _irrlicht.getNode(entity.get());

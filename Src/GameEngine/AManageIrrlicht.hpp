@@ -57,6 +57,7 @@ namespace irrl {
 		bool _displayGUI = true;
 		bool _splitScreen = true;
 
+		irr::io::path _currentScene = "";
 
 		// Game settings
 		int _nb_player = 1;

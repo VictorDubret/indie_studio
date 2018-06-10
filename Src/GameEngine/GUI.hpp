@@ -52,6 +52,7 @@ namespace irrl {
 		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct irrl::hover_s &)> &f);
 		void setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp);
 		void initBaseScene();
+		void initPause();
 		irr::io::path &getCurrentScene();
 
 		protected:
@@ -60,7 +61,6 @@ namespace irrl {
 		void addIA(float x, float z, std::size_t id);
 
 		irr::gui::IGUIEnvironment *_gui = nullptr;
-		irr::io::path _currentScene = "";
 
 		private:
 		void initSettingsScene();
