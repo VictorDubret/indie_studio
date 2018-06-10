@@ -45,12 +45,13 @@ namespace is {
 		void 	setDangerRec(std::size_t pos, std::size_t range, int dir);
 		bool 	setDangerRec(std::size_t pos, std::size_t range, int dir,
 			std::vector<std::pair<Type, IEntity *>> map);
-		int 	getDist(int pos, std::vector<int> map);
+		int 	getDist(int pos, std::vector<int> map, int dist);
 		Direction breadthFirst(int pos, std::vector<int> &map);
 		Direction lookForAZone(Type type);
 		Direction lookForAZone(Type type, std::vector<std::pair<Type, IEntity *>>map);
 		bool	safeBombDrop();
 		bool	onCrate();
+		void 	move(Direction dir);
 		void 	headTowards(Direction dir);
 		void 	addDangerZones();
 		bool 	addDangerZones(std::vector<std::pair<Type, IEntity *>>map);
@@ -60,8 +61,8 @@ namespace is {
 		std::size_t	_height;
 		std::size_t	_width;
 		std::vector<std::pair<Type, IEntity *>>	_map;
-		Direction	_direction = NONE;
 		std::pair<float, float>	_position;
+		std::pair<int, int>	_goal;
 	};
 }
 

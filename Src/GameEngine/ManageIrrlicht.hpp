@@ -27,7 +27,7 @@ namespace irrl {
 
 		void loopDisplay() override;
 		void displayGui(bool display);
-
+		void endScene();
 
 		void unlock() override;
 		void lock() override;
@@ -35,7 +35,6 @@ namespace irrl {
 		protected:
 
 		private:
-		void endScene();
 		void drawScene();
 		};
 }

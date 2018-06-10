@@ -72,6 +72,13 @@ namespace irrl {
 		void manageEventPlayers();
 		void displayFPS();
 		void displaySplitScreen();
+		void displayGlobalScene();
+		void displaySplitScreenScene();
+		void endSplitScene();
+		void displayBothPlayers();
+		void endScene();
+
+		void checkLastAlive();
 
 		std::unordered_map<is::IEntity *, irrl::irrObj_t> _listObj;
 		std::vector<irrl::player_t> _listPlayer;
