@@ -20,7 +20,6 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	size_t time
 ) : AEntity(entities, eventManager, irrlicht), _player(Player)
 {
-	std::cout << "Bomb constructor" << std::endl;
 	_type = "Bomb";
 	auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
 	if (tmp == nullptr) {
@@ -30,7 +29,6 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	_lenExplosion = tmp->getBombLength();
 	_collidable = true;
 	_wallPassable = false;
-	std::cout << _lenExplosion << std::endl;
 	texture();
 	timer(time);
 }

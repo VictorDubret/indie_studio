@@ -120,7 +120,6 @@ void irrl::Game::endScene()
 				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
 
 				_camera[GLOBAL]->setPosition(tmp);
-				//std::cout << "Ma camera est en " << _camera[GLOBAL]->getPosition().Y << " et mon target est en " << _camera[GLOBAL]->getTarget().Y << std::endl;
 				_driver->endScene();
 			}
 		}
@@ -259,18 +258,14 @@ bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
 
 bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 {
-	std::cout << "je dlete mon entité" << std::endl;
 	int i = 0;
 	if (entity->getType() == "Character") {
 		for (auto &it : _listPlayer) {
-			if (it.entity == entity.get()) {
-				std::cout << "je met alive a false" << std::endl;
+			if (it.entity == entity.get())
 				it.alive = false;
-			}
 			if (it.alive)
 				i++;
 		}
-		std::cout << "l'entité que je delete est un joueur" << std::endl;
 		if (i == 0) {
 			_endGame = false;
 			_draw = true;
@@ -336,8 +331,6 @@ void irrl::Game::setCameraPos()
 
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), _camera[GLOBAL]->getPosition().Y, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
-
-	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
 }
 
 void irrl::Game::resetListObj()
@@ -374,7 +367,6 @@ void irrl::Game::unlock()
 void irrl::Game::setPause()
 {
 	_entities.lock();
-	std::cout << "START PAUSE " << std::endl;
 	for (auto &it : _listObj) {
 		auto tmp = dynamic_cast<is::AEntity *>(it.first);
 		if (tmp && it.first->getType() == "Bomb") {
@@ -387,7 +379,6 @@ void irrl::Game::setPause()
 
 void irrl::Game::endPause()
 {
-	std::cout << "END PAUSE" << std::endl;
 	_entities.lock();
 	for (auto &it : _listObj) {
 		auto tmp = dynamic_cast<is::AEntity *>(it.first);
@@ -422,9 +413,6 @@ void irrl::Game::checkLastAlive()
 
 void irrl::Game::setFloor()
 {
-	/* Création floor */
-
-	std::cout << getSceneManager()->getRegisteredSceneNodeFactoryCount() << std::endl;
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
 	irr::core::dimension2d<irr::u32> tileCount(1, 1); // taille de la map
 
@@ -442,7 +430,6 @@ void irrl::Game::setFloor()
 	unsigned int j = 1;
 
 	while (j < getMapSize().Y + 1) {
-		std::cout << "i " << i << " mapsize.x " << getMapSize().X << " j " << j << " mapsize.y " << getMapSize().Y << std::endl;
 		irr::scene::IMeshSceneNode *cubeNode = getSceneManager()->addMeshSceneNode(cube);
 		cubeNode->setMaterialTexture(0, texture);
 		cubeNode->setPosition(irr::core::vector3df(j, -0.5f, i));

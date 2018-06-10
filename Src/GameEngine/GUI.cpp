@@ -128,10 +128,7 @@ void irrl::GUI::initPause()
 		std::ofstream _filestr(".save.indie");
 
 		sleep(1);
-		std::cout << "Sauvegarde" << std::endl;
 		for (auto &it : _entities.get()) {
-			std::cout << "J'ai pas compris: " << _currentScene.c_str() << std::endl;
-			std::cout << "TEST: " << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
 			auto isIA = dynamic_cast<is::ArtificialIntelligence *>(it.get());
 			if (isIA == nullptr)
 				_filestr << it->getType();
@@ -145,11 +142,7 @@ void irrl::GUI::initPause()
 			if (isCharacter != nullptr)
 				_filestr << " bombMax " << isCharacter->getBombMax() << " speed " << isCharacter->getSpeed() << " bombLength " << isCharacter->getBombLength() << " wallPass " << isCharacter->getWallPass();
 			_filestr << "\n";
-			std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
-			std::cout << std::endl;
-			//usleep(100000);
 		}
-		std::cout << "Hey !" << std::endl;
 		_entities.unlock();
 
 	});
@@ -192,16 +185,11 @@ void irrl::GUI::initBaseScene()
 			int j = 0;
 			if (myfile.is_open()) {
 				while (getline(myfile, line)) {
-					//std::cout << line << std::endl;
-
 					streamLine << line;
 					std::vector<std::string> tmpVector;
-					while (streamLine >> temp) {
+					while (streamLine >> temp)
 						tmpVector.push_back(temp);
-						//std::cout << "J split ma commande: " << temp << std::endl;
-					}
 					streamLine.clear();
-					//std::cout << "Ligne " << i << " [" << line << "]" << std::endl;
 					i++;
 					if (tmpVector.size() == 12 || tmpVector.size() == 14 || tmpVector.size() == 20) {
 						if (tmpVector[0] == "Character") {
@@ -239,16 +227,9 @@ void irrl::GUI::initBaseScene()
 							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 							setEntity(tmpVector, wall, _base);
 						} else if (tmpVector[0] == "Bomb") {
-
 							is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, reinterpret_cast<std::shared_ptr<is::IEntity> &>(player2), _base);
 							std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 							setEntity(tmpVector, wall, _base);
-
-							std::cout << "Ma bombe est en :" << _base.getNode(wall.get())->getPosition().X << "][" << _base.getNode(wall.get())->getPosition().Z;
-
-							//	is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, player_tmp2, tmp, 5);
-							//	std::shared_ptr<is::IEntity> bomb = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-							//setEntity(tmpVector, bomb, tmp);
 						}
 
 					}
@@ -257,9 +238,7 @@ void irrl::GUI::initBaseScene()
 				_base.setFloor();
 				_displayGUI = false;
 				_currentScene = "game";
-				//remove(".save.indie");
-			}
-			std::cout << "jai toruvé" << j << "joueurs" << std::endl;
+				}
 		});
 		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {initSettingsScene();});
 	} else
@@ -311,8 +290,8 @@ int irrl::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
 
 void irrl::GUI::updateRateSettings()
 {
-	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 11, 100);
-	_mapSize.second = (std::size_t)getValueInput(_mapYEditBox, 13, 100);
+	_mapSize.first = (std::size_t)getValueInput(_mapXEditBox, 11, 20);
+	_mapSize.second = (std::size_t)getValueInput(_mapYEditBox, 13, 20);
 	_crates = getValueInput(_crateEditBox, 0, 100);
 	_drop = getValueInput(_dropEditBox, 0, 100);
 	_bombUp = getValueInput(_bombEditBox, 0, 100);
@@ -368,13 +347,11 @@ void irrl::GUI::initSettingsScene()
 
 
 	addButtonImage("number1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(700, 200, 800, 300), [this](const struct irrl::hover_s &) {if (_nb_player == 1)return; _nb_player = 1;updateRateSettings();initSettingsScene();});
-	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct irrl::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;if (_nb_ia == 3)_nb_ia = 2;_hoverManage["settings"].erase("number_ia3");updateRateSettings();initSettingsScene();});
+	addButtonImage("number2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(810, 200, 900, 300), [this](const struct irrl::hover_s &) {if (_nb_player == 2)return;_nb_player = 2;updateRateSettings();initSettingsScene();});
 
 	addButtonImage("number_ia0", "settings", "media/number0_hover.png", "media/number0.png", irr::core::rect<irr::s32>(700, 320, 800, 420), f);
 	addButtonImage("number_ia1", "settings", "media/number1_hover.png", "media/number1.png", irr::core::rect<irr::s32>(810, 320, 910, 420), f);
 	addButtonImage("number_ia2", "settings", "media/number2_hover.png", "media/number2.png", irr::core::rect<irr::s32>(920, 320, 1020, 420), f);
-	if (_nb_player == 1)
-		addButtonImage("number_ia3", "settings", "media/number3_hover.png", "media/number3.png", irr::core::rect<irr::s32>(1030, 320, 1130, 420), f);
 
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].base->setImage(getDriver()->getTexture(_hoverManage["settings"]["number" + std::to_string(_nb_player)].hover));
 	_hoverManage["settings"]["number" + std::to_string(_nb_player)].used = false;
@@ -409,8 +386,8 @@ void irrl::GUI::initSettingsScene()
 void irrl::GUI::addPlayer(float x, float z, std::size_t id)
 {
 	is::ACharacter *player = new is::ACharacter(_entities, _eventManager, _base, id);
-	player->setZ(x);
-	player->setX(z);
+	player->setZ(x + !((int)x % 2));
+	player->setX(z + !((int)z % 2));
 	player->setBombMax(1);
 	player->setBomb(1);
 }
@@ -418,8 +395,8 @@ void irrl::GUI::addPlayer(float x, float z, std::size_t id)
 void irrl::GUI::addIA(float x, float z, std::size_t id)
 {
 	is::ACharacter *player = new is::ArtificialIntelligence(_entities, _eventManager, _base, id);
-	player->setZ(x);
-	player->setX(z);
+	player->setZ(x + !((int)x % 2));
+	player->setX(z + !((int)z % 2));
 	player->setBombMax(1);
 	player->setBomb(1);
 }
@@ -429,6 +406,11 @@ void irrl::GUI::addPlayerAndIA()
 	addPlayer(1, 1, 1);
 	if (_nb_player == 2)
 		addPlayer(_base.getMapSize().X, _base.getMapSize().Y, 2);
+	if (_nb_ia) {
+		_mapSize.first = 11;
+		_mapSize.second = 13;
+	}
+
 
 	mg::MapGenerator tmp(_entities, _eventManager, _base, _mapSize, _crates, _drop, _bombUp, _fireUp, _speedUp, _wallPass);
 

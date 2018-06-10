@@ -61,9 +61,7 @@ void is::APowerUp::collide(is::IEntity *entity)
 
 void is::APowerUp::explode()
 {
-	std::cout << "Je lock !" << std::endl;
 	_eventManager.lock();
-	std::cout << "Après le lock !"<< std::endl;
 	_eventManager->enqueue([this]{
 		_entities.lock();
 		if (!dynamic_cast<APowerUp *>(_sptr.get())) {
