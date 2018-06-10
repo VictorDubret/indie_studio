@@ -22,16 +22,6 @@ irrl::ManageIrrlicht::ManageIrrlicht(
 				std::chrono::milliseconds(50));
 		}
 	});
-/*	_thread = new my::Thread([&]() {
-		while (!_stopThread && _device) {
-			if (!_displayGUI && !_splitScreen) {
-				lock();
-				setCameraPos();
-				unlock();
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		}
-	});*/
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
@@ -76,7 +66,6 @@ void irrl::ManageIrrlicht::endScene()
 void irrl::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
-		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
 		if (_displayGUI) {
 			if (_currentScene != "pause")
 				endPause();

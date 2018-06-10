@@ -205,11 +205,12 @@ void irrl::Game::manageEventPlayers()
 			}
 			if (!doSomething) {
 				_eventManager.lock();
-				_eventManager->enqueue(it.nothing.f);
+				if (it.nothing.f) {
+					_eventManager->enqueue(it.nothing.f);
+				}
 				_eventManager.unlock();
 			}
 		}
-
 	}
 }
 
@@ -217,7 +218,9 @@ irr::scene::ISceneNode *irrl::Game::getNode(
 	is::IEntity *entity
 )
 {
-	return _listObj[entity].obj;
+	if (_listObj.find(entity) != _listObj.end())
+		return _listObj[entity].obj;
+	return nullptr;
 }
 
 float &irrl::Game::getNodeSize(
