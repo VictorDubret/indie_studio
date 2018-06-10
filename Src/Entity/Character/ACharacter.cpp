@@ -114,8 +114,6 @@ void is::ACharacter::setSpeed(float speed)
 		_speed = speed;
 	else
 		_speed = 0.24 / (float) _speedCoef;
-
-	std::cerr << _speed << std::endl;
 	unlock();
 }
 
@@ -310,7 +308,6 @@ void is::ACharacter::dropBomb()
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
-			std::cout << "Can't drop bomb" << std::endl;
 			_entities.unlock();
 			return;
 		}
@@ -318,7 +315,6 @@ void is::ACharacter::dropBomb()
 	lock();
 	--_bomb;
 	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
-	std::cerr << "Bomb" << std::endl;
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
@@ -356,29 +352,6 @@ void is::ACharacter::doNothing()
 
 void is::ACharacter::save()
 {
-	/*
-	lock();
-	remove(".save.indie");
-
-	std::ofstream _filestr(".save.indie");
-
-	sleep(1);
-	std::cout << "Sauvegarde" << std::endl;
-	for (auto &it : _entities.get()) {
-		_filestr << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable();
-		auto isWall = dynamic_cast<is::Wall *>(it.get());
-		if (isWall != nullptr)
-			_filestr << " PowerUp " << isWall->getPowerUp();
-		auto isCharacter = dynamic_cast<is::ACharacter *>(it.get());
-		if (isCharacter != nullptr)
-			_filestr << " bombMax " << isCharacter->getBombMax() << " speed " << isCharacter->getSpeed() << " bombLength " << isCharacter->getBombLength() << " wallPass " << isCharacter->getWallPass();
-		_filestr << "\n";
-		//std::cout << it->getType() << " " << it->getX() << " " << it->getY() << " " << it->getZ() << " IsPickable " << it->isPickable() << " IsWalkable " << it->isWalkable() << " Iscollidable " <<  it->isCollidable() << " isWallPassable " << it->isWallPassable() << std::endl;
-		//std::cout << std::endl;
-		//usleep(100000);
-	}
-	unlock();
-	 */
 }
 
 void is::ACharacter::setHP(int life)

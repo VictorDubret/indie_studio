@@ -133,7 +133,9 @@ void irrl::Game::endScene()
 				lock();
 				_sceneManager->drawAll();
 				unlock();
-				//std::cout << "Ma camera est en " << _camera[GLOBAL]->getPosition().Y << " et mon target est en " << _camera[GLOBAL]->getTarget().Y << std::endl;
+				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
+
+				_camera[GLOBAL]->setPosition(tmp);
 				_driver->endScene();
 			}
 		}
@@ -276,9 +278,8 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 	int i = 0;
 	if (entity->getType() == "Character") {
 		for (auto &it : _listPlayer) {
-			if (it.entity == entity.get()) {
+			if (it.entity == entity.get())
 				it.alive = false;
-			}
 			if (it.alive)
 				i++;
 		}
@@ -346,7 +347,6 @@ void irrl::Game::setCameraPos()
 	_distBetweenPlayer[FAREST].Y += 2;
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), _camera[GLOBAL]->getPosition().Y, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
-	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
 }
 
 void irrl::Game::resetListObj()
@@ -428,7 +428,6 @@ void irrl::Game::checkLastAlive()
 
 void irrl::Game::setFloor()
 {
-	std::cout << getSceneManager()->getRegisteredSceneNodeFactoryCount() << std::endl;
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0);
 	irr::core::dimension2d<irr::u32> tileCount(1, 1);
 

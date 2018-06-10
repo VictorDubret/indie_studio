@@ -47,16 +47,16 @@ void irrl::ManageIrrlicht::loopDisplay()
 		displayFPS();
 		std::this_thread::yield();
 	}
+	sleep(3);
+	endPause();
 }
 
 void irrl::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && getCurrentScene() != "base" && !_displayGUI) {
-		std::cout << "OLALALALALALALALALALALALA" << std::endl;
 		_base.lock();
 		_engine->stopAllSounds();
 		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
-		std::cout << "_currentScene: " << _currentScene.c_str() << std::endl;
 		if (_currentScene == "winner") {
 			_endGame = false;
 			_draw = false;

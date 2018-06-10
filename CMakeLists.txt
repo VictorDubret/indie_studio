@@ -25,8 +25,6 @@ include_directories(Src Src/Entity Src/Entity/Character
         Src/Entity/Scenery/Explosion
 	/usr/include)
 
-add_definitions(-DDEBUG=1)
-
 add_executable(bomberman
         ${FILE})
 
