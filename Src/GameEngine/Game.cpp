@@ -58,6 +58,7 @@ void irrl::Game::displayGlobalScene()
 	if (!_endGame || _draw) {
 		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 		lock();
+		setCameraPos();
 		_sceneManager->drawAll();
 		unlock();
 		_driver->endScene();
@@ -279,6 +280,7 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		tmp_obj.obj->setVisible(false);
 		_listObj.erase(tmp_find);
 	}
+	checkLastAlive();
 	unlock();
 	return false;
 }
@@ -305,8 +307,6 @@ void irrl::Game::setCameraPos()
 		if (!it.alive || !getNode(it.entity))
 			continue;
 		tmpX = getNode(it.entity)->getPosition().X;
-		if (!it.alive || !getNode(it.entity))
-			continue;
 		tmpY = getNode(it.entity)->getPosition().Z;
 		if (i == 0) {
 			_distBetweenPlayer[NEAREST].X = tmpX;
@@ -328,39 +328,11 @@ void irrl::Game::setCameraPos()
 		i++;
 	}
 	_distBetweenPlayer[FAREST].Y += 2;
-	irr::f32 saveHeight = _camera[GLOBAL]->getPosition().Y;
-	float tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].X * -1 + _distBetweenPlayer[FAREST].X)));
 
-	// TODO oom camera enleve
-	static bool locked = true;
-
-	if (locked) {
-		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 &&
-			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1) || 1) {
-			tmpHeight = saveHeight;
-			locked = true;
-		} else {
-			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)))) {
-				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
-				locked = false;
-			}
-		}
-	} else {
-		if ((_distBetweenPlayer[FAREST].X - _distBetweenPlayer[NEAREST].X) < getMapSize().X / 2 + 1 ||
-			(_distBetweenPlayer[FAREST].Y - _distBetweenPlayer[NEAREST].Y < getMapSize().Y / 2 + 1)) {
-			tmpHeight = saveHeight;
-			locked = true;
-		} else {
-			if (tmpHeight <= static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y))))
-				tmpHeight = static_cast<irr::f32>(((_distBetweenPlayer[NEAREST].Y * -1 + _distBetweenPlayer[FAREST].Y)));
-		}
-	}
-	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
+	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), _camera[GLOBAL]->getPosition().Y, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
 
 	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
-	checkLastAlive();
-
 }
 
 void irrl::Game::resetListObj()
@@ -436,7 +408,7 @@ void irrl::Game::checkLastAlive()
 			continue;
 		alivePLayer++;
 	}
-	//std::cout << "Total player :" << totalPLayer << "alive player :" << alivePLayer << std::endl;
+	std::cout << "Total player :" << totalPLayer << "alive player :" << alivePLayer << std::endl;
 	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;
 		_alreadyEnd = true;
@@ -450,6 +422,8 @@ void irrl::Game::checkLastAlive()
 void irrl::Game::setFloor()
 {
 	/* Création floor */
+
+	std::cout << getSceneManager()->getRegisteredSceneNodeFactoryCount() << std::endl;
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
 	irr::core::dimension2d<irr::u32> tileCount(1, 1); // taille de la map
 
