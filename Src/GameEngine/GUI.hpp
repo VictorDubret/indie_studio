@@ -67,7 +67,7 @@ namespace irrl {
 		void updateRateSettings();
 		int getValueInput(irr::gui::IGUIEditBox *obj, int min, int max);
 		bool loadSave();
-		bool loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector);
+		bool loadEntity(is::ACharacter *&player2, int &j, std::vector<std::string> &tmpVector);
 		bool isNumber(const std::string& s);
 
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;

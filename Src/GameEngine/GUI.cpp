@@ -400,7 +400,7 @@ bool irrl::GUI::setEntity(const std::vector<std::string> &tmpVector, const std::
 	return true;
 }
 
-bool irrl::GUI::loadEntity(is::ACharacter *player2, int &j, std::vector<std::string> &tmpVector)
+bool irrl::GUI::loadEntity(is::ACharacter *&player2, int &j, std::vector<std::string> &tmpVector)
 {
 	if (tmpVector[0] == "Character") {
 		j++;
@@ -434,11 +434,6 @@ bool irrl::GUI::loadEntity(is::ACharacter *player2, int &j, std::vector<std::str
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 		if (!setEntity(tmpVector, wall, _base))
 			return false;
-	} else if (tmpVector[0] == "BombUp") {
-		is::IEntity *tmp_data = new is::BombUp(_entities, _eventManager, _base);
-		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
-		if (!setEntity(tmpVector, wall, _base))
-			return false;
 	} else if (tmpVector[0] == "FireUp") {
 		is::IEntity *tmp_data = new is::FireUp(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
@@ -449,8 +444,11 @@ bool irrl::GUI::loadEntity(is::ACharacter *player2, int &j, std::vector<std::str
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 		if (!setEntity(tmpVector, wall, _base))
 			return false;
-	} else {
-		return false;
+	} else if (tmpVector[0] == "BombUp") {
+		is::IEntity *tmp_data = new is::BombUp(_entities, _eventManager, _base);
+		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
+		if (!setEntity(tmpVector, wall, _base))
+			return false;
 	}
 	return true;
 }
