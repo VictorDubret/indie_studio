@@ -48,24 +48,112 @@ void nts::Game::updateView()
 	}
 }
 
-void nts::Game::displaySplitScreen()
+
+void nts::Game::displayGlobalScene()
+{
+	if (!_endGame || _draw) {
+		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+		lock();
+		_sceneManager->drawAll();
+		unlock();
+		_driver->endScene();
+
+	} else if (_endGame && !_draw) {
+		endScene();
+	}
+}
+
+
+void nts::Game::endSplitScene()
 {
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900));
 	_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
 
+	for (const auto &it : _listPlayer) {
+		if (it.alive) {
+			if (_camera[PLAYER1]->getPosition().Y < _camera[PLAYER1]->getTarget().Y + 2) {
+				displayBothPlayers();
+			} else {
+				if (!getNode(it.entity))
+					continue;
+				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
+				_camera[PLAYER1]->setTarget(winnerPos);
+				_camera[PLAYER2]->setTarget(winnerPos);
+				const irr::core::vector3df tmp(_camera[PLAYER1]->getPosition().X, static_cast<irr::f32>(_camera[PLAYER1]->getPosition().Y - 0.1), _camera[PLAYER1]->getPosition().Z);
+				_camera[PLAYER1]->setPosition(tmp);
+				_camera[PLAYER2]->setPosition(tmp);
+				displayBothPlayers();
+			}
+			break;
+		}
+	}
+}
+
+void nts::Game::endScene()
+{
+	for (const auto &it : _listPlayer) {
+		if (it.alive) {
+			if (_camera[GLOBAL]->getPosition().Y < _camera[GLOBAL]->getTarget().Y + 2) {
+				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+				lock();
+
+				//initWinner();
+				_sceneManager->drawAll();
+				//drawGUI();
+				unlock();
+				_driver->endScene();
+			} else {
+				if (!getNode(it.entity))
+					continue;
+				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
+				_camera[GLOBAL]->setTarget(winnerPos);
+				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+				lock();
+				_sceneManager->drawAll();
+				unlock();
+				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
+
+				_camera[GLOBAL]->setPosition(tmp);
+				//std::cout << "Ma camera est en " << _camera[GLOBAL]->getPosition().Y << " et mon target est en " << _camera[GLOBAL]->getTarget().Y << std::endl;
+				_driver->endScene();
+			}
+		}
+	}
+}
+
+
+void nts::Game::displaySplitScreenScene()
+{
+	checkLastAlive();
+	if (!_endGame || _draw) {
+		displaySplitScreen();
+	}
+	else
+		endSplitScene();
+}
+
+void nts::Game::displayBothPlayers()
+{
 	/* Display of Player 1 */
 	_sceneManager->setActiveCamera(_camera[PLAYER1]);
-	_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900/2));
+	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900 / 2));
 	lock();
 	_sceneManager->drawAll();
 	unlock();
 	/* Display of Player 2 */
 	_sceneManager->setActiveCamera(_camera[PLAYER2]);
-	_driver->setViewPort(irr::core::rect<irr::s32>(0,450,1600,900));
+	_driver->setViewPort(irr::core::rect<irr::s32>(0, 450, 1600, 900));
 	lock();
 	_sceneManager->drawAll();
 	unlock();
+	_driver->endScene();
+}
 
+
+void nts::Game::displaySplitScreen()
+{
+	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900));
+	_driver->beginScene(true,true,irr::video::SColor(255,100,100,100));
 	int i = 0;
 	/* Setting Camera pos to player's position */
 	for (auto &it : _listPlayer) {
@@ -74,9 +162,12 @@ void nts::Game::displaySplitScreen()
 				continue;
 			_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
 			_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
+			i++;
 		}
-		i++;
+		if (i == 2)
+			break;
 	}
+	displayBothPlayers();
 }
 
 void nts::Game::manageEventPlayers()
@@ -276,15 +367,8 @@ void nts::Game::setCameraPos()
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
 
 	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
+	checkLastAlive();
 
- 	if ((totalPLayer - alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
-		_endGame = true;
-		_alreadyEnd = true;
-		for (auto &it : _listPlayer) {
-			if (it.alive)
-				it.entity->setHP(10);
-		}
-	}
 }
 
 void nts::Game::resetListObj()
@@ -343,4 +427,23 @@ void nts::Game::setPause()
 		}
 	}
 
+}
+void nts::Game::checkLastAlive()
+{
+	int totalPLayer = 0;
+	int alivePLayer = 0;
+	for (auto &it : _listPlayer) {
+		totalPLayer++;
+		if (!it.alive || !getNode(it.entity))
+			continue;
+		alivePLayer++;
+	}
+	if ((totalPLayer - alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
+		_endGame = true;
+		_alreadyEnd = true;
+		for (auto &it : _listPlayer) {
+			if (it.alive)
+				it.entity->setHP(10);
+		}
+	}
 }

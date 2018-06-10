@@ -34,76 +34,23 @@ nts::ManageIrrlicht::ManageIrrlicht(
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 }
 
-void nts::ManageIrrlicht::endScene()
-{
-	for (const auto &it : _listPlayer) {
-		if (it.alive) {
-			if (_camera[GLOBAL]->getPosition().Y < _camera[GLOBAL]->getTarget().Y + 2) {
-				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-				lock();
-
-				//initWinner();
-				_sceneManager->drawAll();
-				//drawGUI();
-				unlock();
-				_driver->endScene();
-			} else {
-				if (!getNode(it.entity))
-					continue;
-				//std::cout << "celui la est vivant" << std::endl;
-
-				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
-				//std::cout << "Mon joueur gagnant est en :" << winnerPos.X << "][" << winnerPos.Z << std::endl;
-				_camera[GLOBAL]->setTarget(winnerPos);
-
-				//	std::cout << "BOUCLINF" << std::endl;
-				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-				lock();
-				_sceneManager->drawAll();
-				unlock();
-				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
-
-				_camera[GLOBAL]->setPosition(tmp);
-				//std::cout << "Ma camera est en " << _camera[GLOBAL]->getPosition().Y << " et mon target est en " << _camera[GLOBAL]->getTarget().Y << std::endl;
-				_driver->endScene();
-			}
-		}
-	}
-}
-
-
 void nts::ManageIrrlicht::loopDisplay()
 {
 	while (_device && _device->run()) {
 		//std::cout <<"current scene :" << _currentScene.c_str()<< std::endl;
 		if (_displayGUI) {
 			lock();
-			_driver->setViewPort(irr::core::rect<irr::s32>(0,0,1600,900));
-			_driver->beginScene(true, true, irr::video::SColor(255, 115, 214, 210));
+			_driver->setViewPort(
+				irr::core::rect<irr::s32>(0, 0, 1600, 900));
+			_driver->beginScene(true, true,
+				irr::video::SColor(255, 115, 214, 210));
 			drawGUI();
 			_driver->endScene();
 			unlock();
-
-		} else if (_splitScreen) {
-			displaySplitScreen();
-			_driver->endScene();
-
-		} else if (!_endGame && !_draw) {
-
-			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-			lock();
-			_sceneManager->drawAll();
-			unlock();
-			_driver->endScene();
-
-		} else if (_endGame && !_draw) {
-			endScene();
-		} else if (_draw) {
-			_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-			lock();
-			_sceneManager->drawAll();
-			unlock();
-			_driver->endScene();
+		} else if (!_splitScreen) {
+			displayGlobalScene();
+		} else {
+			displaySplitScreenScene();
 		}
 		displayFPS();
 		std::this_thread::yield();
@@ -123,8 +70,6 @@ void nts::ManageIrrlicht::manageEvent()
 		_draw = false;
 		_alreadyEnd = false;
 		initBaseScene();
-		std::cout << "JAI RESET SA PUTAIN DE HUI" << std::endl;
-		//sleep(1);
 		/*
 				else {
 					lock();

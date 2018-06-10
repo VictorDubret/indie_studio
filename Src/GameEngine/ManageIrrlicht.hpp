@@ -35,7 +35,6 @@ namespace nts {
 		protected:
 
 		private:
-		void endScene();
 		void drawScene();
 		};
 }

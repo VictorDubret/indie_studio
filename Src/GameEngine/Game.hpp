@@ -72,6 +72,13 @@ namespace nts {
 		void manageEventPlayers();
 		void displayFPS();
 		void displaySplitScreen();
+		void displayGlobalScene();
+		void displaySplitScreenScene();
+		void endSplitScene();
+		void displayBothPlayers();
+		void endScene();
+
+		void checkLastAlive();
 
 		std::unordered_map<is::IEntity *, nts::irrObj_t> _listObj;
 		std::vector<nts::player_t> _listPlayer;
