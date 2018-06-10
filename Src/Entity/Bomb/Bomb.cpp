@@ -129,7 +129,7 @@ void is::Bomb::texture()
 {
 	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d", 0.75);
 	_irrlicht.getNode(_sptr.get())->setPosition(
-		irr::core::vector3df(1.1f, 0.1f, 1.1f));
+		irr::core::vector3df(1.1f, -0.5f, 1.1f));
 	irrl::ManageObject::setScale(_irrlicht, _sptr,
 		irr::core::vector3df(1, 1, 1));
 	irrl::ManageObject::setRotation(_irrlicht, _sptr,

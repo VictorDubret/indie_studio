@@ -83,11 +83,18 @@ void irrl::Game::endSplitScene()
 				if (!getNode(it.entity))
 					continue;
 				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
+
+				if (_winPLayer) {
+					_camera[PLAYER1]->setPosition(irr::core::vector3df(winnerPos.X, _camera[GLOBAL]->getPosition().Y, winnerPos.Z - 1));
+					_camera[PLAYER2]->setPosition(irr::core::vector3df(winnerPos.X, _camera[GLOBAL]->getPosition().Y, winnerPos.Z - 1));
+					_winPLayer = false;
+				} else {
+					const irr::core::vector3df tmp(_camera[PLAYER1]->getPosition().X, static_cast<irr::f32>(_camera[PLAYER1]->getPosition().Y - 0.1), _camera[PLAYER1]->getPosition().Z);
+					_camera[PLAYER1]->setPosition(tmp);
+					_camera[PLAYER2]->setPosition(tmp);
+				}
 				_camera[PLAYER1]->setTarget(winnerPos);
 				_camera[PLAYER2]->setTarget(winnerPos);
-				const irr::core::vector3df tmp(_camera[PLAYER1]->getPosition().X, static_cast<irr::f32>(_camera[PLAYER1]->getPosition().Y - 0.1), _camera[PLAYER1]->getPosition().Z);
-				_camera[PLAYER1]->setPosition(tmp);
-				_camera[PLAYER2]->setPosition(tmp);
 				displayBothPlayers();
 			}
 			break;
@@ -172,7 +179,10 @@ void irrl::Game::displaySplitScreen()
 		if (it.alive) {
 			if (getNode(it.entity) == nullptr)
 				continue;
-			_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
+			if (i == 1)
+				_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.2), getNode(it.entity)->getPosition().Z - 3));
+			else
+				_camera[i]->setPosition(irr::core::vector3df(getNode(it.entity)->getPosition().X, static_cast<irr::f32>(getMapSize().X / 1.4), getNode(it.entity)->getPosition().Z));
 			_camera[i]->setTarget(irr::core::vector3df(getNode(it.entity)->getPosition().X, 0, getNode(it.entity)->getPosition().Z + 3));
 			i++;
 		}
@@ -339,10 +349,8 @@ void irrl::Game::setCameraPos()
 		i++;
 	}
 	_distBetweenPlayer[FAREST].Y += 2;
-
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), _camera[GLOBAL]->getPosition().Y, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
-
 	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
 }
 
@@ -360,7 +368,7 @@ void irrl::Game::displayFPS()
 	int fps = _driver->getFPS();
 
 	if (lastFPS != fps) {
-		swprintf(tmp, 1024, L"GameFreak (%ls)(fps:%d)",
+		swprintf(tmp, 1024, L"Bomberman (%ls)(fps:%d)",
 			_driver->getName(), fps);
 		_device->setWindowCaption(tmp);
 		lastFPS = fps;
@@ -426,8 +434,6 @@ void irrl::Game::checkLastAlive()
 
 void irrl::Game::setFloor()
 {
-	/* Création floor */
-
 	std::cout << getSceneManager()->getRegisteredSceneNodeFactoryCount() << std::endl;
 	irr::core::dimension2d<irr::f32> tileSize(1.0, 1.0); // taille dun bloc
 	irr::core::dimension2d<irr::u32> tileCount(1, 1); // taille de la map
@@ -446,7 +452,6 @@ void irrl::Game::setFloor()
 	unsigned int j = 1;
 
 	while (j < getMapSize().Y + 1) {
-		std::cout << "i " << i << " mapsize.x " << getMapSize().X << " j " << j << " mapsize.y " << getMapSize().Y << std::endl;
 		irr::scene::IMeshSceneNode *cubeNode = getSceneManager()->addMeshSceneNode(cube);
 		cubeNode->setMaterialTexture(0, texture);
 		cubeNode->setPosition(irr::core::vector3df(j, -0.5f, i));
