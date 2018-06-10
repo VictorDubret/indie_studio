@@ -29,7 +29,8 @@ is::AEntity::~AEntity()
 	_locked = true;
 	_irrlicht.deleteEntity(_sptr);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
-	_entities->erase(tmp);
+	if (tmp != _entities->end())
+		_entities->erase(tmp);
 	unlock();
 	_entities.unlock();
 }

@@ -29,6 +29,7 @@ irrl::ManageIrrlicht::ManageIrrlicht(
 				setCameraPos();
 				unlock();
 			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		}
 	});
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
@@ -143,12 +144,5 @@ void irrl::ManageIrrlicht::displayGui(bool display)
 void irrl::ManageIrrlicht::drawScene()
 {
 	return;
-	std::cout << "c'est un draw dans drawScene()" << std::endl;
-	_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
-	lock();
-	//initDraw();
-	_sceneManager->drawAll();
-	//drawGUI();
-	unlock();
-	_driver->endScene();
+
 }

@@ -356,22 +356,15 @@ void irrl::Game::setCameraPos()
 	}
 	_camera[GLOBAL]->setPosition(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X  + _distBetweenPlayer[FAREST].X) / 2), tmpHeight, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 2));
 	_camera[GLOBAL]->setTarget(irr::core::vector3df(((_distBetweenPlayer[NEAREST].X + _distBetweenPlayer[FAREST].X) / 2), 0, ((_distBetweenPlayer[NEAREST].Y  + _distBetweenPlayer[FAREST].Y) / 2) - 1));
-
-	//std::cout << "Total PLayer "<< totalPLayer << " alive player " << alivePLayer << std::endl;
 	checkLastAlive();
-
 }
 
 void irrl::Game::resetListObj()
 {
+	_eventManager->notify();
 	_listPlayer.clear();
 	_listObj.clear();
 	_entities.get().clear();
-	/*unlock();
-	for (auto entity : _entities.get()) {
-		std::cout << "toto" << std::endl;
-		delete entity.get();
-	}*/
 }
 
 void irrl::Game::displayFPS()
@@ -423,8 +416,8 @@ void irrl::Game::setPause()
 			tmp->setPaused(false);
 		}
 	}
-
 }
+
 void irrl::Game::checkLastAlive()
 {
 	int totalPLayer = 0;
@@ -435,7 +428,6 @@ void irrl::Game::checkLastAlive()
 			continue;
 		alivePLayer++;
 	}
-	//std::cout << "Total player :" << totalPLayer << "alive player :" << alivePLayer << std::endl;
 	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;
 		_alreadyEnd = true;

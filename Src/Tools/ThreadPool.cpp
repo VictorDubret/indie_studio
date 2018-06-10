@@ -44,7 +44,10 @@ my::ThreadPool::~ThreadPool()
 	finishAll();
 }
 
-
+void my::ThreadPool::notify()
+{
+	_cond.notify_all();
+}
 
 bool my::ThreadPool::empty() const
 {
