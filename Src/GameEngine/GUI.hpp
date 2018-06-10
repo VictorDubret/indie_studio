@@ -46,8 +46,6 @@ namespace irrl {
 
 		void manageEventGui();
 		void drawGUI();
-		void initWinner();
-		void initDraw();
 		void addButton(const wchar_t *text, const irr::core::rect<irr::s32> &textRect, const irr::io::path &trigger = "");
 		void addButtonImage(const std::string &name, const irr::io::path &scene, const irr::io::path &hover, const irr::io::path &no_hover, const irr::core::rect<irr::s32> &sq, const std::function<void(const struct irrl::hover_s &)> &f);
 		bool setEntity(const std::vector<std::string> &tmpVector, const std::shared_ptr<is::IEntity> &player_tmp2, irrl::ManageIrrlicht &tmp);

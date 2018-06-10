@@ -334,25 +334,9 @@ void irrl::GUI::addPlayerAndIA()
 
 }
 
-void irrl::GUI::initWinner()
-{
-	_gui->clear();
-	_currentScene = "winner";
-	_gui->addImage(getDriver()->getTexture("media/winner.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
-}
-
 irr::io::path &irrl::GUI::getCurrentScene()
 {
 	return _currentScene;
-}
-
-void irrl::GUI::initDraw()
-{
-	_base.lock();
-	_gui->clear();
-	_base.unlock();
-	_currentScene = "draw";
-	_gui->addImage(getDriver()->getTexture("media/draw.png"), irr::core::position2d<irr::s32>(1600 / 2 - 200, 900 / 2 - 50));
 }
 
 bool irrl::GUI::isNumber(const std::string& s)

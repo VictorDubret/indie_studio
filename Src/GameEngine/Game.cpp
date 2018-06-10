@@ -38,14 +38,10 @@ void irrl::Game::updateView()
 	_distBetweenPlayer.push_back(tmpDist);
 	tmpDist.X = _mapSize.first / 2;
 	_distBetweenPlayer.push_back(tmpDist);
-
-	/* Setting Global Camera */
 	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
 		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
 		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
 	setCameraPos();
-
-	/* Setting Split Screen Camera */
 	if (_splitScreen) {
 		_camera[PLAYER1] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
 		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
@@ -109,17 +105,13 @@ void irrl::Game::endScene()
 			if (_camera[GLOBAL]->getPosition().Y < _camera[GLOBAL]->getTarget().Y + 2) {
 				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 				lock();
-
-				//initWinner();
 				_sceneManager->drawAll();
-				//drawGUI();
 				unlock();
 				_driver->endScene();
 			} else {
 				if (!getNode(it.entity))
 					continue;
 				const irr::core::vector3df winnerPos = getNode(it.entity)->getPosition();
-
 				if (_winPLayer) {
 					_camera[GLOBAL]->setPosition(irr::core::vector3df(winnerPos.X, _camera[GLOBAL]->getPosition().Y, winnerPos.Z - 1));
 					_camera[GLOBAL]->setTarget(winnerPos);
@@ -134,7 +126,6 @@ void irrl::Game::endScene()
 				_sceneManager->drawAll();
 				unlock();
 				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
-
 				_camera[GLOBAL]->setPosition(tmp);
 				_driver->endScene();
 			}
@@ -225,24 +216,19 @@ void irrl::Game::manageEventPlayers()
 }
 
 irr::scene::ISceneNode *irrl::Game::getNode(
-	is::IEntity *entity
-)
+	is::IEntity *entity)
 {
 	if (_listObj.find(entity) != _listObj.end())
 		return _listObj[entity].obj;
 	return nullptr;
 }
 
-float &irrl::Game::getNodeSize(
-	const std::shared_ptr<is::IEntity> &entity
-)
+float &irrl::Game::getNodeSize(const std::shared_ptr<is::IEntity> &entity)
 {
 	return _listObj[entity.get()].size;
 }
 
-bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity,
-	irr::scene::ISceneNode *obj, float size
-)
+bool irrl::Game::addEntity(std::shared_ptr<is::IEntity> &entity, irr::scene::ISceneNode *obj, float size)
 {
 	auto tmp = dynamic_cast<is::ACharacter *>(entity.get());
 

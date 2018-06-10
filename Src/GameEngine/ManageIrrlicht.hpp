@@ -34,7 +34,6 @@ namespace irrl {
 		protected:
 
 		private:
-		void drawScene();
 		};
 }
 

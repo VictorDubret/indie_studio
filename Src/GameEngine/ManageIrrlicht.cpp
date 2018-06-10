@@ -6,7 +6,7 @@
 */
 
 #include <irrTypes.h>
-#include <zconf.h>
+#include <unistd.h>
 #include "ManageIrrlicht.hpp"
 
 irrl::ManageIrrlicht::ManageIrrlicht(
@@ -89,10 +89,4 @@ void irrl::ManageIrrlicht::unlock()
 void irrl::ManageIrrlicht::displayGui(bool display)
 {
 	_displayGUI = display;
-}
-
-void irrl::ManageIrrlicht::drawScene()
-{
-	return;
-
 }
