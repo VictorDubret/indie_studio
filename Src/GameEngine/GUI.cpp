@@ -117,14 +117,13 @@ void irrl::GUI::initPause()
 
 	});
 	addButtonImage("menu", "pause", "media/menu_hover.png", "media/menu.png", irr::core::rect<irr::s32>(740, 490, 940, 590), [this](const struct irrl::hover_s &) {
-		_base.lock();
 		initBaseScene();
-		_base.unlock();
 	});
 }
 
 void irrl::GUI::initBaseScene()
 {
+	_base.lock();
 	_gui->clear();
 	_currentScene = "base";
 
@@ -141,7 +140,6 @@ void irrl::GUI::initBaseScene()
 			_base.resetListObj();
 			_base.lock();
 			getSceneManager()->clear();
-			_base.unlock();
 			updateView();
 			if (!loadSave()) {
 				_base.resetListObj();
@@ -149,10 +147,15 @@ void irrl::GUI::initBaseScene()
 				updateView();
 				remove(".indie.save");
 			}
+			_base.unlock();
 		});
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {initSettingsScene();});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {
+			initSettingsScene();
+		});
 	} else
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {initSettingsScene();});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {
+			initSettingsScene();
+		});
 
 	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct irrl::hover_s &) {
 		_base.resetListObj();
@@ -173,6 +176,7 @@ void irrl::GUI::initBaseScene()
 		_currentScene = "game";
 		_base.checkLastAlive();
 	});
+	_base.unlock();
 }
 
 int irrl::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)

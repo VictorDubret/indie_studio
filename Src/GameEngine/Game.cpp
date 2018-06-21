@@ -277,7 +277,7 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 	lock();
 	irrl::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
-	if (_device && tmp_find != _listObj.end() && tmp_obj.obj) {
+	if (_device && _device->run() && tmp_find != _listObj.end() && tmp_obj.obj) {
 		tmp_obj.obj->setVisible(false);
 		_listObj.erase(tmp_find);
 	}
@@ -344,16 +344,6 @@ void irrl::Game::resetListObj()
 
 void irrl::Game::displayFPS()
 {
-	int lastFPS = -1;
-	wchar_t tmp[1024];
-	int fps = _driver->getFPS();
-
-	if (lastFPS != fps) {
-		swprintf(tmp, 1024, L"Bomberman (%ls)(fps:%d)",
-			_driver->getName(), fps);
-		_device->setWindowCaption(tmp);
-		lastFPS = fps;
-	}
 }
 
 void irrl::Game::lock()

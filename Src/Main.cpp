@@ -25,6 +25,6 @@ int main()
 		std::cerr << e.what() << std::endl;
 	}
 	lockList.unlock();
-	pool->finishAll();
+	//pool->finishAll();
 	return 0;
 }

@@ -23,6 +23,12 @@ irrl::ManageIrrlicht::ManageIrrlicht(
 		}
 	});
 	_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
+	wchar_t tmp[1024];
+	swprintf(tmp, 1024, L"Bomberman (%ls)",
+		_driver->getName());
+	if (_device && _device->run()) {
+		_device->setWindowCaption(tmp);
+	}
 }
 
 void irrl::ManageIrrlicht::loopDisplay()
@@ -49,27 +55,32 @@ void irrl::ManageIrrlicht::loopDisplay()
 	}
 	sleep(3);
 	endPause();
+	sleep(3);
 }
 
 void irrl::ManageIrrlicht::manageEvent()
 {
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && getCurrentScene() != "base" && !_displayGUI) {
-		_base.lock();
-		_engine->stopAllSounds();
+		lock();
+
+		if (_sound)
+			_sound->stop();
 		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 		if (_currentScene == "winner") {
 			_endGame = false;
 			_draw = false;
 			_winPLayer = true;
 			endPause();
+			unlock();
 			initBaseScene();
+			lock();
 		} else if (_currentScene != "pause") {
 			setPause();
 			initPause();
 		}
 		_displayGUI = true;
 
-		_base.unlock();
+		unlock();
 	} else if (_displayGUI) {
 		manageEventGui();
 	} else if (!_endGame)
