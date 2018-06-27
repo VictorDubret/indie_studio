@@ -75,7 +75,7 @@ namespace is {
 		bool _locked = false;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 
-		std::shared_ptr<IEntity> _sptr;
+		std::shared_ptr<IEntity> _spointer;
 		irrl::ManageIrrlicht &_irrlicht;
 	private:
 	};

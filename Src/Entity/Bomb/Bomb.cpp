@@ -71,7 +71,7 @@ void is::Bomb::explode()
 		_eventManager.lock();
 		_eventManager->enqueue([this] {
 			_entities.lock();
-			if (!dynamic_cast<Bomb *>(_sptr.get())) {
+			if (!dynamic_cast<Bomb *>(_spointer.get())) {
 				_entities.unlock();
 				return;
 			}
@@ -125,15 +125,15 @@ void is::Bomb::timer(size_t time)
 
 void is::Bomb::texture()
 {
-	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/bomb.b3d", 0.75);
-	_irrlicht.getNode(_sptr.get())->setPosition(
+	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/bomb.b3d", 0.75);
+	_irrlicht.getNode(_spointer.get())->setPosition(
 		irr::core::vector3df(1.1f, -0.5f, 1.1f));
-	irrl::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _spointer,
 		irr::core::vector3df(1, 1, 1));
-	irrl::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _spointer,
 		irr::core::vector3df(0, 90, 0));
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/bomb.png");
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/bomb.png");
 }
 
 size_t is::Bomb::getLenExplosion() const

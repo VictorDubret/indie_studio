@@ -47,7 +47,7 @@ void is::APowerUp::collide(is::IEntity *entity)
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
 			_entities.lock();
-			if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+			if (!dynamic_cast<APowerUp *>(_spointer.get())) {
 				_entities.unlock();
 				return;
 			}
@@ -64,7 +64,7 @@ void is::APowerUp::explode()
 	_eventManager.lock();
 	_eventManager->enqueue([this]{
 		_entities.lock();
-		if (!dynamic_cast<APowerUp *>(_sptr.get())) {
+		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
 			_entities.unlock();
 			return;
 		}
@@ -77,7 +77,7 @@ void is::APowerUp::explode()
 
 void is::APowerUp::texture()
 {
-	irrl::ManageObject::createCube(_irrlicht, _sptr, 1);
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/help.png");
+	irrl::ManageObject::createCube(_irrlicht, _spointer, 1);
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/help.png");
 }

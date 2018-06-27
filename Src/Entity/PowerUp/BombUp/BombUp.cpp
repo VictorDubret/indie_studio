@@ -29,17 +29,17 @@ is::BombUp::~BombUp()
 
 void is::BombUp::texture()
 {
-	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/bombup.b3d",
+	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/bombup.b3d",
 		0.75);
-	_irrlicht.getNode(_sptr.get())->setPosition(
+	_irrlicht.getNode(_spointer.get())->setPosition(
 		irr::core::vector3df(1.1f, 0.1f, 1.1f));
-	irrl::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _spointer,
 		irr::core::vector3df(1, 1, 1));
-	irrl::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _spointer,
 		irr::core::vector3df(30, 0, 0));
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/map_ob000_item_AL.png");
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setAnimation(_irrlicht, _spointer, irr::scene::EMAT_RUN);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/map_ob000_item_AL.png");
 }
 
 void is::BombUp::action(is::ACharacter *character)

@@ -58,7 +58,7 @@ void is::Wall::placePowerUp(irr::core::vector3df pos)
 	default:
 		break;
 	}
-	if (powerUp && dynamic_cast<AEntity *>(_sptr.get())) {
+	if (powerUp && dynamic_cast<AEntity *>(_spointer.get())) {
  		powerUp->setPosition(getPosition());
 	}
 	_entities.unlock();
@@ -70,7 +70,7 @@ void is::Wall::explode()
 	_eventManager->enqueue([this, pos]{
 		placePowerUp(pos);
 		_entities.lock();
-		if (!dynamic_cast<is::Wall *>(_sptr.get())) {
+		if (!dynamic_cast<is::Wall *>(_spointer.get())) {
 			_entities.unlock();
 			return;
 		}
@@ -87,9 +87,9 @@ void is::Wall::setPowerUp(char powerUp)
 
 void is::Wall::texture()
 {
-	irrl::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/caisse.png");
+	irrl::ManageObject::createCube(_irrlicht, _spointer, 0.9999);
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/caisse.png");
 }
 
 char is::Wall::getPowerUp() const

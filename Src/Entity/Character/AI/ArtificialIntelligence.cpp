@@ -17,7 +17,7 @@ is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPoo
 	_entities.lock();
 	getMapDimensions();
 	std::pair<Type, IEntity *>tmp = std::pair<Type, IEntity *> (SAFE, nullptr);
-	if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+	if (!dynamic_cast<ACharacter *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -34,7 +34,7 @@ void 	is::ArtificialIntelligence::AIsTurn()
 {
 	Direction	dir;
 
-	if (!dynamic_cast<ACharacter *>(_sptr.get()))
+	if (!dynamic_cast<ACharacter *>(_spointer.get()))
 		return;
 	_entities.lock();
 	updateMap();
@@ -43,7 +43,7 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		dir = lookForAZone(SAFE);
 		headTowards(dir);
 		_entities.lock();
-		if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+		if (!dynamic_cast<ACharacter *>(_spointer.get())) {
 			_entities.unlock();
 			return;
 		}
@@ -56,7 +56,7 @@ void 	is::ArtificialIntelligence::AIsTurn()
 	if (dir != NONE) {
 		headTowards(dir);
 		_entities.lock();
-		if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+		if (!dynamic_cast<ACharacter *>(_spointer.get())) {
 			_entities.unlock();
 			return;
 		}
@@ -77,7 +77,7 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		headTowards(dir);
 	}
 	_entities.lock();
-	if (!dynamic_cast<ACharacter *>(_sptr.get())) {
+	if (!dynamic_cast<ACharacter *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -88,7 +88,7 @@ void 	is::ArtificialIntelligence::AIsTurn()
 
 bool is::ArtificialIntelligence::inDanger()
 {
-	float size = _irrlicht.getNodeSize(_sptr);
+	float size = _irrlicht.getNodeSize(_spointer);
 	if (_map[(int)_position.second * _width + (int)_position.first].first == BOMB || _map[(int)_position.second * _width + (int)_position.first].first == DANGER)
 		return (true);
 	if (_map[(int)(_position.second + size) * _width + (int)(_position.first + size)].first == BOMB || _map[(int)(_position.second + size) * _width + (int)(_position.first + size)].first == DANGER)
@@ -269,8 +269,8 @@ bool	is::ArtificialIntelligence::safeBombDrop()
 {
 	std::vector<std::pair<Type, IEntity *>> map = _map;
 
-	map[(int)(_position.first + _irrlicht.getNodeSize(_sptr) / 2) + (int)(_position.second + _irrlicht.getNodeSize(_sptr) / 2) * _width].first = BOMB;
-	map[(int)(_position.first + _irrlicht.getNodeSize(_sptr) / 2) + (int)(_position.second + _irrlicht.getNodeSize(_sptr) / 2) * _width].second = nullptr;
+	map[(int)(_position.first + _irrlicht.getNodeSize(_spointer) / 2) + (int)(_position.second + _irrlicht.getNodeSize(_spointer) / 2) * _width].first = BOMB;
+	map[(int)(_position.first + _irrlicht.getNodeSize(_spointer) / 2) + (int)(_position.second + _irrlicht.getNodeSize(_spointer) / 2) * _width].second = nullptr;
 	if (addDangerZones(map) == false) {
 		return (false);
 	}
@@ -291,7 +291,7 @@ bool 	is::ArtificialIntelligence::onCrate()
 void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir)
 {
 	if (dir == LEFT || dir == RIGHT) {
-		if ((int)(_position.second + 0.15) != (int)(_position.second + _irrlicht.getNodeSize(_sptr) + 0.20)) {
+		if ((int)(_position.second + 0.15) != (int)(_position.second + _irrlicht.getNodeSize(_spointer) + 0.20)) {
 			_goal.second = (int)(_position.second + 1.15);
 			_eventManager.lock();
 			_eventManager->enqueue([&]{moveDown();});
@@ -308,7 +308,7 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 			_eventManager.unlock();
 		}
 	} else {
-		if ((int)(_position.first + 0.15) != (int)(_position.first + _irrlicht.getNodeSize(_sptr) + 0.20)) {
+		if ((int)(_position.first + 0.15) != (int)(_position.first + _irrlicht.getNodeSize(_spointer) + 0.20)) {
 			_goal.first = (int)(_position.first - 0.85);
 			_eventManager.lock();
 			_eventManager->enqueue([&]{moveLeft();});

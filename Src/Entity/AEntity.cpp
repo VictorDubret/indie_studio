@@ -16,8 +16,8 @@
 is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, irrl::ManageIrrlicht &irrlicht):
 	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
-	_sptr = std::shared_ptr<IEntity>(this, [&](IEntity *){});
-	_entities->push_back(_sptr);
+	_spointer = std::shared_ptr<IEntity>(this, [&](IEntity *){});
+	_entities->push_back(_spointer);
 }
 
 is::AEntity::~AEntity()
@@ -27,8 +27,8 @@ is::AEntity::~AEntity()
 		lock();
 	}
 	_locked = true;
-	_irrlicht.deleteEntity(_sptr);
-	auto tmp = std::find(_entities->begin(), _entities->end(), _sptr);
+	_irrlicht.deleteEntity(_spointer);
+	auto tmp = std::find(_entities->begin(), _entities->end(), _spointer);
 	if (tmp != _entities->end())
 		_entities->erase(tmp);
 	unlock();
@@ -39,8 +39,8 @@ irr::core::vector3df const is::AEntity::getPosition() const
 {
 	irr::core::vector3df tmp({0, 0, 0});
 	_irrlicht.lock();
-	auto node = _irrlicht.getNode(_sptr.get());
-	if (_sptr.get() && node)
+	auto node = _irrlicht.getNode(_spointer.get());
+	if (_spointer.get() && node)
 		tmp = node->getPosition();
 	_irrlicht.unlock();
 	return tmp;
@@ -93,7 +93,7 @@ void is::AEntity::setZ(float z)
 void is::AEntity::setPosition(irr::core::vector3df position)
 {
 	_irrlicht.lock();
-	auto node = _irrlicht.getNode(_sptr.get());
+	auto node = _irrlicht.getNode(_spointer.get());
 	if (node)
 		node->setPosition(position);
 	_irrlicht.unlock();
@@ -136,7 +136,7 @@ void is::AEntity::explode()
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
-	auto size = _irrlicht.getNodeSize(_sptr);
+	auto size = _irrlicht.getNodeSize(_spointer);
 	return (((getX() >= entity->getX() && getX() < entity->getX() + size) || (getX() + size > entity->getX() && getX() + size < entity->getX() + size)) &&
 		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
 }
@@ -145,7 +145,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	_irrlicht.lock();
-	float size = _irrlicht.getNodeSize(_sptr);
+	float size = _irrlicht.getNodeSize(_spointer);
 	irr::core::vector3df pos(x, 0, z);
 	auto sceneManager = _irrlicht.getSceneManager();
 	_irrlicht.unlock();

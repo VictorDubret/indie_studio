@@ -34,7 +34,7 @@ is::UnbreakableWall::~UnbreakableWall()
 
 void is::UnbreakableWall::texture()
 {
-	irrl::ManageObject::createCube(_irrlicht, _sptr, 0.9999);
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/wall.png");
+	irrl::ManageObject::createCube(_irrlicht, _spointer, 0.9999);
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/wall.png");
 }

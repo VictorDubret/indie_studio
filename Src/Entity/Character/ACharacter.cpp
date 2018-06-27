@@ -29,17 +29,17 @@ is::ACharacter::ACharacter(
 
 void is::ACharacter::texture()
 {
-	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/character.b3d",
+	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/character.b3d",
 		0.6);
-	_irrlicht.getNode(_sptr.get())->setPosition(
+	_irrlicht.getNode(_spointer.get())->setPosition(
 		irr::core::vector3df(1.1f, -0.5f, 1.1f));
-	irrl::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _spointer,
 		irr::core::vector3df(0.9, 0.9, 0.9));
-	irrl::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _spointer,
 		irr::core::vector3df(0, 90, 0));
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, (std::string("media/") + std::to_string(_id) + std::string("_character.png")).c_str());
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setAnimation(_irrlicht, _spointer, irr::scene::EMAT_RUN);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, (std::string("media/") + std::to_string(_id) + std::string("_character.png")).c_str());
 }
 
 is::ACharacter::~ACharacter()
@@ -152,7 +152,7 @@ bool is::ACharacter::move(float nextX, float nextY, float nextZ)
 
 	for (auto &it: list) {
 		it->lock();
-		if (it.get() != this && it->isCollidable() && !it->isWalkable(_sptr) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
+		if (it.get() != this && it->isCollidable() && !it->isWalkable(_spointer) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
 			it->unlock();
 			return false;
 		}
@@ -173,14 +173,14 @@ bool is::ACharacter::move(float nextX, float nextY, float nextZ)
 void is::ACharacter::moveUp()
 {
 	if (_lastMove != MoveCharacter::UP) {
-		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _spointer,
 			irr::scene::EMAT_RUN);
-		irrl::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _spointer,
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+	if (!dynamic_cast<AEntity *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -203,14 +203,14 @@ void is::ACharacter::moveUp()
 void is::ACharacter::moveDown()
 {
 	if (_lastMove != MoveCharacter::DOWN) {
-		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _spointer,
 			irr::scene::EMAT_RUN);
-		irrl::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _spointer,
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+	if (!dynamic_cast<AEntity *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -233,14 +233,14 @@ void is::ACharacter::moveDown()
 void is::ACharacter::moveLeft()
 {
 	if (_lastMove != MoveCharacter::LEFT) {
-		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _spointer,
 			irr::scene::EMAT_RUN);
-		irrl::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _spointer,
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+	if (!dynamic_cast<AEntity *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -263,14 +263,14 @@ void is::ACharacter::moveLeft()
 void is::ACharacter::moveRight()
 {
 	if (_lastMove != MoveCharacter::RIGHT) {
-		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _spointer,
 			irr::scene::EMAT_RUN);
-		irrl::ManageObject::setRotation(_irrlicht, _sptr,
+		irrl::ManageObject::setRotation(_irrlicht, _spointer,
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+	if (!dynamic_cast<AEntity *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -293,7 +293,7 @@ void is::ACharacter::moveRight()
 void is::ACharacter::dropBomb()
 {
 	_entities.lock();
-	if (!dynamic_cast<AEntity *>(_sptr.get())) {
+	if (!dynamic_cast<AEntity *>(_spointer.get())) {
 		_entities.unlock();
 		return;
 	}
@@ -301,7 +301,7 @@ void is::ACharacter::dropBomb()
 		_entities.unlock();
 		return;
 	}
-	float size = _irrlicht.getNodeSize(_sptr);
+	float size = _irrlicht.getNodeSize(_spointer);
 	auto _entitiesAt = getEntitiesAt((int)(getX() + size / 2.0), (int)(getZ() + size / 2.0));
 
 	for (auto &it: _entitiesAt) {
@@ -314,7 +314,7 @@ void is::ACharacter::dropBomb()
 	}
 	lock();
 	--_bomb;
-	auto bomb = new is::Bomb(_entities, _eventManager, _sptr, _irrlicht);
+	auto bomb = new is::Bomb(_entities, _eventManager, _spointer, _irrlicht);
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
@@ -329,7 +329,7 @@ void is::ACharacter::explode()
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
 			_entities.lock();
-			if (!dynamic_cast<AEntity *>(_sptr.get())) {
+			if (!dynamic_cast<AEntity *>(_spointer.get())) {
 				_entities.unlock();
 				return;
 			}
@@ -344,7 +344,7 @@ void is::ACharacter::explode()
 void is::ACharacter::doNothing()
 {
 	if (_lastMove != MoveCharacter::NOTHING) {
-		irrl::ManageObject::setAnimation(_irrlicht, _sptr,
+		irrl::ManageObject::setAnimation(_irrlicht, _spointer,
 			irr::scene::EMAT_STAND);
 		_lastMove = MoveCharacter::NOTHING;
 	}

@@ -47,15 +47,15 @@ is::Explosion::~Explosion()
 
 void is::Explosion::texture()
 {
-	irrl::ManageObject::createAnim(_irrlicht, _sptr, "media/explosion.b3d",
+	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/explosion.b3d",
 		0.999);
-	irrl::ManageObject::setScale(_irrlicht, _sptr,
+	irrl::ManageObject::setScale(_irrlicht, _spointer,
 		irr::core::vector3df(1.0, 1.0, 1.0));
-	irrl::ManageObject::setRotation(_irrlicht, _sptr,
+	irrl::ManageObject::setRotation(_irrlicht, _spointer,
 		irr::core::vector3df(0, 0, 0));
-	irrl::ManageObject::setMaterialLight(_irrlicht, _sptr, false);
-	irrl::ManageObject::setAnimation(_irrlicht, _sptr, irr::scene::EMAT_RUN);
-	irrl::ManageObject::setTexture(_irrlicht, _sptr, "media/fire.jpg");
+	irrl::ManageObject::setMaterialLight(_irrlicht, _spointer, false);
+	irrl::ManageObject::setAnimation(_irrlicht, _spointer, irr::scene::EMAT_RUN);
+	irrl::ManageObject::setTexture(_irrlicht, _spointer, "media/fire.jpg");
 }
 
 void is::Explosion::explode()
