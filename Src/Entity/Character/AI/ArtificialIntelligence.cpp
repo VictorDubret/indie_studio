@@ -281,9 +281,12 @@ bool	is::ArtificialIntelligence::safeBombDrop()
 
 bool 	is::ArtificialIntelligence::onCrate()
 {
-	if (_map[(int)(_position.first + 0.15) + (int)(_position.second + 0.15) * _width].first == BOMB ||
-		_map[(int)(_position.first + 0.15) + (int)(_position.second + 0.15) * _width].first == CRATE)
-		return (true);
+	try {
+		if (_map[(int)(_position.first + 0.15) + (int)(_position.second + 0.15) * _width].first == BOMB ||
+			_map[(int)(_position.first + 0.15) + (int)(_position.second + 0.15) * _width].first == CRATE)
+			return (true);
+	}
+	catch (...) {}
 	return (false);
 }
 
