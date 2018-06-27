@@ -20,7 +20,7 @@ namespace my {
 		}
 
 		// Destructor
-		~ItemLocker() = default;
+		~ItemLocker();
 
 		// Getter
 
@@ -56,6 +56,10 @@ namespace my {
 		std::recursive_mutex _mutex;
 	private:
 	};
+	template<class ItemClass>
+	ItemLocker<ItemClass>::~ItemLocker()
+	{
+	}
 }
 
 #endif //CPP_INDIE_STUDIO_ITEMLOCKER_HPP

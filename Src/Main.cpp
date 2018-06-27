@@ -5,6 +5,7 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <chrono>
 #include "ThreadPool.hpp"
 #include "IEntity.hpp"
 #include "ItemLocker.hpp"
@@ -24,7 +25,6 @@ int main()
 	} catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;
 	}
-	lockList.unlock();
 	//pool->finishAll();
 	return 0;
 }

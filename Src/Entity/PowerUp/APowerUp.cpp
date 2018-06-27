@@ -68,7 +68,7 @@ void is::APowerUp::explode()
 			_entities.unlock();
 			return;
 		}
-		std::lock_guard<std::recursive_mutex> lock(_mutex);
+		_mutex.lock();
 		_locked = true;
 		this->~APowerUp();
 	});

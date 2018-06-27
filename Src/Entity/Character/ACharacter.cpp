@@ -167,13 +167,14 @@ void is::ACharacter::moveUp()
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
-	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
+	_entities.lock();
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
+		_entities.unlock();
 		return;
 	}
 	float x, y, z, next;
 	{
-		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
 		x = getX();
 		y = getY();
 		z = getZ();
@@ -186,6 +187,7 @@ void is::ACharacter::moveUp()
 		else
 			move(x - 0.1f, y, z);
 	}
+	_entities.unlock();
 }
 
 void is::ACharacter::moveDown()
@@ -197,13 +199,14 @@ void is::ACharacter::moveDown()
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
-	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
+	_entities.lock();
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
+		_entities.unlock();
 		return;
 	}
 	float x, y, z, next;
 	{
-		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
 		x = getX();
 		y = getY();
 		z = getZ();
@@ -216,6 +219,7 @@ void is::ACharacter::moveDown()
 		else
 			move(x - 0.1f, y, z);
 	}
+	_entities.unlock();
 }
 
 void is::ACharacter::moveLeft()
@@ -227,14 +231,15 @@ void is::ACharacter::moveLeft()
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
-	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
+	_entities.lock();
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
+		_entities.unlock();
 		return;
 	}
 
 	float x, y, z, next;
 	{
-		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
 		x = getX();
 		y = getY();
 		z = getZ();
@@ -247,6 +252,7 @@ void is::ACharacter::moveLeft()
 		else
 			move(x, y, z - 0.1f);
 	}
+	_entities.unlock();
 }
 
 void is::ACharacter::moveRight()
@@ -258,13 +264,14 @@ void is::ACharacter::moveRight()
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
-	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
+	_entities.lock();
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
+		_entities.unlock();
 		return;
 	}
 	float x, y, z, next;
 	{
-		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
 		x = getX();
 		y = getY();
 		z = getZ();
@@ -277,15 +284,18 @@ void is::ACharacter::moveRight()
 		else
 			move(x, y, z - 0.1f);
 	}
+	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
 {
-	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
+	_entities.lock();
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
+		_entities.unlock();
 		return;
 	}
 	if (_bomb <= 0) {
+		_entities.unlock();
 		return;
 	}
 	float size = _irrlicht.getNodeSize(_spointer);
@@ -295,15 +305,19 @@ void is::ACharacter::dropBomb()
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
+			_entities.unlock();
 			return;
 		}
 	}
-	std::lock_guard<std::recursive_mutex> lk2(_mutex);
-	--_bomb;
-	auto bomb = new is::Bomb(_entities, _eventManager, _spointer, _irrlicht);
-	bomb->setX((int)(getX() + size / 2.0));
-	bomb->setY((int)(getY()));
-	bomb->setZ((int)(getZ() + size / 2.0));
+	{
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
+		--_bomb;
+		auto bomb = new is::Bomb(_entities, _eventManager, _spointer, _irrlicht);
+		bomb->setX((int)(getX() + size / 2.0));
+		bomb->setY((int)(getY()));
+		bomb->setZ((int)(getZ() + size / 2.0));
+	}
+	_entities.unlock();
 }
 
 void is::ACharacter::explode()
@@ -312,8 +326,9 @@ void is::ACharacter::explode()
 	if (_pv == 0) {
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
-			std::lock_guard<std::recursive_mutex> lk(_entities.getMutex());
+			_entities.lock();
 			if (!dynamic_cast<AEntity *>(_spointer.get())) {
+				_entities.unlock();
 				return;
 			}
 			_mutex.lock();
