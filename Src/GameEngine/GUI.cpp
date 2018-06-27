@@ -121,60 +121,62 @@ void irrl::GUI::initPause()
 
 void irrl::GUI::initBaseScene()
 {
-	_base.lock();
-	_gui->clear();
-	_currentScene = "base";
+	{
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
+		_gui->clear();
+		_currentScene = "base";
 
-	_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(230, 100));
-	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(620, 110));
+		_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(230, 100));
+		_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(620, 110));
 
-	std::ifstream infile(".save.indie");
-	if (infile.good()) {
-		_base.resetListObj();
-		getSceneManager()->clear();
-		updateView();
-
-		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct irrl::hover_s &) {
+		std::ifstream infile(".save.indie");
+		if (infile.good()) {
 			_base.resetListObj();
-			_base.lock();
 			getSceneManager()->clear();
 			updateView();
-			if (!loadSave()) {
+
+			addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct irrl::hover_s &) {
 				_base.resetListObj();
+				_base.lock();
 				getSceneManager()->clear();
 				updateView();
-				remove(".indie.save");
-			}
-			_base.unlock();
-		});
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {
-			initSettingsScene();
-		});
-	} else
-		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {
+				if (!loadSave()) {
+					_base.resetListObj();
+					getSceneManager()->clear();
+					updateView();
+					remove(".indie.save");
+				}
+				_base.unlock();
+			});
+			addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {
+				initSettingsScene();
+			});
+		}
+		else
+			addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {
 			initSettingsScene();
 		});
 
-	addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct irrl::hover_s &) {
-		_base.resetListObj();
-		if (_nb_player != 2)
-			_splitScreen = false;
-		if (_nb_player + _nb_ia == 1)
-			_nb_ia = 1;
-		_base.lock();
-		getSceneManager()->clear();
-		_base.unlock();
-		addPlayerAndIA();
-		_base.setFloor();
-		updateView();
-		_sound->stop();
-		_displayGUI = false;
-		// setCameraPos();
-		_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
-		_currentScene = "game";
-		_base.checkLastAlive();
-	});
-	_base.unlock();
+		addButtonImage("playGame", "base", "media/button_hover.png", "media/button.png", irr::core::rect<irr::s32>(1000, 450, 1300, 750), [this](const struct irrl::hover_s &) {
+			_base.resetListObj();
+			if (_nb_player != 2)
+				_splitScreen = false;
+			if (_nb_player + _nb_ia == 1)
+				_nb_ia = 1;
+			_base.lock();
+			getSceneManager()->clear();
+			_base.unlock();
+			addPlayerAndIA();
+			_base.setFloor();
+			updateView();
+			_sound->stop();
+			_displayGUI = false;
+			// setCameraPos();
+			_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);
+			_currentScene = "game";
+			_base.checkLastAlive();
+		});
+	}
 }
 
 int irrl::GUI::getValueInput(irr::gui::IGUIEditBox *obj, int min, int max)
@@ -214,9 +216,10 @@ void irrl::GUI::updateRateSettings()
 
 void irrl::GUI::initSettingsScene()
 {
-	_base.lock();
-	_gui->clear();
-	_base.unlock();
+	{
+		std::lock_guard<std::recursive_mutex> lk(_mutex);
+		_gui->clear();
+	}
 	_currentScene = "settings";
 
 	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(230, 80));

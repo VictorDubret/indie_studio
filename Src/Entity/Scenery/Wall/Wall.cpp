@@ -33,7 +33,7 @@ is::Wall::~Wall()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }
@@ -74,7 +74,7 @@ void is::Wall::explode()
 			_entities.unlock();
 			return;
 		}
-		this->lock();
+		_mutex.lock();
 		_locked = true;
 		this->~Wall();
 	});

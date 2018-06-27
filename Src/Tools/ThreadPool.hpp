@@ -33,7 +33,7 @@ namespace my {
 			auto f = std::bind(std::forward<Callable>(func),
 				std::forward<Args>(args)...);
 
-			_tasks.push(f);
+			_tasks.push([=]() {f(); });
 			_cond.notify_one();
 		};
 
@@ -53,7 +53,7 @@ namespace my {
 		std::mutex _mutex;
 
 		std::condition_variable _cond;
-		std::queue<std::function<void(void)>> _tasks;
+		std::queue<std::function<void (void)>> _tasks;
 		std::vector<std::shared_ptr<my::Thread>> _threads;
 	};
 }

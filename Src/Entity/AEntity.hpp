@@ -57,10 +57,9 @@ namespace is {
 		std::vector<std::shared_ptr<IEntity>> getEntitiesAt(float x, float z) const;
 		void explode() override;
 
-		void lock() override;
-		void unlock() override;
-
 		virtual void texture() = 0;
+
+		std::recursive_mutex &getMutex() override;
 	protected:
 		my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &_entities;
 		my::ItemLocker<my::ThreadPool> &_eventManager;
@@ -71,7 +70,7 @@ namespace is {
 		bool _walkable = true;
 		bool _wallPassable = true;
 
-		std::mutex _mutex;
+		std::recursive_mutex _mutex;
 		bool _locked = false;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 

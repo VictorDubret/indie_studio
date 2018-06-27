@@ -37,7 +37,7 @@ is::Bomb::~Bomb()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }
@@ -55,7 +55,7 @@ void is::Bomb::explode()
 	_stopTimer = true;
 	_eventManager.lock();
 	_eventManager->enqueue([this]() {
-		lock();
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		_eventManager.lock();
 		float x = getX();
 		float z = getZ();
@@ -75,12 +75,11 @@ void is::Bomb::explode()
 				_entities.unlock();
 				return;
 			}
-			this->lock();
+			_mutex.lock();
 			_locked = true;
 			this->~Bomb();
 		});
 		_eventManager.unlock();
-		unlock();
 		return;
 	});
 	_eventManager.unlock();
@@ -175,22 +174,20 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			auto tmp_it = dynamic_cast<AEntity *>(it.get());
 			if (!tmp_it || stop)
 				return false;
-			it->lock();
+			std::lock_guard<std::recursive_mutex> lock(it->getMutex());
+
 			if (it->getType() == "Wall") {
 				it->explode();
 				createExplosion(f, which_axes, actualPos,
 					x_bomb, z_bomb);
-				it->unlock();
 				stop = true;
 				return false;
 			} else if (it->getType() == "UnbreakableWall") {
-				it->unlock();
 				stop = true;
 				return false;
 			}
 			if (it.get() != this)
 				it->explode();
-			it->unlock();
 			return true;
 		});
 	if (stop)
@@ -221,7 +218,6 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 {
-	unlock();
 	std::vector<std::shared_ptr<IEntity>> tmp_down = getEntitiesAt(
 		getX() + 0.15, getZ() + 0.15);
 	std::vector<std::shared_ptr<IEntity>> tmp_up = getEntitiesAt(
@@ -229,8 +225,10 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 	for (const auto &it : tmp_down) {
 		if (entity.get() == it.get()) {
 			for (const auto &tmp_entity : tmp_up) {
-				if (tmp_entity.get() == entity.get())
+				if (tmp_entity.get() == entity.get()) {
+					_entities.unlock();
 					return true;
+				}
 			}
 		}
 	}
