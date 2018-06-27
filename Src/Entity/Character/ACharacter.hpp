@@ -78,6 +78,7 @@ namespace is {
 		MoveCharacter _lastMove = MoveCharacter::UNKNOWN;
 
 		size_t _bomb = 1;
+
 		size_t _bombMax = 1;
 
 		size_t _bombLength = 1;

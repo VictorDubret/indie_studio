@@ -234,15 +234,17 @@ is::ArtificialIntelligence::Direction 	is::ArtificialIntelligence::lookForAZone(
 	std::vector<int>	map(_width * _height, 0);
 	int 			start = static_cast<int>(static_cast<int>(_position.second + 0.2) * _width + static_cast<int>(_position.first + 0.2));
 
-	for (std::size_t i = 0 ; i < _width * _height ; ++i) {
-		if (_map[i].first == WALL || _map[i].first == BOMB || _map[i].first == EXPLOSION ||
-			(getWallPass() == false && _map[i].first == CRATE))
-			map[i] = -3;
-		if (_map[i].first == DANGER)
-			map[i] = -2;
-		if (_map[i].first == type)
-			map[i] = -1;
-	}
+	try {
+		for (std::size_t i = 0; i < _width * _height; ++i) {
+			if (_map[i].first == WALL || _map[i].first == BOMB || _map[i].first == EXPLOSION ||
+				(getWallPass() == false && _map[i].first == CRATE))
+				map[i] = -3;
+			if (_map[i].first == DANGER)
+				map[i] = -2;
+			if (_map[i].first == type)
+				map[i] = -1;
+		}
+	} catch (...){}
 	return (breadthFirst(start, map));
 }
 
