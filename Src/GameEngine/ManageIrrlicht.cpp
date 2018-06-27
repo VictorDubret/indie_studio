@@ -5,8 +5,8 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <chrono>
 #include <irrTypes.h>
-#include <unistd.h>
 #include "ManageIrrlicht.hpp"
 
 irrl::ManageIrrlicht::ManageIrrlicht(
@@ -53,9 +53,9 @@ void irrl::ManageIrrlicht::loopDisplay()
 		displayFPS();
 		std::this_thread::yield();
 	}
-	sleep(3);
+	std::this_thread::sleep_for(std::chrono::seconds(3));
 	endPause();
-	sleep(3);
+	std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void irrl::ManageIrrlicht::manageEvent()

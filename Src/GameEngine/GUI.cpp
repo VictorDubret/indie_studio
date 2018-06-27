@@ -6,10 +6,9 @@
 */
 
 #include <iostream>
-#include <unistd.h>
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
+#include <chrono>
 #include <Entity/Scenery/Wall/Wall.hpp>
 #include <Entity/PowerUp/FireUp/FireUp.hpp>
 #include <Entity/PowerUp/BombUp/BombUp.hpp>
@@ -19,7 +18,6 @@
 #include <Entity/Bomb/Bomb.hpp>
 #include "MapGenerator.hpp"
 #include "ArtificialIntelligence.hpp"
-#include "GUI.hpp"
 
 irrl::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
@@ -97,7 +95,7 @@ void irrl::GUI::initPause()
 
 		std::ofstream _filestr(".save.indie");
 
-		sleep(1);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 		for (auto &it : _entities.get()) {
 			auto isIA = dynamic_cast<is::ArtificialIntelligence *>(it.get());
 			if (isIA == nullptr)
@@ -346,7 +344,7 @@ irr::io::path &irrl::GUI::getCurrentScene()
 bool irrl::GUI::isNumber(const std::string& s)
 {
 	std::string::const_iterator it = s.begin();
-	while (it != s.end() && std::isdigit(*it)) ++it;
+	while (it != s.end() && isdigit(*it)) ++it;
 	return !s.empty() && it == s.end();
 }
 

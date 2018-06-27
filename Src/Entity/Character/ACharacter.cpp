@@ -7,11 +7,7 @@
 
 #include <algorithm>
 #include <fstream>
-#include <unistd.h>
 #include <Entity/Scenery/Wall/Wall.hpp>
-#include "ThreadPool.hpp"
-#include "ACharacter.hpp"
-#include "Debug.hpp"
 #include "Bomb.hpp"
 #include "ManageObject.hpp"
 #include "APowerUp.hpp"
