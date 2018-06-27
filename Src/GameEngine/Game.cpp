@@ -22,6 +22,7 @@ irrl::Game::Game(
 irrl::Game::~Game()
 {
 	_stopThread = true;
+	_thread->join();
 	delete _device;
 	delete _engine;
 	delete _thread;
