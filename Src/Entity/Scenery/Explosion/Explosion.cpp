@@ -40,7 +40,7 @@ is::Explosion::~Explosion()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }

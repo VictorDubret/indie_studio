@@ -113,12 +113,11 @@ void	is::ArtificialIntelligence::setWalls()
 	for (const auto &it : _entities.get()) {
 		if (dynamic_cast<is::AEntity *>(it.get()) == nullptr)
 			continue;
-		it->lock();
+		std::lock_guard<std::recursive_mutex> lk(it->getMutex());
 		if (it->getType() == "UnbreakableWall") {
 			_map[(int)it->getX() + (int)it->getZ() * _width].first = WALL;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
 		}
-		it->unlock();
 	}
 }
 

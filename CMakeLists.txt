@@ -98,15 +98,13 @@ target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3 -w)
 
 endif (UNIX)
 
+if (WIN32)
+		add_definitions(-D_REENTRANT)
+endif (WIN32)
+
 include_directories(externalLibs/include)
 
-
-
 link_directories(externalLibs)
-
-target_link_libraries(bomberman
-        pthread)
-
 
 if(WIN32)
         TARGET_LINK_LIBRARIES(bomberman
@@ -118,5 +116,5 @@ endif(WIN32)
 
 if(UNIX)
 target_link_libraries(bomberman
-        Irrlicht GL Xxf86vm Xext X11 Xcursor ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so)
+        Irrlicht GL Xxf86vm Xext pthread X11 Xcursor ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so)
 endif(UNIX)

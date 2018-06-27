@@ -37,14 +37,15 @@ void irrl::ManageIrrlicht::loopDisplay()
 		if (_displayGUI) {
 			if (_currentScene != "pause")
 				endPause();
-			lock();
-			_driver->setViewPort(
-				irr::core::rect<irr::s32>(0, 0, 1600, 900));
-			_driver->beginScene(true, true,
-				irr::video::SColor(255, 115, 214, 210));
-			drawGUI();
-			_driver->endScene();
-			unlock();
+			{
+				std::lock_guard<std::recursive_mutex> lk(_mutex);
+				_driver->setViewPort(
+					irr::core::rect<irr::s32>(0, 0, 1600, 900));
+				_driver->beginScene(true, true,
+					irr::video::SColor(255, 115, 214, 210));
+				drawGUI();
+				_driver->endScene();
+			}
 		} else if (!_splitScreen) {
 			displayGlobalScene();
 		} else {
@@ -71,16 +72,12 @@ void irrl::ManageIrrlicht::manageEvent()
 			_draw = false;
 			_winPLayer = true;
 			endPause();
-			unlock();
 			initBaseScene();
-			lock();
 		} else if (_currentScene != "pause") {
 			setPause();
 			initPause();
 		}
 		_displayGUI = true;
-
-		unlock();
 	} else if (_displayGUI) {
 		manageEventGui();
 	} else if (!_endGame)

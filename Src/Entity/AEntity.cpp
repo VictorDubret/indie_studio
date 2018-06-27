@@ -24,14 +24,14 @@ is::AEntity::~AEntity()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 	_irrlicht.deleteEntity(_spointer);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _spointer);
 	if (tmp != _entities->end())
 		_entities->erase(tmp);
-	unlock();
+	_mutex.unlock();
 	_entities.unlock();
 }
 
@@ -160,38 +160,41 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	auto f = [&](std::shared_ptr<is::IEntity> entity) {
 		if (!dynamic_cast<AEntity *>(entity.get()))
 			return false;
-		entity->lock();
-		_irrlicht.lock();
-		auto tmp = _irrlicht.getNode(entity.get());
-		entity->unlock();
+		irr::scene::ISceneNode *tmp;
+		{
+			std::lock_guard<std::recursive_mutex> lk(entity->getMutex());
+			_irrlicht.lock();
+			tmp = _irrlicht.getNode(entity.get());
+		}
 		_irrlicht.unlock();
 		if (!tmp)
 			return false;
 		auto mesh2 = tmp->getTransformedBoundingBox();
 		return mesh1.intersectsWithBox(mesh2);
 	};
-	auto it = std::find_if(_entities->begin(), _entities->end(), f);
+
+	for (auto &it : _entities.get()) {
+		if (f(it)) {
+			ret.push_back(it);
+		}
+	}
+	/*auto it = std::find_if(_entities->begin(), _entities->end(), f);
 	while (it != _entities->end()) {
 		ret.push_back(*(it.base()));
 		it++;
 		if (it != _entities->end()) {
 			it = std::find_if(it, _entities->end(), f);
 		}
-	}
+	}*/
 	_irrlicht.lock();
 	node->remove();
 	_irrlicht.unlock();
 	return std::move(ret);
 }
 
-void is::AEntity::lock()
+std::recursive_mutex & is::AEntity::getMutex()
 {
-	_mutex.lock();
-}
-
-void is::AEntity::unlock()
-{
-	_mutex.unlock();
+	return _mutex;
 }
 
 void is::AEntity::setCollidable(bool state)

@@ -45,10 +45,7 @@ namespace is {
 		virtual void collide(IEntity * collider) = 0;
 		virtual void explode() = 0;
 
-		virtual void lock() = 0;
-		virtual void unlock() = 0;
-
-		//virtual void animate() = 0; // TODO when Irlicht is set
+		virtual std::recursive_mutex &getMutex() = 0;
 	};
 }
 

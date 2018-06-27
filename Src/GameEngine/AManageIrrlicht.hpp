@@ -69,6 +69,7 @@ namespace irrl {
 		int _fireUp = 29;
 		int _speedUp = 19;
 		int _wallPass = 2;
+		std::recursive_mutex _mutex;
 
 		irrklang::ISound *_sound = nullptr;
 

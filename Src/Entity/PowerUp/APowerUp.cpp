@@ -26,7 +26,7 @@ is::APowerUp::~APowerUp()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }
@@ -51,7 +51,7 @@ void is::APowerUp::collide(is::IEntity *entity)
 				_entities.unlock();
 				return;
 			}
-			this->lock();
+			_mutex.lock();
 			_locked = true;
 			this->~APowerUp();
 		});
@@ -68,7 +68,7 @@ void is::APowerUp::explode()
 			_entities.unlock();
 			return;
 		}
-		this->lock();
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		_locked = true;
 		this->~APowerUp();
 	});

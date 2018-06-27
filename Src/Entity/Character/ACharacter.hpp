@@ -72,7 +72,7 @@ namespace is {
 		float _speedCoef = 0.15;
 		std::size_t _id;
 
-		uint _pv = 1;
+		size_t _pv = 1;
 
 		bool _wallPass = false;
 		MoveCharacter _lastMove = MoveCharacter::UNKNOWN;

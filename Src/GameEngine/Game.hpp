@@ -70,7 +70,6 @@ namespace irrl {
 		void checkLastAlive();
 
 		protected:
-		std::mutex _mutex;
 
 		void manageEventPlayers();
 		void displayFPS();

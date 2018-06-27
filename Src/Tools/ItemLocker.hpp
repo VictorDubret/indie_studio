@@ -47,9 +47,13 @@ namespace my {
 			return _mutex.try_lock();
 		}
 
+		std::recursive_mutex &getMutex() {
+			return _mutex;
+		}
+
 	protected:
 		ItemClass &_item;
-		std::mutex _mutex;
+		std::recursive_mutex _mutex;
 	private:
 	};
 }

@@ -42,7 +42,7 @@ is::ACharacter::~ACharacter()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }
@@ -74,51 +74,45 @@ float const &is::ACharacter::getSpeed() const
 
 void is::ACharacter::setWallPass(bool wallPass)
 {
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	_wallPass = wallPass;
-	unlock();
 }
 
 void is::ACharacter::setBomb(size_t bomb)
 {
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	if (bomb <= _bombMax)
 		_bomb = bomb;
-	unlock();
 }
 
 void is::ACharacter::setBombMax(size_t bombMax)
 {
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	_bombMax = bombMax;
-	unlock();
 }
 
 void is::ACharacter::setBombLength(size_t length)
 {
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	_bombLength = length;
-	unlock();
 }
 
 void is::ACharacter::setSpeed(float speed)
 {
 	if (_speed > 4)
 		return;
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	if (_speedCoef * speed < 0.24)
 		_speed = speed;
 	else
 		_speed = 0.24 / (float) _speedCoef;
-	unlock();
 }
 
 is::ACharacter &is::ACharacter::operator++()
 {
-	lock();
+	std::lock_guard<std::recursive_mutex> lk(_mutex);
 	if (_bomb < _bombMax)
 		++_bomb;
-	unlock();
 	return *this;
 }
 
@@ -146,14 +140,12 @@ bool is::ACharacter::move(float nextX, float nextY, float nextZ)
 
 	auto list = getEntitiesAt(nextX, nextZ);
 
-	for (auto &it: list) {
-		it->lock();
+	for (auto &it : list) {
+		std::lock_guard<std::recursive_mutex> lk(it->getMutex());
 		if (it.get() != this && it->isCollidable() && !it->isWalkable(_spointer) && ((it->isWallPassable() && !_wallPass) || !it->isWallPassable())) {
-			it->unlock();
 			return false;
 		}
-		it->unlock();
-	} // TODO Sahel
+	}
 	while (abs(getX() - nextX) > 0.01 || abs(getY() - nextY) > 0.01 || abs(getZ() - nextZ) > 0.01) {
 		if (abs(getX() - nextX) > 0.01)
 			setX(getX() > nextX ? getX() - 0.01 : getX() + 0.01);
@@ -175,17 +167,18 @@ void is::ACharacter::moveUp()
 			irr::core::vector3df(0, 270, 0));
 		_lastMove = MoveCharacter::UP;
 	}
-	_entities.lock();
+	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
-		_entities.unlock();
 		return;
 	}
-	lock();
-	float x = getX();
-	float y = getY();
-	float z = getZ();
-	float next = z + _speed * _speedCoef;
-	unlock();
+	float x, y, z, next;
+	{
+		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		x = getX();
+		y = getY();
+		z = getZ();
+		next = z + _speed * _speedCoef;
+	}
 
 	if (!move(x, y, next)) {
 		if (x < _xmax / 2)
@@ -193,7 +186,6 @@ void is::ACharacter::moveUp()
 		else
 			move(x - 0.1f, y, z);
 	}
-	_entities.unlock();
 }
 
 void is::ACharacter::moveDown()
@@ -205,17 +197,18 @@ void is::ACharacter::moveDown()
 			irr::core::vector3df(0, 90, 0));
 		_lastMove = MoveCharacter::DOWN;
 	}
-	_entities.lock();
+	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
-		_entities.unlock();
 		return;
 	}
-	lock();
-	float x = getX();
-	float y = getY();
-	float z = getZ();
-	float next = z - _speed * _speedCoef;
-	unlock();
+	float x, y, z, next;
+	{
+		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		x = getX();
+		y = getY();
+		z = getZ();
+		next = z - _speed * _speedCoef;
+	}
 
 	if (!move(x, y, next)) {
 		if (x < _xmax / 2)
@@ -223,7 +216,6 @@ void is::ACharacter::moveDown()
 		else
 			move(x - 0.1f, y, z);
 	}
-	_entities.unlock();
 }
 
 void is::ACharacter::moveLeft()
@@ -235,17 +227,19 @@ void is::ACharacter::moveLeft()
 			irr::core::vector3df(0, 180, 0));
 		_lastMove = MoveCharacter::LEFT;
 	}
-	_entities.lock();
+	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
-		_entities.unlock();
 		return;
 	}
-	lock();
-	float x = getX();
-	float y = getY();
-	float z = getZ();
-	float next = x - _speed * _speedCoef;
-	unlock();
+
+	float x, y, z, next;
+	{
+		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		x = getX();
+		y = getY();
+		z = getZ();
+		next = x - _speed * _speedCoef;
+	}
 
 	if (!move(next, y, z)) {
 		if (z < _zmax / 2)
@@ -253,7 +247,6 @@ void is::ACharacter::moveLeft()
 		else
 			move(x, y, z - 0.1f);
 	}
-	_entities.unlock();
 }
 
 void is::ACharacter::moveRight()
@@ -265,17 +258,18 @@ void is::ACharacter::moveRight()
 			irr::core::vector3df(0, 0, 0));
 		_lastMove = MoveCharacter::RIGHT;
 	}
-	_entities.lock();
+	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
-		_entities.unlock();
 		return;
 	}
-	lock();
-	float x = getX();
-	float y = getY();
-	float z = getZ();
-	float next = x + _speed * _speedCoef;
-	unlock();
+	float x, y, z, next;
+	{
+		std::lock_guard<std::recursive_mutex> lk2(_mutex);
+		x = getX();
+		y = getY();
+		z = getZ();
+		next = x + _speed * _speedCoef;
+	}
 
 	if (!move(next, y, z)) {
 		if (z < _zmax / 2)
@@ -283,18 +277,15 @@ void is::ACharacter::moveRight()
 		else
 			move(x, y, z - 0.1f);
 	}
-	_entities.unlock();
 }
 
 void is::ACharacter::dropBomb()
 {
-	_entities.lock();
+	std::lock_guard<std::recursive_mutex> lk1(_entities.getMutex());
 	if (!dynamic_cast<AEntity *>(_spointer.get())) {
-		_entities.unlock();
 		return;
 	}
 	if (_bomb <= 0) {
-		_entities.unlock();
 		return;
 	}
 	float size = _irrlicht.getNodeSize(_spointer);
@@ -304,18 +295,15 @@ void is::ACharacter::dropBomb()
 		auto checkCharacter = dynamic_cast<ACharacter *>(it.get());
 		auto checkPowerUp = dynamic_cast<APowerUp *>(it.get());
 		if (checkCharacter == nullptr && checkPowerUp == nullptr) {
-			_entities.unlock();
 			return;
 		}
 	}
-	lock();
+	std::lock_guard<std::recursive_mutex> lk2(_mutex);
 	--_bomb;
 	auto bomb = new is::Bomb(_entities, _eventManager, _spointer, _irrlicht);
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
-	unlock();
-	_entities.unlock();
 }
 
 void is::ACharacter::explode()
@@ -324,12 +312,11 @@ void is::ACharacter::explode()
 	if (_pv == 0) {
 		_eventManager.lock();
 		_eventManager->enqueue([this]{
-			_entities.lock();
+			std::lock_guard<std::recursive_mutex> lk(_entities.getMutex());
 			if (!dynamic_cast<AEntity *>(_spointer.get())) {
-				_entities.unlock();
 				return;
 			}
-			lock();
+			_mutex.lock();
 			_locked = true;
 			this->~ACharacter();
 		});
@@ -352,5 +339,5 @@ void is::ACharacter::save()
 
 void is::ACharacter::setHP(int life)
 {
-	_pv = static_cast<uint>(life);
+	_pv = static_cast<size_t>(life);
 }

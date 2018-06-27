@@ -20,3 +20,10 @@ Makefile
 .gui_*
 .save.indie
 .vs
+ALL_BUILD.*
+bomberman.dir
+bomberman.sln
+*vcxproj*
+Debug
+INSTALL
+Release

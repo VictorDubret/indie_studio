@@ -21,7 +21,7 @@ is::FireUp::~FireUp()
 {
 	if (!_locked) {
 		_entities.lock();
-		lock();
+		_mutex.lock();
 	}
 	_locked = true;
 }
