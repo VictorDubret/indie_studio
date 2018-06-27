@@ -381,7 +381,7 @@ void irrl::Game::endPause()
 		if (tmp && it.first->getType() == "Bomb") {
 			auto tmp = static_cast<is::Bomb *>(it.first);
 			tmp->setPaused(false);
-			it.first->getMutex().unlock();
+			//it.first->getMutex().unlock();
 		}
 	}
 	_entities.unlock();
