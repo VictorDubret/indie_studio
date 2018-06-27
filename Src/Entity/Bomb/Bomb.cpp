@@ -226,12 +226,10 @@ bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
 		if (entity.get() == it.get()) {
 			for (const auto &tmp_entity : tmp_up) {
 				if (tmp_entity.get() == entity.get()) {
-					_entities.unlock();
 					return true;
 				}
 			}
 		}
 	}
-	_entities.unlock();
 	return false;
 }

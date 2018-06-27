@@ -72,12 +72,15 @@ void irrl::ManageIrrlicht::manageEvent()
 			_draw = false;
 			_winPLayer = true;
 			endPause();
+			unlock();
 			initBaseScene();
+			lock();
 		} else if (_currentScene != "pause") {
 			setPause();
 			initPause();
 		}
 		_displayGUI = true;
+		unlock();
 	} else if (_displayGUI) {
 		manageEventGui();
 	} else if (!_endGame)

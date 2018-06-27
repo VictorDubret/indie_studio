@@ -33,7 +33,7 @@ namespace my {
 			auto f = std::bind(std::forward<Callable>(func),
 				std::forward<Args>(args)...);
 
-			_tasks.push([=]() {f(); });
+			_tasks.push(f);
 			_cond.notify_one();
 		};
 

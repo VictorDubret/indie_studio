@@ -349,10 +349,12 @@ void 	is::ArtificialIntelligence::headTowards(is::ArtificialIntelligence::Direct
 
 void 	is::ArtificialIntelligence::updateMap()
 {
-	for (std::size_t i = _width + 1 ; i < (_height - 1) * _width ; ++i) {
-		_map[i].first = SAFE;
-		_map[i].second = nullptr;
-	}
+	try {
+		for (std::size_t i = _width + 1; i < (_height - 1) * _width; ++i) {
+			_map[i].first = SAFE;
+			_map[i].second = nullptr;
+		}
+	} catch(...) {}
 	setWalls();
 	_ennemies.clear();
 	for (const auto &it : _entities.get()) {

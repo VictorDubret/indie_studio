@@ -8,6 +8,11 @@
 #include <csignal>
 #include "ThreadPool.hpp"
 
+void catchS(int)
+{
+	
+}
+
 my::ThreadPool::ThreadPool(unsigned int threadNumber)
 {
 	for (unsigned int i = 0; i < threadNumber; i++) {
@@ -24,9 +29,17 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 					});
 					if (_stop)
 						break;
-					if (_tasks.size() && _tasks.front()) {
-						task = std::move(_tasks.front());
+					try {
+						signal(SIGSEGV, &catchS);
+						if (!_tasks.empty()) {
+							task = _tasks.front();
+							_tasks.pop();
+						}
+						signal(SIGSEGV, nullptr);
+					}
+					catch (...) {
 						_tasks.pop();
+						task = std::function<void(void)>();
 					}
 				}
 				if (task) {

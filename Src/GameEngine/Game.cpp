@@ -276,6 +276,10 @@ bool irrl::Game::deleteEntity(std::shared_ptr<is::IEntity> &entity)
 		}
 	}
 	lock();
+	if (!dynamic_cast<is::AEntity *>(entity.get())) {
+		unlock();
+		return false;
+	}
 	irrl::irrObj_t tmp_obj = _listObj[entity.get()];
 	auto tmp_find = _listObj.find(entity.get());
 	if (_device && _device->run() && tmp_find != _listObj.end() && tmp_obj.obj) {
