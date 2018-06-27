@@ -29,18 +29,16 @@ my::ThreadPool::ThreadPool(unsigned int threadNumber)
 					});
 					if (_stop)
 						break;
+					signal(SIGSEGV, &catchS);
 					try {
-						signal(SIGSEGV, &catchS);
-						if (!_tasks.empty()) {
-							task = _tasks.front();
-							_tasks.pop();
-						}
-						signal(SIGSEGV, nullptr);
+						if (!_tasks.empty())
+							task = std::move(_tasks.front());
 					}
 					catch (...) {
-						_tasks.pop();
 						task = std::function<void(void)>();
 					}
+					signal(SIGSEGV, nullptr);
+					_tasks.pop();
 				}
 				if (task) {
 					task();

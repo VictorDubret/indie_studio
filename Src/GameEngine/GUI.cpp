@@ -169,7 +169,9 @@ void irrl::GUI::initBaseScene()
 			addPlayerAndIA();
 			_base.setFloor();
 			updateView();
-			_sound->stop();
+			if (_sound)
+				_sound->stop();
+			_sound = nullptr;
 			_displayGUI = false;
 			// setCameraPos();
 			_sound = getSoundDevice()->play2D("media/sound/battle.ogg", true, false, true, irrklang::ESM_AUTO_DETECT, true);

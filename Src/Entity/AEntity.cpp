@@ -38,11 +38,9 @@ is::AEntity::~AEntity()
 irr::core::vector3df const is::AEntity::getPosition() const
 {
 	irr::core::vector3df tmp({0, 0, 0});
-	_irrlicht.lock();
 	auto node = _irrlicht.getNode(_spointer.get());
 	if (_spointer.get() && node)
 		tmp = node->getPosition();
-	_irrlicht.unlock();
 	return tmp;
 }
 
