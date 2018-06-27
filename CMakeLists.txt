@@ -28,6 +28,8 @@ include_directories(Src Src/Entity Src/Entity/Character
 add_executable(bomberman
         ${FILE})
 
+if (UNIX)
+
 add_custom_command(
         OUTPUT
         ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
@@ -86,18 +88,35 @@ add_custom_target(
         installIrrKlang
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so
 )
-
 add_dependencies(bomberman installIrrKlang)
-
-include_directories(externalLibs/include)
-
-target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3 -w)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrlicht.a
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs
         )
 
+target_compile_options(bomberman PRIVATE -W -Wall -Wextra -ggdb3 -w)
+
+endif (UNIX)
+
+include_directories(externalLibs/include)
+
+
+
 link_directories(externalLibs)
 
 target_link_libraries(bomberman
-        pthread Irrlicht GL Xxf86vm Xext X11 Xcursor ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so)
+        pthread)
+
+
+if(WIN32)
+        TARGET_LINK_LIBRARIES(bomberman
+        ${PROJECT_SOURCE_DIR}/externalLibs/Irrlicht.lib
+        ${PROJECT_SOURCE_DIR}/externalLibs/irrKlang.lib
+        )
+
+endif(WIN32)
+
+if(UNIX)
+target_link_libraries(bomberman
+        Irrlicht GL Xxf86vm Xext X11 Xcursor ${CMAKE_CURRENT_SOURCE_DIR}/externalLibs/libIrrKlang.so)
+endif(UNIX)
