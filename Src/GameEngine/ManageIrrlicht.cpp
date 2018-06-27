@@ -64,8 +64,10 @@ void irrl::ManageIrrlicht::manageEvent()
 	if (_eventReceiver.IsKeyDown(irr::KEY_ESCAPE) && getCurrentScene() != "base" && !_displayGUI) {
 		lock();
 
-		if (_sound)
+		if (_sound) {
 			_sound->stop();
+			_sound = nullptr;
+		}
 		_sound = getSoundDevice()->play2D("media/sound/opening.ogg", false, false, true, irrklang::ESM_AUTO_DETECT, true);
 		if (_currentScene == "winner") {
 			_endGame = false;
