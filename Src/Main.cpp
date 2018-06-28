@@ -13,7 +13,7 @@
 
 int main()
 {
-	my::ThreadPool thpool(100);
+	my::ThreadPool thpool(1);
 	std::vector<std::shared_ptr<is::IEntity>> list;
 	my::ItemLocker<my::ThreadPool> pool(thpool);
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> lockList(list);

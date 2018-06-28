@@ -28,12 +28,17 @@ namespace is {
 		// Other
 		void explode() override;
 		void collide(IEntity *) override;
+		void timer();
 
 		void texture() override;
 		void setIsPaused(const bool isPaused);
 
 		private:
 		bool _isPaused = false;
+
+		size_t _time = 1;
+		ssize_t _startedAt;
+		ssize_t _lastTime;
 
 	};
 };

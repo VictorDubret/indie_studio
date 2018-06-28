@@ -297,36 +297,42 @@ void 	is::ArtificialIntelligence::move(is::ArtificialIntelligence::Direction dir
 	if (dir == LEFT || dir == RIGHT) {
 		if ((int)(_position.second + 0.15) != (int)(_position.second + _irrlicht.getNodeSize(_spointer) + 0.20)) {
 			_goal.second = (int)(_position.second + 1.15);
-			_eventManager.lock();
+			moveDown();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveDown();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
 		} else if (dir == LEFT) {
 			_goal.first = (int)(_position.first - 0.85);
-			_eventManager.lock();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveLeft();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
+			moveLeft();
 		} else {
 			_goal.first = (int)(_position.first + 1.15);
-			_eventManager.lock();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveRight();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
+			moveRight();
 		}
 	} else {
 		if ((int)(_position.first + 0.15) != (int)(_position.first + _irrlicht.getNodeSize(_spointer) + 0.20)) {
 			_goal.first = (int)(_position.first - 0.85);
-			_eventManager.lock();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveLeft();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
+			moveLeft();
 		} else if (dir == DOWN) {
 			_goal.second = (int)(_position.second + 1.15);;
-			_eventManager.lock();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveDown();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
+			moveDown();
 		} else {
 			_goal.second = (int)(_position.second - 0.85);;
-			_eventManager.lock();
+			/*_eventManager.lock();
 			_eventManager->enqueue([&]{moveUp();});
-			_eventManager.unlock();
+			_eventManager.unlock();*/
+			moveUp();
 		}
 	}
 }

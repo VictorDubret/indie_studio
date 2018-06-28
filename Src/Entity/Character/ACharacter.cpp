@@ -324,18 +324,18 @@ void is::ACharacter::explode()
 {
 	--_pv;
 	if (_pv == 0) {
-		_eventManager.lock();
-		_eventManager->enqueue([this]{
-			_entities.lock();
+		/*_eventManager.lock();
+		_eventManager->enqueue([this]{*/
+			//_entities.lock();
 			if (!dynamic_cast<AEntity *>(_spointer.get())) {
-				_entities.unlock();
+			//	_entities.unlock();
 				return;
 			}
-			_mutex.lock();
-			_locked = true;
+			//_mutex.lock();
+			//_locked = true;
 			this->~ACharacter();
-		});
-		_eventManager.unlock();
+		/*});
+		_eventManager.unlock();*/
 	}
 }
 

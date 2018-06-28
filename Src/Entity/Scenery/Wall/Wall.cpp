@@ -67,7 +67,7 @@ void is::Wall::placePowerUp(irr::core::vector3df pos)
 void is::Wall::explode()
 {
 	irr::core::vector3df pos = getPosition();
-	_eventManager->enqueue([this, pos]{
+	/*_eventManager->enqueue([this, pos]{*/
 		placePowerUp(pos);
 		_entities.lock();
 		if (!dynamic_cast<is::Wall *>(_spointer.get())) {
@@ -77,7 +77,7 @@ void is::Wall::explode()
 		_mutex.lock();
 		_locked = true;
 		this->~Wall();
-	});
+	/*});*/
 }
 
 void is::Wall::setPowerUp(char powerUp)

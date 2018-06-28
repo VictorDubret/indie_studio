@@ -39,13 +39,13 @@ void is::APowerUp::collide(is::IEntity *entity)
 		//_entities.lock();
 		auto tmp = dynamic_cast<is::AEntity *>(entity);
 		if (!tmp) {
-			_entities.unlock();
+			//_entities.unlock();
 			return;
 		}
 		action(character);
 		//_entities.unlock();
-		_eventManager.lock();
-		_eventManager->enqueue([this]{
+		/*_eventManager.lock();
+		_eventManager->enqueue([this]{*/
 			_entities.lock();
 			if (!dynamic_cast<APowerUp *>(_spointer.get())) {
 				_entities.unlock();
@@ -54,15 +54,15 @@ void is::APowerUp::collide(is::IEntity *entity)
 			_mutex.lock();
 			_locked = true;
 			this->~APowerUp();
-		});
-		_eventManager.unlock();
+		/*});
+		_eventManager.unlock();*/
 	}
 }
 
 void is::APowerUp::explode()
 {
-	_eventManager.lock();
-	_eventManager->enqueue([this]{
+	/*_eventManager.lock();
+	_eventManager->enqueue([this]{*/
 		_entities.lock();
 		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
 			_entities.unlock();
@@ -71,8 +71,8 @@ void is::APowerUp::explode()
 		_mutex.lock();
 		_locked = true;
 		this->~APowerUp();
-	});
-	_eventManager.unlock();
+	/*});
+	_eventManager.unlock();*/
 }
 
 void is::APowerUp::texture()

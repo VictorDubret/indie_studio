@@ -14,7 +14,7 @@
 namespace is {
 
 	class Bomb : public AEntity {
-		public:
+	public:
 		Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 			my::ItemLocker<my::ThreadPool> &eventManager,
 			std::shared_ptr<IEntity> &Player,
@@ -25,7 +25,7 @@ namespace is {
 
 		void explode() override;
 
-		void timer(size_t time);
+		void timer();
 
 		void texture() override;
 
@@ -33,7 +33,7 @@ namespace is {
 
 		void setPaused(const bool isPaused);
 
-		private:
+	private:
 
 		bool isWalkable(std::shared_ptr<is::IEntity> &entity) override;
 
@@ -44,8 +44,6 @@ namespace is {
 
 		size_t _lenExplosion = 1;
 
-		bool _stopTimer = false;
-
 		bool check_arround(int lenExplosion, int actualPos, std::function<float(int)> f, Axes_t which_axes, float x, float z);
 
 		void createExplosion(std::function<float(int)> &f, Axes_t &which_axes, int &actualPos, float x_bomb, float z_bomb);
@@ -54,6 +52,11 @@ namespace is {
 		void doExplosions(float x, float z);
 
 		bool _isPaused = false;
+		bool _explosed = false;
+
+		size_t _time = 2;
+		ssize_t _startedAt = 0;
+		ssize_t _lastTime = 0;
 	};
 }
 

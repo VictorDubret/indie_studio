@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <algorithm>
+#include <ctime>
 #include "ItemLocker.hpp"
 #include "Bomb.hpp"
 #include "Explosion.hpp"
@@ -17,8 +18,8 @@
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
 	std::shared_ptr<IEntity> &Player, irrl::ManageIrrlicht &irrlicht,
-	size_t time
-) : AEntity(entities, eventManager, irrlicht), _player(Player)
+	size_t t
+) : AEntity(entities, eventManager, irrlicht), _player(Player), _time(t)
 {
 	_type = "Bomb";
 	auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
@@ -30,7 +31,9 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	_collidable = true;
 	_wallPassable = false;
 	texture();
-	timer(time);
+	//timer(time);
+	_startedAt = time(nullptr);
+	_lastTime = time(nullptr);
 }
 
 is::Bomb::~Bomb()
@@ -49,11 +52,19 @@ void is::Bomb::setPaused(const bool isPaused)
 
 void is::Bomb::explode()
 {
-	if (_stopTimer) {
+	if (_explosed)
 		return;
-	}
-	_stopTimer = true;
-	_eventManager.lock();
+	_explosed = true;
+	// test
+	float x = getX();
+	float z = getZ();
+	doExplosions(x, z);
+	auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
+	if (tmp)
+		tmp->operator++();
+	this->~Bomb();
+
+	/*_eventManager.lock();
 	_eventManager->enqueue([this]() {
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		_eventManager.lock();
@@ -82,12 +93,22 @@ void is::Bomb::explode()
 		_eventManager.unlock();
 		return;
 	});
-	_eventManager.unlock();
+	_eventManager.unlock();*/
 }
 
-void is::Bomb::timer(size_t time)
+void is::Bomb::timer()
 {
-	_eventManager.lock();
+	ssize_t now = time(nullptr);
+
+	//std::cout << _startedAt << " + " << _time << " <= " << now << std::endl;
+	if (_isPaused && now > _lastTime) {
+		_time++;
+	}
+	if (!_isPaused && _startedAt + _time <= now) {
+		explode();
+	}
+	_lastTime = now;
+	/*_eventManager.lock();
 	_eventManager->enqueue([this, time]() {
 		Timer t;
 
@@ -119,7 +140,7 @@ void is::Bomb::timer(size_t time)
 		}
 		explode();
 	});
-	_eventManager.unlock();
+	_eventManager.unlock();*/
 }
 
 void is::Bomb::texture()
@@ -204,16 +225,16 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 {
 	float x = (which_axes == XAXES) ? f(actualPos) : x_bomb;
 	float z = (which_axes == ZAXES) ? f(actualPos) : z_bomb;
-	_eventManager.lock();
-	_eventManager->enqueue([this, x, z]() {
+	/*_eventManager.lock();
+	_eventManager->enqueue([this, x, z]() {*/
 		_entities.lock();
 		auto explosion = new is::Explosion(_entities, _eventManager,
 			_irrlicht);
 		explosion->setX(x);
 		explosion->setZ(z);
 		_entities.unlock();
-	});
-	_eventManager.unlock();
+	/*});
+	_eventManager.unlock();*/
 }
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)
