@@ -37,6 +37,7 @@ void is::APowerUp::collide(is::IEntity *entity)
 			return;
 		}
 		action(character);
+		character->setScore(character->getScore() + _score);
 		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
 			return;
 		}

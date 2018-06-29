@@ -123,12 +123,13 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 	std::vector<std::shared_ptr<IEntity>> tmp = getEntitiesAt(x, z);
 	std::for_each(tmp.begin(), tmp.end(),
 		[&](std::shared_ptr<IEntity> &it) {
+			auto player = dynamic_cast<ACharacter *>(_player.get());
 			auto tmp_it = dynamic_cast<AEntity *>(it.get());
 			if (!tmp_it || stop)
 				return false;
-			std::lock_guard<std::recursive_mutex> lock(
-				it->getMutex());
-
+			if (player) {
+				player->explode(it.get());
+			}
 			if (it->getType() == "Wall") {
 				it->explode();
 				createExplosion(f, which_axes, actualPos,
@@ -139,8 +140,9 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 				stop = true;
 				return false;
 			}
-			if (it.get() != this)
+			if (it.get() != this) {
 				it->explode();
+			}
 			return true;
 		});
 	if (stop)

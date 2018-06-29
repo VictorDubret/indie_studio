@@ -34,6 +34,7 @@ namespace is {
 	protected:
 		virtual void action(is::ACharacter *entity) = 0;
 
+		size_t _score = 2000;
 	private:
 	};
 }

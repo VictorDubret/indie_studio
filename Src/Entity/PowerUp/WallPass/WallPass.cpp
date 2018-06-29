@@ -15,6 +15,7 @@ is::WallPass::WallPass(
 ) : APowerUp(entities, eventManager, irrlicht)
 {
 	_type = "WallPass";
+	_score = 4000;
 	texture();
 }
 

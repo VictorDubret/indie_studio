@@ -295,6 +295,7 @@ void is::ACharacter::dropBomb()
 	bomb->setX((int)(getX() + size / 2.0));
 	bomb->setY((int)(getY()));
 	bomb->setZ((int)(getZ() + size / 2.0));
+	_score += 100;
 }
 
 void is::ACharacter::explode()
@@ -324,4 +325,27 @@ void is::ACharacter::save()
 void is::ACharacter::setHP(int life)
 {
 	_pv = static_cast<size_t>(life);
+}
+
+
+size_t is::ACharacter::getScore() const
+{
+	return _score;
+}
+
+void is::ACharacter::setScore(size_t score)
+{
+	_score = score;
+}
+
+void is::ACharacter::explode(IEntity *entity)
+{
+	if (dynamic_cast<is::Wall *>(entity)) {
+		_score += 300;
+		return;
+	}
+	if (dynamic_cast<is::ACharacter *>(entity)) {
+		_score += 5000;
+		return;
+	}
 }

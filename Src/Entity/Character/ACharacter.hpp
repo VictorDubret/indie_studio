@@ -61,10 +61,14 @@ namespace is {
 		void save();
 
 		void explode() override;
+		void explode(is::IEntity *entity);
 
 		bool checkCollision(std::vector<std::shared_ptr<is::IEntity>> &);
 
 		void texture() override;
+
+		size_t getScore() const;
+		void setScore(size_t score);
 	protected:
 		/*
 		 * Internal Config
@@ -87,6 +91,8 @@ namespace is {
 		bool move(float, float, float);
 		int _xmax = -1;
 		int _zmax = -1;
+
+		size_t _score = 0;
 	private:
 	};
 }
