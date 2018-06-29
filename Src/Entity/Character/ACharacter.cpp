@@ -349,3 +349,8 @@ void is::ACharacter::explode(IEntity *entity)
 		return;
 	}
 }
+
+size_t const &is::ACharacter::getID() const
+{
+	return _id;
+}

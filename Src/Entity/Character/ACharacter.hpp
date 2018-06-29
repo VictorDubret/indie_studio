@@ -36,6 +36,7 @@ namespace is {
 		size_t const &getBombMax() const;
 		size_t const &getBombLength() const;
 		float const &getSpeed() const;
+		size_t const &getID() const;
 
 
 		// Setter

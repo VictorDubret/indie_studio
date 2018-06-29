@@ -17,7 +17,6 @@ irrl::Game::Game(
 ) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
 
-	/* init win picture */
 	_winPicture = _driver->getTexture("media/winner.png");
 	_drawPicture = _driver->getTexture("media/draw.png");
 
@@ -29,12 +28,16 @@ irrl::Game::Game(
 	irr::core::position2d<irr::s32> position1;
 	position1.X = tmpSize.Width + _winPosPicture.X;
 	position1.Y = tmpSize.Height + _winPosPicture.Y;
-
 	_winRectangle.UpperLeftCorner = _winPosPicture;
 	_winRectangle.LowerRightCorner = position1;
 
 	_splitScreen = splitScreen;
 	updateView();
+	_font = _device->getGUIEnvironment()->getFont("media/bigfont.png");
+	_color[1] = {255, 255, 0, 0};
+	_color[2] = {255, 255, 165, 0};
+	_color[3] = {255, 65, 105, 225};
+	_color[4] = {255, 255, 250, 250};
 }
 
 irrl::Game::~Game()
@@ -51,12 +54,14 @@ void irrl::Game::updateView()
 	_endGame = false;
 	_draw = false;
 	_winPLayer = true;
+	_startTime = std::chrono::system_clock::now();
 	irr::core::vector2df tmpDist;
 	tmpDist.X = -(_mapSize.first / 2);
 	tmpDist.Y = 0;
 	_distBetweenPlayer.push_back(tmpDist);
 	tmpDist.X = _mapSize.first / 2;
 	_distBetweenPlayer.push_back(tmpDist);
+
 	_camera[GLOBAL] = _sceneManager->addCameraSceneNode(0,
 		irr::core::vector3df(getMapSize().X / 2 + 1, static_cast<irr::f32>(getMapSize().X / 1.1), getMapSize().Y / 2),
 		irr::core::vector3df(getMapSize().X / 2 + 1, 0, getMapSize().Y / 2 + 1));
@@ -66,6 +71,12 @@ void irrl::Game::updateView()
 		_camera[PLAYER2] = _sceneManager->addCameraSceneNode(0, irr::core::vector3df(getMapSize().X / 2 + 1, (getMapSize().X / 2), -3), irr::core::vector3df(getMapSize().X / 2 + 1, getMapSize().X / 10, getMapSize().X / 4));
 	}
 }
+unsigned long long irrl::Game::gameLengh() const
+{
+	return static_cast<unsigned long long int>
+	(std::chrono::duration_cast<std::chrono::milliseconds>(
+			std::chrono::system_clock::now() - _startTime).count());
+}
 
 void irrl::Game::displayGlobalScene()
 {
@@ -73,7 +84,7 @@ void irrl::Game::displayGlobalScene()
 		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 		lock();
 		_sceneManager->drawAll();
-			_driver->draw2DImage(_drawPicture, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		_driver->draw2DImage(_drawPicture, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
 		unlock();
 		_driver->endScene();
 		return;
@@ -83,6 +94,7 @@ void irrl::Game::displayGlobalScene()
 		lock();
 		setCameraPos();
 		_sceneManager->drawAll();
+		displayScore();
 		unlock();
 		_driver->endScene();
 
@@ -136,6 +148,7 @@ void irrl::Game::endScene()
 				_sceneManager->drawAll();
 				unlock();
 				_driver->draw2DImage(_winPicture, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+				_font->draw(_gameLengh, irr::core::rect<irr::s32>(130,10,300,200), irr::video::SColor(255,255,255,255));
 				_driver->endScene();
 			} else {
 				if (!getNode(it.entity))
@@ -144,13 +157,11 @@ void irrl::Game::endScene()
 				if (_winPLayer) {
 					_camera[GLOBAL]->setPosition(irr::core::vector3df(winnerPos.X, _camera[GLOBAL]->getPosition().Y, winnerPos.Z - 1));
 					_camera[GLOBAL]->setTarget(winnerPos);
-					it.entity->moveDown();
+					//it.entity->moveDown();
 					_winPLayer = false;
 				} else {
 					const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
 					_camera[GLOBAL]->setPosition(tmp);
-
-
 				}
 				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 				lock();
@@ -185,12 +196,14 @@ void irrl::Game::displayBothPlayers()
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900 / 2));
 	lock();
 	_sceneManager->drawAll();
+	displayScore();
 	unlock();
 	/* Display of Player 2 */
 	_sceneManager->setActiveCamera(_camera[PLAYER2]);
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 450, 1600, 900));
 	lock();
 	_sceneManager->drawAll();
+	displayScore();
 	unlock();
 	_driver->endScene();
 }
@@ -455,14 +468,28 @@ void irrl::Game::checkLastAlive()
 		alivePLayer++;
 	}
 	if (alivePLayer == 0) {
+		float time = gameLengh();
+		_gameLengh = "";
+		_gameLengh += time;
 		_draw = true;
 		return;
 	}
 	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;
+		float time = gameLengh();
+		_gameLengh = "";
 		for (auto &it : _listPlayer) {
-			if (it.alive)
+			if (it.alive) {
 				it.entity->setHP(10);
+				if (it.entity->getScore() > _bestScore) {
+					_bestScore = it.entity->getScore();
+					_gameLengh += "New Record ! ";
+					_gameLengh += it.entity->getScore();
+				} else {
+					_gameLengh += "Winner Score ";
+					_gameLengh += it.entity->getScore();
+				}
+			}
 		}
 	}
 }
@@ -519,4 +546,27 @@ void irrl::Game::setBG()
 	cubeNode->setPosition(irr::core::vector3df(0, -0.7f, 0));
 	cubeNode->setMaterialFlag(irr::video::EMF_WIREFRAME, false);
 	cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+}
+
+void irrl::Game::displayScore()
+{
+
+	int topPos = 40;
+	for (auto &it : _listPlayer) {
+		if (!it.alive || !getNode(it.entity)) {
+			_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(130,10 + topPos,300,200 + topPos), _color[it.entity->getID()]);
+			topPos += 40;
+			continue;
+		}
+		_scoreString[it.entity->getID()] = "";
+		float tmpScore = it.entity->getScore();
+		_scoreString[it.entity->getID()] += tmpScore;
+		if (!_scoreString[it.entity->getID()].empty()) {
+			while (_scoreString[it.entity->getID()][_scoreString[it.entity->getID()].size() - 1] == '0')
+				_scoreString[it.entity->getID()].erase(_scoreString[it.entity->getID()].size() -1);
+			_scoreString[it.entity->getID()].erase(_scoreString[it.entity->getID()].size() -1);
+		}
+		_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(130,10 + topPos,300,200 + topPos), _color[it.entity->getID()]);
+		topPos += 40;
+	}
 }
