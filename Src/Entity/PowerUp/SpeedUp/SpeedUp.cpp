@@ -19,10 +19,6 @@ is::SpeedUp::SpeedUp(
 
 is::SpeedUp::~SpeedUp()
 {
-	if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}
 	_locked = true;
 }
 

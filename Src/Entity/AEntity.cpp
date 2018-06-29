@@ -13,26 +13,22 @@
 #include "ManageIrrlicht.hpp"
 #include "ManageObject.hpp"
 
-is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, irrl::ManageIrrlicht &irrlicht):
-	_entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
+is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager,
+	irrl::ManageIrrlicht &irrlicht
+) : _entities(entities), _eventManager(eventManager), _irrlicht(irrlicht)
 {
-	_spointer = std::shared_ptr<IEntity>(this, [&](IEntity *){});
+	_spointer = std::shared_ptr<IEntity>(this, [&](IEntity *) {
+	});
 	_entities->push_back(_spointer);
 }
 
 is::AEntity::~AEntity()
 {
-	if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}
-	_locked = true;
+
 	_irrlicht.deleteEntity(_spointer);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _spointer);
 	if (tmp != _entities->end())
 		_entities->erase(tmp);
-	_mutex.unlock();
-	_entities.unlock();
 }
 
 irr::core::vector3df const is::AEntity::getPosition() const
@@ -44,7 +40,7 @@ irr::core::vector3df const is::AEntity::getPosition() const
 	return tmp;
 }
 
-std::string const& is::AEntity::getType() const
+std::string const &is::AEntity::getType() const
 {
 	return _type;
 }
@@ -124,22 +120,26 @@ bool is::AEntity::isWallPassable() const
 
 void is::AEntity::collide(IEntity *collider)
 {
-	//Debug::debug(_type, " collide with ", collider->getType());
 }
 
 void is::AEntity::explode()
 {
-	//Debug::debug(_type, " explode");
 }
 
 bool is::AEntity::isInCollisionWith(std::shared_ptr<is::IEntity> &entity)
 {
 	auto size = _irrlicht.getNodeSize(_spointer);
-	return (((getX() >= entity->getX() && getX() < entity->getX() + size) || (getX() + size > entity->getX() && getX() + size < entity->getX() + size)) &&
-		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) || (getZ() + size > entity->getZ() && getZ() + size < entity->getZ() + size)));
+	return (((getX() >= entity->getX() && getX() < entity->getX() + size) ||
+		(getX() + size > entity->getX() &&
+			getX() + size < entity->getX() + size)) &&
+		((getY() >= entity->getZ() && getZ() < entity->getZ() + size) ||
+			(getZ() + size > entity->getZ() &&
+				getZ() + size < entity->getZ() + size)));
 }
 
-std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, float z) const
+std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x,
+	float z
+) const
 {
 	std::vector<std::shared_ptr<is::IEntity>> ret;
 	_irrlicht.lock();
@@ -150,7 +150,8 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 	if (!sceneManager) {
 		return ret;
 	}
-	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0, 1, pos);
+	irr::scene::ISceneNode *node = sceneManager->addCubeSceneNode(size, 0,
+		1, pos);
 
 	auto mesh1 = node->getTransformedBoundingBox();
 	node->setVisible(false);
@@ -159,11 +160,8 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 		if (!dynamic_cast<AEntity *>(entity.get()))
 			return false;
 		irr::scene::ISceneNode *tmp;
-		{
-			std::lock_guard<std::recursive_mutex> lk(entity->getMutex());
-			_irrlicht.lock();
-			tmp = _irrlicht.getNode(entity.get());
-		}
+		_irrlicht.lock();
+		tmp = _irrlicht.getNode(entity.get());
 		_irrlicht.unlock();
 		if (!tmp)
 			return false;
@@ -176,21 +174,13 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 			ret.push_back(it);
 		}
 	}
-	/*auto it = std::find_if(_entities->begin(), _entities->end(), f);
-	while (it != _entities->end()) {
-		ret.push_back(*(it.base()));
-		it++;
-		if (it != _entities->end()) {
-			it = std::find_if(it, _entities->end(), f);
-		}
-	}*/
 	_irrlicht.lock();
 	node->remove();
 	_irrlicht.unlock();
 	return std::move(ret);
 }
 
-std::recursive_mutex & is::AEntity::getMutex()
+std::recursive_mutex &is::AEntity::getMutex()
 {
 	return _mutex;
 }

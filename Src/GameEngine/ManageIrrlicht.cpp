@@ -54,9 +54,6 @@ void irrl::ManageIrrlicht::loopDisplay()
 		displayFPS();
 		std::this_thread::yield();
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(3));
-	endPause();
-	std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void irrl::ManageIrrlicht::manageEvent()

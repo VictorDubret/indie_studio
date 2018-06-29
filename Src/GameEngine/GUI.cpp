@@ -430,12 +430,13 @@ bool irrl::GUI::loadEntity(is::ACharacter *&player2, int &j, std::vector<std::st
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 		if (!setEntity(tmpVector, wall, _base))
 			return false;
-	} else if (tmpVector[0] == "Bomb" && player2 != nullptr) {
+	} /*else if (tmpVector[0] == "Bomb" && player2 != nullptr) {
+		std::cerr << "Bomb generated " << std::endl;
 		is::IEntity *tmp_data = new is::Bomb(_entities, _eventManager, reinterpret_cast<std::shared_ptr<is::IEntity> &>(player2), _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 		if (!setEntity(tmpVector, wall, _base))
 			return false;
-	} else if (tmpVector[0] == "BombUp") {
+	} */else if (tmpVector[0] == "BombUp") {
 		is::IEntity *tmp_data = new is::BombUp(_entities, _eventManager, _base);
 		std::shared_ptr<is::IEntity> wall = std::shared_ptr<is::IEntity>(tmp_data, [](is::IEntity *) {});
 		if (!setEntity(tmpVector, wall, _base))

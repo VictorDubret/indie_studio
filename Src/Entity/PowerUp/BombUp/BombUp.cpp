@@ -20,10 +20,6 @@ is::BombUp::BombUp(
 
 is::BombUp::~BombUp()
 {
-	if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}
 	_locked = true;
 }
 

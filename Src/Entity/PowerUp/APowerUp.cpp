@@ -15,8 +15,7 @@ is::APowerUp::APowerUp(
 	my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
 	irrl::ManageIrrlicht &irrlicht
-):
-	AEntity(entities, eventManager, irrlicht)
+) : AEntity(entities, eventManager, irrlicht)
 {
 	_pickable = true;
 	_type = "PowerUp";
@@ -24,10 +23,7 @@ is::APowerUp::APowerUp(
 
 is::APowerUp::~APowerUp()
 {
-	if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}
+
 	_locked = true;
 }
 
@@ -36,43 +32,24 @@ void is::APowerUp::collide(is::IEntity *entity)
 	auto character = dynamic_cast<ACharacter *>(entity);
 
 	if (character) {
-		//_entities.lock();
 		auto tmp = dynamic_cast<is::AEntity *>(entity);
 		if (!tmp) {
-			_entities.unlock();
 			return;
 		}
 		action(character);
-		//_entities.unlock();
-		_eventManager.lock();
-		_eventManager->enqueue([this]{
-			_entities.lock();
-			if (!dynamic_cast<APowerUp *>(_spointer.get())) {
-				_entities.unlock();
-				return;
-			}
-			_mutex.lock();
-			_locked = true;
-			this->~APowerUp();
-		});
-		_eventManager.unlock();
+		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
+			return;
+		}
+		this->~APowerUp();
 	}
 }
 
 void is::APowerUp::explode()
 {
-	_eventManager.lock();
-	_eventManager->enqueue([this]{
-		_entities.lock();
-		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
-			_entities.unlock();
-			return;
-		}
-		_mutex.lock();
-		_locked = true;
-		this->~APowerUp();
-	});
-	_eventManager.unlock();
+	if (!dynamic_cast<APowerUp *>(_spointer.get())) {
+		return;
+	}
+	this->~APowerUp();
 }
 
 void is::APowerUp::texture()

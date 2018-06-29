@@ -6,6 +6,7 @@
 ** Created by guillaume.berdeaux@epitech.eu
 */
 
+#include <ctime>
 #include <Tools/Debug.hpp>
 #include "ManageIrrlicht.hpp"
 #include "Explosion.hpp"
@@ -26,22 +27,12 @@ is::Explosion::Explosion(
 	_walkable = true;
 	_wallPassable = true;
 	texture();
-	_eventManager.lock();
-	_eventManager->enqueue([this]() {
-		do {
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		} while(_isPaused);
-		this->~Explosion();
-	});
-	_eventManager.unlock();
+	_startedAt = time(nullptr);
+	_lastTime = _startedAt;
 }
 
 is::Explosion::~Explosion()
 {
-	if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}
 	_locked = true;
 }
 
@@ -68,6 +59,18 @@ void is::Explosion::collide(is::IEntity *entity)
 		if (dynamic_cast<is::ACharacter *>(entity) == nullptr)
 			return ;
 		entity->explode();
+	}
+}
+
+void is::Explosion::timer()
+{
+	ssize_t now = time(nullptr);
+
+	if (_isPaused && now > _lastTime) {
+		_time++;
+	}
+	if (now >= _startedAt + _time) {
+		this->~Explosion();
 	}
 }
 

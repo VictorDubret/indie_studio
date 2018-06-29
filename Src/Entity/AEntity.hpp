@@ -71,7 +71,7 @@ namespace is {
 		bool _wallPassable = true;
 
 		std::recursive_mutex _mutex;
-		bool _locked = false;
+		bool _locked = true;
 		bool isInCollisionWith(std::shared_ptr<IEntity> &entity);
 
 		std::shared_ptr<IEntity> _spointer;
