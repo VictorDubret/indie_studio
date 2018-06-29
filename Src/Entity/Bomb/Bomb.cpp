@@ -13,7 +13,6 @@
 #include "Explosion.hpp"
 #include "Timer.hpp"
 #include "ManageObject.hpp"
-#include "Debug.hpp"
 
 is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 	my::ItemLocker<my::ThreadPool> &eventManager,
@@ -38,10 +37,6 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 
 is::Bomb::~Bomb()
 {
-	/*if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}*/
 	_locked = true;
 }
 
@@ -63,44 +58,12 @@ void is::Bomb::explode()
 	if (tmp)
 		tmp->operator++();
 	this->~Bomb();
-
-	/*_eventManager.lock();
-	_eventManager->enqueue([this]() {
-		std::lock_guard<std::recursive_mutex> lock(_mutex);
-		_eventManager.lock();
-		float x = getX();
-		float z = getZ();
-		_eventManager->enqueue([this, x, z] {
-			_entities.lock();
-			doExplosions(x, z);
-			_entities.unlock();
-		});
-		_eventManager.unlock();
-		auto tmp = dynamic_cast<is::ACharacter *>(_player.get());
-		if (tmp)
-			tmp->operator++();
-		_eventManager.lock();
-		_eventManager->enqueue([this] {
-			_entities.lock();
-			if (!dynamic_cast<Bomb *>(_spointer.get())) {
-				_entities.unlock();
-				return;
-			}
-			_mutex.lock();
-			_locked = true;
-			this->~Bomb();
-		});
-		_eventManager.unlock();
-		return;
-	});
-	_eventManager.unlock();*/
 }
 
 void is::Bomb::timer()
 {
 	ssize_t now = time(nullptr);
 
-	//std::cout << _startedAt << " + " << _time << " <= " << now << std::endl;
 	if (_isPaused && now > _lastTime) {
 		_time++;
 	}
@@ -108,44 +71,12 @@ void is::Bomb::timer()
 		explode();
 	}
 	_lastTime = now;
-	/*_eventManager.lock();
-	_eventManager->enqueue([this, time]() {
-		Timer t;
-
-		t.startTimer(time);
-
-		bool paused = false;
-		bool wait = false;
-		bool test = false;
-		while (!wait) {
-			while (_isPaused) {
-				paused = true;
-				wait = true;
-				test = true;
-			}
-			if (!_isPaused && !test) {
-				if ((t.isOver() || _stopTimer)) {
-					wait = true;
-					break;
-				}
-			}
-		}
-		if (paused) {
-			t.startTimer(time);
-		}
-
-		while ((!t.isOver() && !_stopTimer));
-		if (_stopTimer) {
-			return;
-		}
-		explode();
-	});
-	_eventManager.unlock();*/
 }
 
 void is::Bomb::texture()
 {
-	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/bomb.b3d", 0.75);
+	irrl::ManageObject::createAnim(_irrlicht, _spointer, "media/bomb.b3d",
+		0.75);
 	_irrlicht.getNode(_spointer.get())->setPosition(
 		irr::core::vector3df(1.1f, -0.5f, 1.1f));
 	irrl::ManageObject::setScale(_irrlicht, _spointer,
@@ -195,7 +126,8 @@ bool is::Bomb::check_arround(int lenExplosion, int actualPos,
 			auto tmp_it = dynamic_cast<AEntity *>(it.get());
 			if (!tmp_it || stop)
 				return false;
-			std::lock_guard<std::recursive_mutex> lock(it->getMutex());
+			std::lock_guard<std::recursive_mutex> lock(
+				it->getMutex());
 
 			if (it->getType() == "Wall") {
 				it->explode();
@@ -225,16 +157,9 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 {
 	float x = (which_axes == XAXES) ? f(actualPos) : x_bomb;
 	float z = (which_axes == ZAXES) ? f(actualPos) : z_bomb;
-	/*_eventManager.lock();
-	_eventManager->enqueue([this, x, z]() {*/
-		//_entities.lock();
-		auto explosion = new is::Explosion(_entities, _eventManager,
-			_irrlicht);
-		explosion->setX(x);
-		explosion->setZ(z);
-		//_entities.unlock();
-	/*});
-	_eventManager.unlock();*/
+	auto explosion = new is::Explosion(_entities, _eventManager, _irrlicht);
+	explosion->setX(x);
+	explosion->setZ(z);
 }
 
 bool is::Bomb::isWalkable(std::shared_ptr<is::IEntity> &entity)

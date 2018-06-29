@@ -29,19 +29,10 @@ is::Explosion::Explosion(
 	texture();
 	_startedAt = time(nullptr);
 	_lastTime = _startedAt;
-	/*_eventManager.lock();
-	_eventManager->enqueue([this]() {*/
-
-	/*});
-	_eventManager.unlock();*/
 }
 
 is::Explosion::~Explosion()
 {
-	/*if (!_locked) {
-		_entities.lock();
-		_mutex.lock();
-	}*/
 	_locked = true;
 }
 
