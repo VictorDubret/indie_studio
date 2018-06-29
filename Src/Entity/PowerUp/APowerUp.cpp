@@ -24,10 +24,10 @@ is::APowerUp::APowerUp(
 
 is::APowerUp::~APowerUp()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
-	}
+	}*/
 	_locked = true;
 }
 
@@ -46,13 +46,13 @@ void is::APowerUp::collide(is::IEntity *entity)
 		//_entities.unlock();
 		/*_eventManager.lock();
 		_eventManager->enqueue([this]{*/
-			_entities.lock();
+			//_entities.lock();
 			if (!dynamic_cast<APowerUp *>(_spointer.get())) {
-				_entities.unlock();
+			//	_entities.unlock();
 				return;
 			}
-			_mutex.lock();
-			_locked = true;
+			//_mutex.lock();
+			//_locked = true;
 			this->~APowerUp();
 		/*});
 		_eventManager.unlock();*/
@@ -63,13 +63,13 @@ void is::APowerUp::explode()
 {
 	/*_eventManager.lock();
 	_eventManager->enqueue([this]{*/
-		_entities.lock();
+		//_entities.lock();
 		if (!dynamic_cast<APowerUp *>(_spointer.get())) {
-			_entities.unlock();
+		//	_entities.unlock();
 			return;
 		}
-		_mutex.lock();
-		_locked = true;
+		//_mutex.lock();
+		//_locked = true;
 		this->~APowerUp();
 	/*});
 	_eventManager.unlock();*/

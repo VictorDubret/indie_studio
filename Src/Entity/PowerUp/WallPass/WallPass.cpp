@@ -20,10 +20,10 @@ is::WallPass::WallPass(
 
 is::WallPass::~WallPass()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
-	}
+	}*/
 	_locked = true;
 }
 

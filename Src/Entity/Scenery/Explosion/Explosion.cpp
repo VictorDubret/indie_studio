@@ -38,10 +38,10 @@ is::Explosion::Explosion(
 
 is::Explosion::~Explosion()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
-	}
+	}*/
 	_locked = true;
 }
 

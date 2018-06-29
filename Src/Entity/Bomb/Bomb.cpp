@@ -38,10 +38,10 @@ is::Bomb::Bomb(my::ItemLocker<std::vector<std::shared_ptr<IEntity>>> &entities,
 
 is::Bomb::~Bomb()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
-	}
+	}*/
 	_locked = true;
 }
 
@@ -227,12 +227,12 @@ void is::Bomb::createExplosion(std::function<float(int)> &f,
 	float z = (which_axes == ZAXES) ? f(actualPos) : z_bomb;
 	/*_eventManager.lock();
 	_eventManager->enqueue([this, x, z]() {*/
-		_entities.lock();
+		//_entities.lock();
 		auto explosion = new is::Explosion(_entities, _eventManager,
 			_irrlicht);
 		explosion->setX(x);
 		explosion->setZ(z);
-		_entities.unlock();
+		//_entities.unlock();
 	/*});
 	_eventManager.unlock();*/
 }

@@ -31,17 +31,17 @@ is::Wall::Wall(
 
 is::Wall::~Wall()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
-	}
+	}*/
 	_locked = true;
 }
 
 void is::Wall::placePowerUp(irr::core::vector3df pos)
 {
 	is::APowerUp *powerUp = nullptr;
-	_entities.lock();
+	//_entities.lock();
 	switch (_powerUp) {
 	case 'b':
 		powerUp = new is::BombUp(_entities, _eventManager, _irrlicht);
@@ -61,7 +61,7 @@ void is::Wall::placePowerUp(irr::core::vector3df pos)
 	if (powerUp && dynamic_cast<AEntity *>(_spointer.get())) {
  		powerUp->setPosition(getPosition());
 	}
-	_entities.unlock();
+	//_entities.unlock();
 }
 
 void is::Wall::explode()
@@ -69,13 +69,13 @@ void is::Wall::explode()
 	irr::core::vector3df pos = getPosition();
 	/*_eventManager->enqueue([this, pos]{*/
 		placePowerUp(pos);
-		_entities.lock();
+	//	_entities.lock();
 		if (!dynamic_cast<is::Wall *>(_spointer.get())) {
-			_entities.unlock();
+	//		_entities.unlock();
 			return;
 		}
-		_mutex.lock();
-		_locked = true;
+	//	_mutex.lock();
+	//	_locked = true;
 		this->~Wall();
 	/*});*/
 }

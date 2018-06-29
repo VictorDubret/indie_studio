@@ -22,17 +22,17 @@ is::AEntity::AEntity(Entity_t &entities, ThreadPool_t &eventManager, irrl::Manag
 
 is::AEntity::~AEntity()
 {
-	if (!_locked) {
+	/*if (!_locked) {
 		_entities.lock();
 		_mutex.lock();
 	}
-	_locked = true;
+	_locked = true;*/
 	_irrlicht.deleteEntity(_spointer);
 	auto tmp = std::find(_entities->begin(), _entities->end(), _spointer);
 	if (tmp != _entities->end())
 		_entities->erase(tmp);
-	_mutex.unlock();
-	_entities.unlock();
+	//_mutex.unlock();
+	//_entities.unlock();
 }
 
 irr::core::vector3df const is::AEntity::getPosition() const
@@ -160,7 +160,7 @@ std::vector<std::shared_ptr<is::IEntity>> is::AEntity::getEntitiesAt(float x, fl
 			return false;
 		irr::scene::ISceneNode *tmp;
 		{
-			std::lock_guard<std::recursive_mutex> lk(entity->getMutex());
+	//		std::lock_guard<std::recursive_mutex> lk(entity->getMutex());
 			_irrlicht.lock();
 			tmp = _irrlicht.getNode(entity.get());
 		}

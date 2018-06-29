@@ -14,11 +14,11 @@ is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPoo
 		ACharacter(entities, eventManager, irrlicht, id), _entities(entities),
 		_height(0), _width(0)
 {
-	_entities.lock();
+	//_entities.lock();
 	getMapDimensions();
 	std::pair<Type, IEntity *>tmp = std::pair<Type, IEntity *> (SAFE, nullptr);
 	if (!dynamic_cast<ACharacter *>(_spointer.get())) {
-		_entities.unlock();
+	//	_entities.unlock();
 		return;
 	}
 	_position.first = getX();
@@ -27,7 +27,7 @@ is::ArtificialIntelligence::ArtificialIntelligence(Entity_t &entities, ThreadPoo
 	_goal.second = -1;
 	_map = std::vector<std::pair<Type, IEntity *>>(_height * _width, tmp);
 	updateMap();
-	_entities.unlock();
+	//_entities.unlock();
 }
 
 void 	is::ArtificialIntelligence::AIsTurn()
@@ -36,33 +36,33 @@ void 	is::ArtificialIntelligence::AIsTurn()
 
 	if (!dynamic_cast<ACharacter *>(_spointer.get()))
 		return;
-	_entities.lock();
+	//_entities.lock();
 	updateMap();
-	_entities.unlock();
+	//_entities.unlock();
 	if (inDanger() == true) {
 		dir = lookForAZone(SAFE);
 		headTowards(dir);
-		_entities.lock();
+	//	_entities.lock();
 		if (!dynamic_cast<ACharacter *>(_spointer.get())) {
-			_entities.unlock();
+	//		_entities.unlock();
 			return;
 		}
 		_position.first = getX();
 		_position.second = getZ();
-		_entities.unlock();
+	//	_entities.unlock();
 		return;
 	}
 	dir = lookForAZone(POWERUP);
 	if (dir != NONE) {
 		headTowards(dir);
-		_entities.lock();
+	//	_entities.lock();
 		if (!dynamic_cast<ACharacter *>(_spointer.get())) {
-			_entities.unlock();
+	//		_entities.unlock();
 			return;
 		}
 		_position.first = getX();
 		_position.second = getZ();
-		_entities.unlock();
+	//	_entities.unlock();
 		return;
 	}
 	if (safeBombDrop() == true) {
@@ -76,14 +76,14 @@ void 	is::ArtificialIntelligence::AIsTurn()
 		dir = lookForAZone(CRATE);
 		headTowards(dir);
 	}
-	_entities.lock();
+	//_entities.lock();
 	if (!dynamic_cast<ACharacter *>(_spointer.get())) {
-		_entities.unlock();
+	//	_entities.unlock();
 		return;
 	}
 	_position.first = getX();
 	_position.second = getZ();
-	_entities.unlock();
+	//_entities.unlock();
 }
 
 bool is::ArtificialIntelligence::inDanger()
@@ -113,7 +113,7 @@ void	is::ArtificialIntelligence::setWalls()
 	for (const auto &it : _entities.get()) {
 		if (dynamic_cast<is::AEntity *>(it.get()) == nullptr)
 			continue;
-		std::lock_guard<std::recursive_mutex> lk(it->getMutex());
+	//	std::lock_guard<std::recursive_mutex> lk(it->getMutex());
 		if (it->getType() == "UnbreakableWall") {
 			_map[(int)it->getX() + (int)it->getZ() * _width].first = WALL;
 			_map[(int)it->getX() + (int)it->getZ() * _width].second = it.get();
