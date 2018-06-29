@@ -78,6 +78,7 @@ namespace irrl {
 		void displaySplitScreenScene();
 		void endSplitScene();
 		void displayBothPlayers();
+		void displayBothPlayersEnd(irr::video::ITexture *);
 		void endScene();
 
 
@@ -91,6 +92,11 @@ namespace irrl {
 		bool _endGame = false;
 		bool _draw = false;
 		bool _winPLayer = true;
+
+		irr::video::ITexture *_winPicture;
+		irr::video::ITexture *_drawPicture;
+		irr::core::position2d<irr::s32> _winPosPicture;
+		irr::core::rect<irr::s32> _winRectangle;
 	};
 
 }

@@ -15,6 +15,23 @@ irrl::Game::Game(
 	irr::core::vector2di mapSize, bool splitScreen
 ) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
+
+	/* init win picture */
+	_winPicture = _driver->getTexture("media/winner.png");
+	_drawPicture = _driver->getTexture("media/draw.png");
+
+	irr::core::dimension2d<irr::u32> tmpSize = _winPicture->getSize();
+
+	_winPosPicture.X = 500;
+	_winPosPicture.Y = 400;
+
+	irr::core::position2d<irr::s32> position1;
+	position1.X = tmpSize.Width + _winPosPicture.X;
+	position1.Y = tmpSize.Height + _winPosPicture.Y;
+
+	_winRectangle.UpperLeftCorner = _winPosPicture;
+	_winRectangle.LowerRightCorner = position1;
+
 	_splitScreen = splitScreen;
 	updateView();
 }
@@ -51,7 +68,16 @@ void irrl::Game::updateView()
 
 void irrl::Game::displayGlobalScene()
 {
-	if (!_endGame || _draw) {
+	if (_draw) {
+		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
+		lock();
+		_sceneManager->drawAll();
+			_driver->draw2DImage(_drawPicture, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		unlock();
+		_driver->endScene();
+		return;
+	}
+	if (!_endGame) {
 		_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 		lock();
 		setCameraPos();
@@ -73,7 +99,7 @@ void irrl::Game::endSplitScene()
 	for (const auto &it : _listPlayer) {
 		if (it.alive) {
 			if (_camera[PLAYER1]->getPosition().Y < _camera[PLAYER1]->getTarget().Y + 2) {
-				displayBothPlayers();
+				displayBothPlayersEnd(_winPicture);
 			} else {
 				if (!getNode(it.entity))
 					continue;
@@ -108,6 +134,7 @@ void irrl::Game::endScene()
 				lock();
 				_sceneManager->drawAll();
 				unlock();
+				_driver->draw2DImage(_winPicture, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
 				_driver->endScene();
 			} else {
 				if (!getNode(it.entity))
@@ -121,6 +148,8 @@ void irrl::Game::endScene()
 				} else {
 					const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
 					_camera[GLOBAL]->setPosition(tmp);
+
+
 				}
 				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 				lock();
@@ -136,6 +165,10 @@ void irrl::Game::endScene()
 
 void irrl::Game::displaySplitScreenScene()
 {
+	if (_draw) {
+		displayBothPlayersEnd(_drawPicture);
+		return;
+	}
 	checkLastAlive();
 	if (!_endGame || _draw) {
 		displaySplitScreen();
@@ -157,6 +190,25 @@ void irrl::Game::displayBothPlayers()
 	_driver->setViewPort(irr::core::rect<irr::s32>(0, 450, 1600, 900));
 	lock();
 	_sceneManager->drawAll();
+	unlock();
+	_driver->endScene();
+}
+
+void irrl::Game::displayBothPlayersEnd(irr::video::ITexture *image)
+{
+	/* Display of Player 1 */
+	_sceneManager->setActiveCamera(_camera[PLAYER1]);
+	_driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 1600, 900 / 2));
+	lock();
+	_sceneManager->drawAll();
+	_driver->draw2DImage(image, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+	unlock();
+	/* Display of Player 2 */
+	_sceneManager->setActiveCamera(_camera[PLAYER2]);
+	_driver->setViewPort(irr::core::rect<irr::s32>(0, 450, 1600, 900));
+	lock();
+	_sceneManager->drawAll();
+	_driver->draw2DImage(image, _winPosPicture, _winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
 	unlock();
 	_driver->endScene();
 }
@@ -397,6 +449,10 @@ void irrl::Game::checkLastAlive()
 		if (!it.alive || !getNode(it.entity))
 			continue;
 		alivePLayer++;
+	}
+	if (alivePLayer == 0) {
+		_draw = true;
+		return;
 	}
 	if ((alivePLayer == 1 || totalPLayer == 1) && !_endGame) {
 		_endGame = true;

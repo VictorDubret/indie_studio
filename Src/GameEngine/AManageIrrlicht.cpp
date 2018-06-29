@@ -24,6 +24,7 @@ irrl::AManageIrrlicht::AManageIrrlicht(
 		throw std::exception();
 
 	_driver->getTexture(irr::io::path("media/fire.jpg"));
+	_driver->getTexture(irr::io::path("media/winner.png"));
 	_driver->getTexture(irr::io::path("media/1_character.png"));
 	_driver->getTexture(irr::io::path("media/2_character.png"));
 	_driver->getTexture(irr::io::path("media/3_character.png"));
