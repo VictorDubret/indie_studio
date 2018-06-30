@@ -501,11 +501,10 @@ void irrl::Game::checkLastAlive()
 				if (it.entity->getScore() > _bestScore) {
 					_bestScore = it.entity->getScore();
 					_gameLengh += "New Record ! ";
-					_gameLengh += it.entity->getScore();
 				} else {
 					_gameLengh += "Winner Score ";
-					_gameLengh += it.entity->getScore();
 				}
+				_gameLengh += it.entity->getScore();
 			}
 		}
 	}

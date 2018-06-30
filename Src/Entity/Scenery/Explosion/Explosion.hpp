@@ -37,8 +37,8 @@ namespace is {
 		bool _isPaused = false;
 
 		size_t _time = 1;
-		ssize_t _startedAt;
-		ssize_t _lastTime;
+		long int _startedAt;
+		long int _lastTime;
 
 	};
 };

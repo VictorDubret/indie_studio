@@ -64,7 +64,7 @@ void is::Explosion::collide(is::IEntity *entity)
 
 void is::Explosion::timer()
 {
-	ssize_t now = time(nullptr);
+	long int now = time(nullptr);
 
 	if (_isPaused && now > _lastTime) {
 		_time++;

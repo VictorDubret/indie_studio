@@ -55,8 +55,8 @@ namespace is {
 		bool _explosed = false;
 
 		size_t _time = 2;
-		ssize_t _startedAt = 0;
-		ssize_t _lastTime = 0;
+		long int _startedAt = 0;
+		long int _lastTime = 0;
 	};
 }
 

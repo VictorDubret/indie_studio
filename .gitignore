@@ -24,6 +24,4 @@ ALL_BUILD.*
 bomberman.dir
 bomberman.sln
 *vcxproj*
-Debug
 INSTALL
-Release
