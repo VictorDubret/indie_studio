@@ -47,13 +47,13 @@ irrl::Game::Game(
 	_hudPos[1].X = 130;
 	_hudPos[1].Y = 800;
 
-	_hudPos[2].X = 1400;
+	_hudPos[2].X = 1300;
 	_hudPos[2].Y = 10;
 
 	_hudPos[3].X = 130;
 	_hudPos[3].Y = 10;
 
-	_hudPos[4].X = 1400;
+	_hudPos[4].X = 1300;
 	_hudPos[4].Y = 800;
 }
 
@@ -601,11 +601,13 @@ void irrl::Game::displayBonus(is::ACharacter *character)
 	position2.X = 0;
 	position2.Y = 0;
 
-
 	if (character->getBombLength() > 1) {
-		winRectangle.UpperLeftCorner = position2;
-		winRectangle.LowerRightCorner = position1;
-		_driver->draw2DImage(_bonus[FLAME], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		for (int i = 1; i < character->getBombLength(); ++i) {
+			winRectangle.UpperLeftCorner = position2;
+			winRectangle.LowerRightCorner = position1;
+			_driver->draw2DImage(_bonus[FLAME], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+			tmpPos.X += 10;
+		}
 		tmpPos.X += 50;
 	}
 	if (character->getSpeed() > 1) {
@@ -615,9 +617,12 @@ void irrl::Game::displayBonus(is::ACharacter *character)
 		tmpPos.X += 50;
 	}
 	if (character->getBombMax() > 1) {
-		winRectangle.UpperLeftCorner = position2;
-		winRectangle.LowerRightCorner = position1;
-		_driver->draw2DImage(_bonus[BOMB], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		for (int i = 1; i < character->getBombMax(); ++i) {
+			winRectangle.UpperLeftCorner = position2;
+			winRectangle.LowerRightCorner = position1;
+			_driver->draw2DImage(_bonus[BOMB], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+			tmpPos.X += 10;
+		}
 		tmpPos.X += 50;
 	}
 	if (character->getWallPass()) {
