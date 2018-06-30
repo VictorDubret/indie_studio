@@ -17,6 +17,11 @@ irrl::Game::Game(
 ) : AManageIrrlicht(entities, eventManager, irrlicht)
 {
 
+	_bonus[BOMB] = _driver->getTexture("media/Bomb2.png");
+	_bonus[FLAME] = _driver->getTexture("media/Flame.png");
+	_bonus[SPEED] = _driver->getTexture("media/Speed.png");
+	_bonus[WALLPASS] = _driver->getTexture("media/WallPass.png");
+
 	_winPicture = _driver->getTexture("media/winner.png");
 	_drawPicture = _driver->getTexture("media/draw.png");
 
@@ -38,6 +43,18 @@ irrl::Game::Game(
 	_color[2] = {255, 255, 165, 0};
 	_color[3] = {255, 65, 105, 225};
 	_color[4] = {255, 255, 250, 250};
+
+	_hudPos[1].X = 130;
+	_hudPos[1].Y = 800;
+
+	_hudPos[2].X = 1400;
+	_hudPos[2].Y = 10;
+
+	_hudPos[3].X = 130;
+	_hudPos[3].Y = 10;
+
+	_hudPos[4].X = 1400;
+	_hudPos[4].Y = 800;
 }
 
 irrl::Game::~Game()
@@ -548,14 +565,14 @@ void irrl::Game::setBG()
 	cubeNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 }
 
+
+
 void irrl::Game::displayScore()
 {
 
-	int topPos = 40;
 	for (auto &it : _listPlayer) {
 		if (!it.alive || !getNode(it.entity)) {
-			_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(130,10 + topPos,300,200 + topPos), _color[it.entity->getID()]);
-			topPos += 40;
+			_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(_hudPos[it.entity->getID()].X, _hudPos[it.entity->getID()].Y, _hudPos[it.entity->getID()].X + 100, _hudPos[it.entity->getID()].Y + 100), _color[it.entity->getID()]);
 			continue;
 		}
 		_scoreString[it.entity->getID()] = "";
@@ -566,7 +583,46 @@ void irrl::Game::displayScore()
 				_scoreString[it.entity->getID()].erase(_scoreString[it.entity->getID()].size() -1);
 			_scoreString[it.entity->getID()].erase(_scoreString[it.entity->getID()].size() -1);
 		}
-		_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(130,10 + topPos,300,200 + topPos), _color[it.entity->getID()]);
-		topPos += 40;
+		displayBonus(it.entity);
+		_font->draw(_scoreString[it.entity->getID()], irr::core::rect<irr::s32>(_hudPos[it.entity->getID()].X, _hudPos[it.entity->getID()].Y, _hudPos[it.entity->getID()].X + 100, _hudPos[it.entity->getID()].Y + 100), _color[it.entity->getID()]);
+	}
+}
+
+void irrl::Game::displayBonus(is::ACharacter *character)
+{
+	irr::core::position2d<irr::s32> tmpPos = _hudPos[character->getID()];
+	irr::core::rect<irr::s32> winRectangle;
+	irr::core::position2d<irr::s32> position1;
+	irr::core::position2d<irr::s32> position2;
+
+	tmpPos.Y += 40;
+	position1.X = 32;
+	position1.Y = 32;
+	position2.X = 0;
+	position2.Y = 0;
+
+
+	if (character->getBombLength() > 1) {
+		winRectangle.UpperLeftCorner = position2;
+		winRectangle.LowerRightCorner = position1;
+		_driver->draw2DImage(_bonus[FLAME], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		tmpPos.X += 50;
+	}
+	if (character->getSpeed() > 1) {
+		winRectangle.UpperLeftCorner = position2;
+		winRectangle.LowerRightCorner = position1;
+		_driver->draw2DImage(_bonus[SPEED], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		tmpPos.X += 50;
+	}
+	if (character->getBombMax() > 1) {
+		winRectangle.UpperLeftCorner = position2;
+		winRectangle.LowerRightCorner = position1;
+		_driver->draw2DImage(_bonus[BOMB], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
+		tmpPos.X += 50;
+	}
+	if (character->getWallPass()) {
+		winRectangle.UpperLeftCorner = position2;
+		winRectangle.LowerRightCorner = position1;
+		_driver->draw2DImage(_bonus[WALLPASS], tmpPos, winRectangle, 0, irr::video::SColor(255, 255, 255, 255), true);
 	}
 }

@@ -42,6 +42,12 @@ namespace irrl {
 		GLOBAL = 3
 	};
 
+	enum {
+		BOMB = 0,
+		FLAME = 1,
+		SPEED = 2,
+		WALLPASS = 3
+	};
 	class Game : public virtual AManageIrrlicht {
 		public:
 		Game(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entities, my::ItemLocker<my::ThreadPool> &eventManager, irrl::ManageIrrlicht &irrlicht,  irr::core::vector2di mapSize, bool splitScreen);
@@ -81,6 +87,7 @@ namespace irrl {
 		void displayBothPlayersEnd(irr::video::ITexture *);
 		void endScene();
 		void displayScore();
+		void displayBonus(is::ACharacter *hudPos);
 		unsigned long long gameLengh() const;
 
 
@@ -105,6 +112,8 @@ namespace irrl {
 		irr::core::stringc _gameLengh;
 		std::map<size_t, irr::core::stringw> _scoreString;
 		std::map<size_t, irr::video::SColor> _color;
+		std::map<size_t, irr::core::position2d<irr::s32>> _hudPos;
+		std::map<char, irr::video::ITexture *> _bonus;
 	};
 
 }

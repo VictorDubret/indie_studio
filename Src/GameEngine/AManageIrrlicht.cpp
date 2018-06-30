@@ -23,6 +23,11 @@ irrl::AManageIrrlicht::AManageIrrlicht(
 	if (!_driver || !_sceneManager)
 		throw std::exception();
 
+	_driver->getTexture(irr::io::path("media/WallPass.png"));
+	_driver->getTexture(irr::io::path("media/Bomb2.png"));
+	_driver->getTexture(irr::io::path("media/Speed.png"));
+	_driver->getTexture(irr::io::path("media/Flame.png"));
+
 	_driver->getTexture(irr::io::path("media/fire.jpg"));
 	_driver->getTexture(irr::io::path("media/winner.png"));
 	_driver->getTexture(irr::io::path("media/1_character.png"));
