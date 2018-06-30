@@ -38,7 +38,6 @@ irrl::Game::Game(
 
 	_splitScreen = splitScreen;
 	updateView();
-	_font = _device->getGUIEnvironment()->getFont("media/bigfont.png");
 	_color[1] = {255, 255, 0, 0};
 	_color[2] = {255, 255, 165, 0};
 	_color[3] = {255, 65, 105, 225};
@@ -183,10 +182,10 @@ void irrl::Game::endScene()
 				_driver->beginScene(true, true, irr::video::SColor(255, 100, 100, 100));
 				lock();
 				_sceneManager->drawAll();
-				unlock();
 				const irr::core::vector3df tmp(_camera[GLOBAL]->getPosition().X, static_cast<irr::f32>(_camera[GLOBAL]->getPosition().Y - 0.1), _camera[GLOBAL]->getPosition().Z);
 				_camera[GLOBAL]->setPosition(tmp);
 				_driver->endScene();
+				unlock();
 			}
 		}
 	}

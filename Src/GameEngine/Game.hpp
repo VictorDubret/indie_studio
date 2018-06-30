@@ -106,7 +106,6 @@ namespace irrl {
 		irr::video::ITexture *_drawPicture;
 		irr::core::position2d<irr::s32> _winPosPicture;
 		irr::core::rect<irr::s32> _winRectangle;
-		irr::gui::IGUIFont* _font;
 		size_t _bestScore = 0;
 		std::chrono::time_point<std::chrono::system_clock> _startTime;
 		irr::core::stringc _gameLengh;

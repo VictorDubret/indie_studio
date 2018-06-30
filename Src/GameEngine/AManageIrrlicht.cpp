@@ -23,6 +23,8 @@ irrl::AManageIrrlicht::AManageIrrlicht(
 	if (!_driver || !_sceneManager)
 		throw std::exception();
 
+	_font = _device->getGUIEnvironment()->getFont("media/bigfont.png");
+
 	_driver->getTexture(irr::io::path("media/WallPass.png"));
 	_driver->getTexture(irr::io::path("media/Bomb2.png"));
 	_driver->getTexture(irr::io::path("media/Speed.png"));

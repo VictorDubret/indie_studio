@@ -19,7 +19,9 @@ namespace irrl {
 		BOMBEUP_RATE,
 		FIREUP_RATE,
 		SPEEDUP_RATE,
-		WALLPASS_RATE
+		WALLPASS_RATE,
+		SAVE_NAME,
+		SAVE_LOAD
 	};
 
 	enum {
@@ -59,6 +61,7 @@ namespace irrl {
 		void addIA(float x, float z, std::size_t id);
 
 		irr::gui::IGUIEnvironment *_gui = nullptr;
+		irr::gui::IGUIEditBox *_saveLoad = nullptr;
 
 		private:
 		void initSettingsScene();
@@ -69,6 +72,8 @@ namespace irrl {
 		bool isNumber(const std::string& s);
 
 		std::map<irr::io::path, std::map<std::string, hover_t>> _hoverManage;
+
+		irr::gui::IGUIEditBox *_saveName = nullptr;
 
 		// rate et map size settings
 		irr::gui::IGUIEditBox *_mapXEditBox = nullptr;

@@ -53,6 +53,11 @@ namespace irrl {
 		irr::video::IVideoDriver *_driver = nullptr;
 		irr::scene::ISceneManager *_sceneManager = nullptr;
 		irrklang::ISoundEngine *_engine = nullptr;
+
+		irr::gui::IGUIFont* _font = nullptr;
+
+		std::vector<std::string> _listSave;
+
 		irrl::EventManager _eventReceiver;
 		bool _displayGUI = true;
 		bool _splitScreen = true;

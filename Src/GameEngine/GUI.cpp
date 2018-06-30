@@ -23,6 +23,8 @@ irrl::GUI::GUI(my::ItemLocker<std::vector<std::shared_ptr<is::IEntity>>> &entiti
 {
 	_gui = getDevice()->getGUIEnvironment();
 
+
+	_gui->getSkin()->setFont(_font);
 	initPause();
 	initSettingsScene();
 	initBaseScene();
@@ -87,13 +89,23 @@ void irrl::GUI::initPause()
 	_gui->clear();
 	_currentScene = "pause";
 
+	_saveName = _gui->addEditBox(L"Save name", irr::core::rect<irr::s32>(500, 360, 800, 460), true, 0, SAVE_NAME);
+	_saveName->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
+
 	_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(450, 110));
 	addButtonImage("continue", "pause", "media/continue_hover.png", "media/continue.png", irr::core::rect<irr::s32>(650, 240, 1050, 340), [this](const struct irrl::hover_s &) {_displayGUI = false;_base.endPause();_currentScene = "game";});
-	addButtonImage("save", "pause", "media/save_hover.png", "media/save.png", irr::core::rect<irr::s32>(750, 360, 950, 460), [this](const struct irrl::hover_s &) {
+	addButtonImage("save", "pause", "media/save_hover.png", "media/save.png", irr::core::rect<irr::s32>(850, 360, 1050, 460), [this](const struct irrl::hover_s &) {
 		_entities.lock();
-		remove(".save.indie");
 
-		std::ofstream _filestr(".save.indie");
+		std::wstring ws(_saveName->getText());
+		std::string test(ws.begin(), ws.end());
+
+		if (test.empty()) {
+			_entities.unlock();
+			return;
+		}
+
+		std::ofstream _filestr("save/" + test);
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		for (auto &it : _entities.get()) {
@@ -111,6 +123,7 @@ void irrl::GUI::initPause()
 				_filestr << " bombMax " << isCharacter->getBombMax() << " speed " << isCharacter->getSpeed() << " bombLength " << isCharacter->getBombLength() << " wallPass " << isCharacter->getWallPass();
 			_filestr << "\n";
 		}
+		_saveName->setText(L"Save name");
 		_entities.unlock();
 
 	});
@@ -129,31 +142,39 @@ void irrl::GUI::initBaseScene()
 		_gui->addImage(getDriver()->getTexture("media/Bomberman_.png"), irr::core::position2d<irr::s32>(230, 100));
 		_gui->addImage(getDriver()->getTexture("media/Bombermon.png"), irr::core::position2d<irr::s32>(620, 110));
 
-		std::ifstream infile(".save.indie");
-		if (infile.good()) {
+		_saveLoad = _gui->addEditBox(L"Save name", irr::core::rect<irr::s32>(820, 210, 1070, 250));
+		_saveLoad->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
+
+		_base.resetListObj();
+		addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct irrl::hover_s &) {
 			_base.resetListObj();
+			_base.lock();
+
+			std::wstring ws(_saveLoad->getText());
+			std::string test(ws.begin(), ws.end());
+
+			if (test.empty()) {
+				_base.unlock();
+				return;
+			}
+
+			std::ifstream _filestr("save/" + test);
+
+			if (!_filestr.is_open()) {
+				_base.unlock();
+				return;
+			}
+
 			getSceneManager()->clear();
 			updateView();
-
-			addButtonImage("load_game", "base", "media/load_game_hover.png", "media/load_game.png", irr::core::rect<irr::s32>(1100, 210, 1313, 250), [this](const struct irrl::hover_s &) {
+			if (!loadSave()) {
 				_base.resetListObj();
-				_base.lock();
 				getSceneManager()->clear();
 				updateView();
-				if (!loadSave()) {
-					_base.resetListObj();
-					getSceneManager()->clear();
-					updateView();
-					remove(".indie.save");
-				}
-				_base.unlock();
-			});
-			addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {
-				initSettingsScene();
-			});
-		}
-		else
-			addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 210, 1313, 276), [this](const struct irrl::hover_s &) {
+			}
+			_base.unlock();
+		});
+		addButtonImage("launchSettings", "base", "media/textfx(1).png", "media/textfx.png", irr::core::rect<irr::s32>(1100, 260, 1313, 300), [this](const struct irrl::hover_s &) {
 			initSettingsScene();
 		});
 
@@ -277,27 +298,34 @@ void irrl::GUI::initSettingsScene()
 	_hoverManage["settings"]["number_ia" + std::to_string(_nb_ia)].used = false;
 
 	_gui->addImage(getDriver()->getTexture("media/map_size.png"), irr::core::position2d<irr::s32>(230, 470));
-	_mapXEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.first).c_str()).c_str(), irr::core::rect<irr::s32>(410, 470, 460, 500), true, 0, MAPSIZE_X);
-	_mapYEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.second).c_str()).c_str(), irr::core::rect<irr::s32>(470, 470, 520, 500), true, 0, MAPSIZE_Y);
+	_mapXEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.first).c_str()).c_str(), irr::core::rect<irr::s32>(410, 470, 470, 500), true, 0, MAPSIZE_X);
+	_mapXEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
+	_mapYEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_mapSize.second).c_str()).c_str(), irr::core::rect<irr::s32>(480, 470, 540, 500), true, 0, MAPSIZE_Y);
+	_mapYEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/box_rate.png"), irr::core::position2d<irr::s32>(230, 530));
-	_crateEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_crates).c_str()).c_str(), irr::core::rect<irr::s32>(410, 530, 460, 560), true, 0, CRATE_RATE);
+	_crateEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_crates).c_str()).c_str(), irr::core::rect<irr::s32>(410, 530, 510, 560), true, 0, CRATE_RATE);
+	_crateEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/drop_rate.png"), irr::core::position2d<irr::s32>(230, 590));
-	_dropEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_drop).c_str()).c_str(), irr::core::rect<irr::s32>(410, 590, 460, 620), true, 0, DROP_RATE);
+	_dropEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_drop).c_str()).c_str(), irr::core::rect<irr::s32>(410, 590, 510, 620), true, 0, DROP_RATE);
+	_dropEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/bombup_rate.png"), irr::core::position2d<irr::s32>(620, 470));
-	_bombEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_bombUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 470, 940, 500), true, 0, BOMBEUP_RATE);
+	_bombEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_bombUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 470, 990, 500), true, 0, BOMBEUP_RATE);
+	_bombEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/fireup_rate.png"), irr::core::position2d<irr::s32>(620, 530));
-	_fireEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_fireUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 530, 940, 560), true, 0, FIREUP_RATE);
+	_fireEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_fireUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 530, 990, 560), true, 0, FIREUP_RATE);
+	_fireEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/speedup_rate.png"), irr::core::position2d<irr::s32>(620, 590));
-	_speedEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_speedUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 590, 940, 620), true, 0, SPEEDUP_RATE);
+	_speedEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_speedUp).c_str()).c_str(), irr::core::rect<irr::s32>(890, 590, 990, 620), true, 0, SPEEDUP_RATE);
+	_speedEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 
 	_gui->addImage(getDriver()->getTexture("media/wallpass_rate.png"), irr::core::position2d<irr::s32>(620, 650));
-	_wallpassEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_wallPass).c_str()).c_str(), irr::core::rect<irr::s32>(890, 650, 940, 680), true, 0, WALLPASS_RATE);
-
+	_wallpassEditBox = _gui->addEditBox(irr::core::stringw(std::to_string(_wallPass).c_str()).c_str(), irr::core::rect<irr::s32>(890, 650, 990, 680), true, 0, WALLPASS_RATE);
+	_wallpassEditBox->setOverrideColor(irr::video::SColor(255, 255, 255, 255));
 }
 
 void irrl::GUI::addPlayer(float x, float z, std::size_t id)
@@ -450,7 +478,11 @@ bool irrl::GUI::loadSave()
 	std::stringstream streamLine;
 	std::string line;
 	std::string temp;
-	std::ifstream myfile(".save.indie");
+
+	std::wstring ws(_saveLoad->getText());
+	std::string test(ws.begin(), ws.end());
+
+	std::ifstream myfile("save/" + test);
 	int i = 0;
 	int j = 0;
 	is::ACharacter *player2 = nullptr;
