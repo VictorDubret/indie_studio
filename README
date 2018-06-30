@@ -1,0 +1,6 @@
+pour windows:
+    lancer un "invite de command"
+    aller dans le dossier correspondant au project (cpp_indie_studio)
+    executer "cmake.exe . ."
+    lancer le bomberman.sln
+    lancer le projet grace a visual studio :D
